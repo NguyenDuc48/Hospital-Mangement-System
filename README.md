@@ -1,21 +1,61 @@
 # Hospital Patient Management System
 A web based Hospital Patient Record Management System project.
 
-## Hospital Patient Management System - Supports most of the standard HIMS functionalities:
-* Doctor Assign 
-* Patient Appointment 
-* Doctor Prescription
-* Billing
-* 
-* Patient Login
-* Doctor Login
-* Employee Login
-* Administrator Login
+# Hospital Management System (HMS) Web Application
 
+## Overview
+
+This is a web-based Hospital Management System built using ReactJS for the frontend and MySQL for the backend. The system aims to streamline hospital operations, manage patient records, and improve overall efficiency.
+
+## Features
+
+- **User Authentication**: Secure login for manager, doctors, and staff, patient.
+
+- **Patient Management**: Easily manage and update patient records, including personal details, medical history, and treatment plans.
+
+- **Appointment Scheduling**: Schedule and manage appointments for patients with doctors.
+
+- **Billing and Invoicing**: Generate bills and invoices for patient services.
+
+- **Inventory Management**: Keep track of hospital inventory, such as medicines and medical equipment.
+  
 ## Technology Stack
 * Back-End Technologies: Node Js, Express Js, MySQL
 * Front-End Technologies: React Js, BootStrap
 * Authentication provided using JWT
+
+
+# Project Progress
+## Manager
+- [ ] Add, edit, and delete accounts of doctors and nurses
+- [ ] Management of drugs, supplies and equipment
+- [ ] Manage revenue reports and payment invoices
+
+## Doctor
+- [ ] Personal profile management
+- [ ] View the patient's medical history
+- [ ] View patient appointments
+- [ ] Update reports for patients
+
+
+## Nurse
+- [ ] Personal profile management
+- [ ] Manage examination schedules
+- [ ] Bill managerment
+- [ ] View drug and equipment information
+
+## Patient
+- [ ] Personal profile management
+- [ ] schedule a medical examination
+- [ ] View the patient's medical history
+
+## Bug Fixes
+- [ ] Fix issue with user registration
+
+
+Feel free to check our [issues](https://github.com/NguyenDuc48/hms/issues) for more details on what's currently being worked on and to report any problems.
+
+
 
 ### Instruction
 * Clone This Repo https://github.com/arijitiiest/Hospital-Management-System
