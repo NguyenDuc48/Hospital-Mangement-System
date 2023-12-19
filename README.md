@@ -32,10 +32,10 @@ This is a web-based Hospital Management System built using ReactJS for the front
 - [ ] Manage revenue reports and payment invoices
 
 ## Doctor
-- [ ] Personal profile management
+- [x] Personal profile management
 - [ ] View the patient's medical history
 - [ ] View patient appointments
-- [ ] Update reports for patients
+- [g] Update reports for patients
 
 
 ## Nurse
