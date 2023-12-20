@@ -35,14 +35,28 @@ import EmpContact from './component/Employee/EmpContact';
 
 import DocAbout from './component/Doctor/DocAbout';
 import DocContact from './component/Doctor/DocContact';
-
-
+import Header from './component/Landings/Header';
+import Slider from './component/Landings/Slider';
+import Landings from './component/Landings/Landings';
+import Login from './component/Login/Login';
+// import Sidebar from '../src/component/Sidebar/Sidebar';
+// import AdminEmployee from './component/Manager/AdminEmployee';
+import DoctorAccount from './component/Manager/DoctorAccount';
 
 function App() {
   return (
     <div className="App">
+   
+            
+            
+
+
     <Router>
-      <Route exact path="/" component={Home} />
+      {/* <Route exact path="/" component={Header} /> */}
+      {/* <Route exact path="//" component={Slider} /> */}
+      <Route exact path="/" component={Landings} />
+      <Route exact path="/login" component={Login} /> 
+      {/* <Route exact path="/" component={Home} /> */}
       <Route exact path="/about" component={About} />
       <Route exact path="/gallery" component={Gallery} />
       <Route exact path="/contact" component={Contact} />
@@ -79,6 +93,7 @@ function App() {
       <Route exact path="/administrator/login/about" component = {AdminAbout}/>
       <Route exact path="/administrator/login/gallery" component = {AdminGallery}/>
       <Route exact path="/administrator/login/contact" component = {AdminContact}/>
+      <Route exact path="/manager/doctor_account" component = {DoctorAccount}/>
     </Router>
     </div>
   );

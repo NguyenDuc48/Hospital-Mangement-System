@@ -8,6 +8,7 @@ const Employee = require('./routes/users/Employee/employee');
 const Doctor = require('./routes/users/Doctor/docter');
 const Admin = require('./routes/users/Administrator/admin');
 const superAdmin = require('./routes/users/Administrator/superAdmin');
+const Manager = require('./routes/users/Manager/manager');
 const api = require('./routes/api/api');
 
 
@@ -21,6 +22,7 @@ app.use('/patient', Patient);
 app.use('/employee', Employee);
 app.use('/doctor' , Doctor);
 app.use('/admin', Admin);
+app.use('/manager', Manager)
 app.use('/super', superAdmin);
 app.use('/api', api);
 

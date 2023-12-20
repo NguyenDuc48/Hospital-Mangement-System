@@ -39,7 +39,7 @@ class DoctorLogin extends Component {
       if(res !== "Email not found") {
         sessionStorage.setItem('userData', JSON.stringify(user));
         this.props.history.push('/doctors/login/doctor_home');
-      } 
+      }
     }).catch(err => {
       console.log(err)
     })
