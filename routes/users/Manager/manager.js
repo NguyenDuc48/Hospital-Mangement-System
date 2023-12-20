@@ -8,6 +8,16 @@ const db = require('../../../utils/db');
 
 process.env.SECRET_KEY = 'Arijit';
 
+doctor.get('/employee', (req, res) => {
+    const sql = "SELECT * FROM doctors";
+
+    db.query(sql, (err, result) => {
+        if(err) console.log(err);
+        console.log(result)
+        res.json(result);
+    });
+});
+
 doctor.post('/add_doctor', (req, res) => {
     const doctorData = {
         first_name  : req.body.first_name,
