@@ -137,23 +137,34 @@ employee.delete('/delete_doctor', (req, res) => {
     const doctor_id = req.body.doctor_id;
 
     let deleteDoctor = `DELETE FROM doctors 
-                        WHERE doctor_id = "${doctor_id}"`;
+                        WHERE doctors.doctor_id = "${doctor_id}"`;
 
     db.query(deleteDoctor, (err, result) => {
         if (err) {
             console.log(err);
             res.status(500).json({ error: 'Error deleting doctor information' });
         } 
+        console.log("OK")
     });
 
+    let delete_account = `DELETE FROM credentials WHERE id = "${doctor_id}"`
+
+    db.query(delete_account, (err3, result3) => {
+        if (err3) {
+            console.log(err);
+            res.status(500).json({ error: 'Error deleting account' });
+        }
+    })
+
     let deleteEmployee = `DELETE FROM employees 
-                          WHERE employee_id = "${doctor_id}"`;
+                          WHERE employees.employee_id = "${doctor_id}"`;
 
     db.query(deleteEmployee, (err2, result2) => {
         if (err2) {
             console.log(err2);
             res.status(500).json({ error: 'Error deleting associated employee information' });
         } else {
+            console.log("OK")
             res.json({ success: true, message: 'Doctor information deleted successfully' });
         }
     });
