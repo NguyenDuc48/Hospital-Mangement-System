@@ -1,13 +1,13 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const doctor = express.Router();
+const employee = express.Router();
 
 const db = require('../../../utils/db');
 
 process.env.SECRET_KEY = 'Arijit';
 
-doctor.get('/get_doctor', (req, res) => {
+employee.get('/get_doctor', (req, res) => {
     const sql = "SELECT * FROM doctors JOIN employees ON doctors.doctor_id = employees.employee_id";
 
     db.query(sql, (err, result) => {
@@ -16,7 +16,17 @@ doctor.get('/get_doctor', (req, res) => {
         res.json(result);
     });
 });
- 
+
+employee.get('/get_nurse', (req, res) => {
+    const sql = "SELECT * FROM nurses JOIN employees ON nurses.nurse_id = employees.employee_id";
+
+    db.query(sql, (err, result) => {
+        if(err) console.log(err);
+        console.log(result)
+        res.json(result);
+    });
+});
+
 // doctor.post('/add_patient', (req, res) => {
 
 //     const doctorData = {
@@ -61,7 +71,7 @@ doctor.get('/get_doctor', (req, res) => {
 //     });
 // });
 
-doctor.post('/add_doctor', (req, res) => {
+employee.post('/add_doctor', (req, res) => {
     const doctorData = {
         doctor_id   : req.body.doctor_id,
         full_name   : req.body.full_name,
@@ -123,12 +133,11 @@ doctor.post('/add_doctor', (req, res) => {
     });
 });
 
-doctor.put('/update_doctor', (req, res) => {
+employee.put('/update_doctor', (req, res) => {
     const updatedData = {
         doctor_id: req.body.doctor_id,
         expertise: req.body.expertise,
-        department: req.body.department,
-        email: req.body.email
+        department: req.body.department
     };
 
     let updateQuery = `UPDATE doctors
@@ -146,7 +155,29 @@ doctor.put('/update_doctor', (req, res) => {
     });
 });
 
-doctor.delete('/delete_doctor', (req, res) => {
+employee.put('/update_nurse', (req, res) => {
+    const updatedData = {
+        nurse_id: req.body.nurse_id,
+        department: req.body.department,
+        shift: req.body.shift
+    };
+
+    let updateQuery = `UPDATE nurses
+                       SET department = "${updatedData.department}",
+                           shift = "${updatedData.shift}"
+                       WHERE nurse_id = "${updatedData.nurse_id}"`;
+
+    db.query(updateQuery, (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json({ error: 'Error updating nurse information' });
+        } else {
+            res.json({ success: true, message: 'Nurse information updated successfully' });
+        }
+    });
+});
+
+employee.delete('/delete_doctor', (req, res) => {
     const doctor_id = req.body.doctor_id;
 
     let deleteDoctor = `DELETE FROM doctors 
@@ -172,4 +203,4 @@ doctor.delete('/delete_doctor', (req, res) => {
     });
 });
 
-module.exports = doctor;
+module.exports = employee;
