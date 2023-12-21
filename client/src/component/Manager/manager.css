@@ -29,3 +29,25 @@
     }
   }
   
+
+
+.custom-logout-btn {
+background-color: #d46f83; /* Green background color */
+color: white; /* White text color */
+border: 1px solid #4caf50; /* Green border */
+padding: 5px 10px; /* Padding */
+text-align: center; /* Center text */
+text-decoration: none; /* Remove underline */
+display: inline-block; /* Make it inline */
+font-size: 15px; /* Font size */
+cursor: pointer; /* Cursor on hover */
+border-radius: 5px; /* Rounded corners */
+}
+
+.custom-logout-btn:hover {
+border-color: #45a049; /* Darker green border on hover */
+opacity: 0.8;
+text-decoration: none; /* Remove underline */
+color: white; /* White text color */
+
+}
