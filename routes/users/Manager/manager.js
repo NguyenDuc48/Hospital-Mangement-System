@@ -16,7 +16,7 @@ doctor.get('/get_doctor', (req, res) => {
         res.json(result);
     });
 });
-
+ 
 // doctor.post('/add_patient', (req, res) => {
 
 //     const doctorData = {
