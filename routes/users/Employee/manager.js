@@ -27,50 +27,6 @@ employee.get('/get_nurse', (req, res) => {
     });
 });
 
-// doctor.post('/add_patient', (req, res) => {
-
-//     const doctorData = {
-//         patient_id  : req.body.patient_id,
-//         full_name   : req.body.full_name,
-//         dob         : req.body.dob,
-//         gender      : req.body.gender,
-//         phone_number: req.body.phone_number,
-//         address     : req.body.address,
-//         email       : req.body.email
-//     }
-
-//     let find = `SELECT * FROM patient WHERE patient_id = "${patientData.patient_id}"`;
-
-//     db.query(find, (err1, result1) => {
-//         if(err1) console.log(err1);
-//         //console.log(result1[0]);
-
-//         if(result1[0] == undefined) {  
-//             let create = `INSERT INTO patient (
-//                     patient_id,
-//                     full_name,
-//                     dob,
-//                     gender,
-//                     phone_number,
-//                     address,
-//                     email)
-//                               VALUES ( "${patientData.patient_id}", 
-//                                        "${patientData.full_name}",
-//                                        "${patientData.dob}",
-//                                        "${patientData.gender}",
-//                                        "${patientData.phone_number}",
-//                                        "${patientData.address}",
-//                                        "${patientData.email}")`;
-//             db.query(create, (err2, result2) => {
-//                 if(err2) console.log(err2);
-//                 res.send("Created Database ooooooooooooohhhhhh");
-//             })
-//         }else {
-//             res.send("user already exist...");
-//         }
-//     });
-// });
-
 employee.post('/add_doctor', (req, res) => {
     const doctorData = {
         doctor_id   : req.body.doctor_id,
@@ -87,7 +43,7 @@ employee.post('/add_doctor', (req, res) => {
         password    : req.body.password
     }
 
-    let find = `SELECT * FROM doctors WHERE doctor_id = "${doctorData.doctor_id}"`;a
+    let find = `SELECT * FROM doctors WHERE doctor_id = "${doctorData.doctor_id}"`;
 
     db.query(find, (err1, result1) => {
         if(err1) console.log(err1);
