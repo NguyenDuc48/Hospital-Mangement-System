@@ -77,7 +77,7 @@ employee.post('/add_doctor', (req, res) => {
         full_name   : req.body.full_name,
         dob         : req.body.dob,
         gender      : req.body.gender,
-        phone_number: req.body.phone_number,
+        phone_number : req.body.phone_number,
         email       : req.body.email,
         address     : req.body.address,
         salary      : req.body.salary,
@@ -91,7 +91,7 @@ employee.post('/add_doctor', (req, res) => {
 
     db.query(find, (err1, result1) => {
         if(err1) console.log(err1);
-        console.log(result[0]);
+        // console.log(result1[0]);
 
         if(result1[0] == undefined) {
             let create = `INSERT INTO employees (employee_id, full_name, dob, gender, phone_number, email, address, salary, work_from)
@@ -107,26 +107,26 @@ employee.post('/add_doctor', (req, res) => {
 
             db.query(create, (err2, result2) => {
                 if(err2) console.log(err2);
+            });
 
-                let create_account = `INSERT INTO credentials (username, password, id) 
+            let create_account = `INSERT INTO credentials (username, password, id) 
                                       VALUES ("${doctorData.full_name}",
                                               "${doctorData.password}",
                                               "${doctorData.doctor_id}")`;
 
-                db.query(create_account, (err3, result3) => {
-                    if (err3) console.log(err3);
-
-                    let create_doctor = `INSERT INTO doctors (doctor_id, expertise, department)
-                                         VALUES ("${doctorData.doctor_id}",
-                                                  ${doctorData.expertise}",
-                                                  ${doctorData.department}")`
-
-                    db.query(create_doctor, (err4, result4) => {
-                        if (err4) console.log(err4);
-                        res.send("Doctor created successfully");
-                    })
-                });
+            db.query(create_account, (err3, result3) => {
+                if (err3) console.log(err3);
             });
+
+            let create_doctor = `INSERT INTO doctors (doctor_id, expertise, department)
+                                     VALUES ("${doctorData.doctor_id}",
+                                             "${doctorData.expertise}",
+                                             "${doctorData.department}")`
+
+            db.query(create_doctor, (err4, result4) => {
+                if (err4) console.log(err4);
+                res.send("Doctor created successfully");
+            })
         } else {
             res.send("Doctor already exists...");
         }
