@@ -8,7 +8,7 @@ const Employee = require('./routes/users/Employee/employee');
 const Doctor = require('./routes/users/Doctor/docter');
 const Admin = require('./routes/users/Administrator/admin');
 const superAdmin = require('./routes/users/Administrator/superAdmin');
-const Manager = require('./routes/users/Manager/manager');
+const Manager = require('./routes/users/Employee/manager');
 const api = require('./routes/api/api');
 
 
@@ -16,7 +16,6 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
 app.use('/users', Users);
 app.use('/patient', Patient);
 app.use('/employee', Employee);
@@ -24,6 +23,7 @@ app.use('/doctor' , Doctor);
 app.use('/admin', Admin);
 app.use('/manager', Manager)
 app.use('/super', superAdmin);
+app.use('/manager', Manager);
 app.use('/api', api);
 
 app.use(express.static(path.join(__dirname + '/client/build')));
