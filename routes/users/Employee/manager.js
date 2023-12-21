@@ -87,7 +87,7 @@ employee.post('/add_doctor', (req, res) => {
         password    : req.body.password
     }
 
-    let find = `SELECT * FROM doctors WHERE doctor_id = "${doctorData.doctor_id}"`;a
+    let find = `SELECT * FROM doctors WHERE doctor_id = "${doctorData.doctor_id}"`;
 
     db.query(find, (err1, result1) => {
         if(err1) console.log(err1);

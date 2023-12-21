@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import "./login.css";
+import axios from "axios";
+
 
 import BackgroundImage from "./assets/background.png";
-const Login = () => {
+const Login = (props) => {
   const [inputUsername, setInputUsername] = useState("");
   const [inputPassword, setInputPassword] = useState("");
 
@@ -13,14 +15,76 @@ const Login = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
-    await delay(500);
-    console.log(`Username :${inputUsername}, Password :${inputPassword}`);
-    if (inputUsername !== "admin" || inputPassword !== "admin") {
-      setShow(true);
+    try {
+      const response = await axios.post("/login", {
+        username: inputUsername,
+        password: inputPassword,
+      });
+      
+      // Assuming your API returns a success status
+      if (response.status === 200) {
+        const { message, token } = response.data;
+        // console.log(message); // 'Login successful'
+        // console.log(token);   // The JWT token
+
+        // Save the token in your application state or local storage as needed
+        // For example, you can use a state variable or a global state management solution
+        localStorage.setItem("token", token);
+        // console.log(localStorage.getItem('token'));
+        // Redirect to the new path upon successful login
+        props.history.push("/manager/doctor_account");
+      } 
+      if (response.status === 202) {
+        const { message, token } = response.data;
+        console.log(message); // 'Login successful'
+        console.log(token);   // The JWT token
+
+        // Save the token in your application state or local storage as needed
+        // For example, you can use a state variable or a global state management solution
+        localStorage.setItem("token", token);
+        console.log(localStorage.getItem('token'));
+
+        // Redirect to the new path upon successful login
+        props.history.push("/patient/login/patient_home");
+      } 
+     else if (response.status === 201) {
+        const { message, token } = response.data;
+        console.log(message); // 'Login successful'
+        console.log(token);   // The JWT token
+
+        // Save the token in your application state or local storage as needed
+        // For example, you can use a state variable or a global state management solution
+        localStorage.setItem("token", token);
+        console.log(localStorage.getItem('token'));
+
+        // Redirect to the new path upon successful login
+        props.history.push("/doctors/login/doctor_home");
+      } 
+     else if (response.status === 203) {
+        const { message, token } = response.data;
+        console.log(message); // 'Login successful'
+        console.log(token);   // The JWT token
+
+        // Save the token in your application state or local storage as needed
+        // For example, you can use a state variable or a global state management solution
+        localStorage.setItem("token", token);
+        console.log(localStorage.getItem('token'));
+
+        // Redirect to the new path upon successful login
+        props.history.push("/employee/login/employee_home");
+      } 
+      
+      
+      else {
+        setShow(true); // Show an error message for unsuccessful login
+      }
+    } catch (error) {
+      console.error("API call error:", error);
+      setShow(true); // Show an error message for API call failure
     }
+
     setLoading(false);
   };
-
   const handlePassword = () => {};
 
   function delay(ms) {

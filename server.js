@@ -10,7 +10,7 @@ const Admin = require('./routes/users/Administrator/admin');
 const superAdmin = require('./routes/users/Administrator/superAdmin');
 const Manager = require('./routes/users/Employee/manager');
 const api = require('./routes/api/api');
-
+const Login = require('./routes/users/Login/login');
 
 const app = express();
 
@@ -24,6 +24,7 @@ app.use('/admin', Admin);
 app.use('/manager', Manager)
 app.use('/super', superAdmin);
 app.use('/manager', Manager);
+app.use('/login', Login)
 app.use('/api', api);
 
 app.use(express.static(path.join(__dirname + '/client/build')));
