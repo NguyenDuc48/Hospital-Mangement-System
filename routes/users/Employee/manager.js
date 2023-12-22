@@ -161,7 +161,8 @@ employee.post('/add_nurse', (req, res) => {
         salary      : req.body.salary,
         work_from   : req.body.work_from,
         department  : req.body.department,
-        password    : req.body.password
+        password    : req.body.password,
+        shift       : req.body.shift
     }
     
     let find = `SELECT * FROM nurses WHERE nurse_id = "${nurseData.nurse_id}"`;
@@ -198,7 +199,7 @@ employee.post('/add_nurse', (req, res) => {
             let create_nurse = `INSERT INTO nurses (nurse_id, department, shift)
                                      VALUES ("${nurseData.nurse_id}",
                                              "${nurseData.department}",
-                                             "Trống")`
+                                             "${nurseData.shift}")`
     
             db.query(create_nurse, (err4, result4) => {
                 if (err4) console.log(err4);
