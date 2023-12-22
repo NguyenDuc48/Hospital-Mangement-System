@@ -42,6 +42,7 @@ import Login from './component/Login/Login';
 // import Sidebar from '../src/component/Sidebar/Sidebar';
 // import AdminEmployee from './component/Manager/AdminEmployee';
 import DoctorAccount from './component/Manager/DoctorAccount';
+import NurseAccount from './component/Manager/NurseAccount';
 
 function App() {
   return (
@@ -94,6 +95,7 @@ function App() {
       <Route exact path="/administrator/login/gallery" component = {AdminGallery}/>
       <Route exact path="/administrator/login/contact" component = {AdminContact}/>
       <Route exact path="/manager/doctor_account" component = {DoctorAccount}/>
+      <Route exact path="/manager/nurse_account" component = {NurseAccount}/>
     </Router>
     </div>
   );
