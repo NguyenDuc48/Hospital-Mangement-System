@@ -124,7 +124,7 @@ employee.route('/delete_doctor')
         const doctor_id = req.body.doctor_id;
 
         let update_status = `UPDATE employees
-                             SET status = "Retired"
+                             SET status = "retired"
                              WHERE employee_id = "${doctor_id}"`;
 
         db.query(update_status, (err, result) => {
@@ -172,7 +172,7 @@ employee.post('/add_nurse', (req, res) => {
         // console.log(result1[0]);
     
         if(result1[0] == undefined) {
-            let create = `INSERT INTO employees (employee_id, full_name, dob, gender, phone_number, email, address, salary, work_from, status)
+            let create = `INSERT INTO employees (employee_id, full_name, dob, gender, phone_number, email, address, salary, work_from)
                               VALUES ("${nurseData.nurse_id}", 
                                        "${nurseData.full_name}",
                                        "${nurseData.dob}", 
@@ -181,8 +181,7 @@ employee.post('/add_nurse', (req, res) => {
                                        "${nurseData.email}",
                                        "${nurseData.address}",
                                        "${nurseData.salary}",
-                                       "${nurseData.work_from}",
-                                       "Having job")`;
+                                       "${nurseData.work_from}")`;
     
             db.query(create, (err2, result2) => {
                 if(err2) console.log(err2);
@@ -254,7 +253,7 @@ employee.route('/delete_nurse')
         const nurse_id = req.body.nurse_id;
     
         let update_status = `UPDATE employees
-                             SET status = "Retired"
+                             SET status = "retired"
                              WHERE employee_id = "${nurse_id}"`;
     
         db.query(update_status, (err, result) => {
