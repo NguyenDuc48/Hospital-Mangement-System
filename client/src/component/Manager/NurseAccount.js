@@ -28,6 +28,7 @@ function NurseAccount() {
     work_from: '',
     department: '',
     password: '',
+    shift: '',
   });
 
   useEffect(() => {
@@ -124,6 +125,45 @@ function NurseAccount() {
       console.error('Error updating nurse:', error);
     }
   };
+//delete
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [deletingNurseId, setDeletingNurseId] = useState(null);
+  const handleShowDeleteConfirmation = (nurseId) => {
+    setDeletingNurseId(nurseId);
+    setShowDeleteConfirmation(true);
+  }
+  const handleCloseDeleteConfirmation = () => {
+    setDeletingNurseId(null);
+    setShowDeleteConfirmation(false);
+  }
+  const handleDeleteNurse = async () => {
+    try {
+      // Step 1: Delete the nurse's account
+      const deleteResponse = await axios.delete('/manager/delete_nurse', {
+        data: { nurse_id: deletingNurseId },
+      });
+  
+      if (deleteResponse.data.success) {
+        // Step 2: Update the nurse's status
+        const updateResponse = await axios.put('/manager/delete_nurse', {
+          nurse_id: deletingNurseId,
+        });
+  
+        if (updateResponse.data.success) {
+          fetchNurses(); // Fetch updated data
+        } else {
+          console.error('Error updating nurse status:', updateResponse.data.error);
+        }
+      } else {
+        console.error('Error deleting nurse:', deleteResponse.data.error);
+      }
+    } catch (error) {
+      console.error('Error deleting/updating nurse:', error);
+    }
+  
+    handleCloseDeleteConfirmation();
+  };
+  
 
   return (
     <div>
@@ -202,6 +242,16 @@ function NurseAccount() {
                             onClick={() => handleShowEditModal(nurse.nurse_id)}
                             >
                             <i className="material-icons">&#xE254;</i>
+                            </a>
+                            <a
+                              href="#"
+                              className="delete"
+                              title="Delete"
+                              data-toggle="tooltip"
+                              style={{ color: "red" }}
+                              onClick={() => handleShowDeleteConfirmation(nurse.nurse_id)}
+                            >
+                              <i className="material-icons">&#xE872;</i>
                             </a>
                         </td>
                         </tr>
@@ -341,6 +391,18 @@ function NurseAccount() {
                       onChange={handleInputChange}
                     />
                   </Form.Group>
+                  <Form.Group controlId="formShift">
+                    <Form.Label>Shift</Form.Label>
+                    <Form.Control
+
+                      type="text"
+                      placeholder="Enter Shift"
+                      name="shift"
+                      value={formData.shift}
+                      onChange={handleInputChange}
+                    />
+                  </Form.Group>
+                  
                     
                     <Button variant="primary" type="submit">
                     Add Record
@@ -410,8 +472,6 @@ function NurseAccount() {
                     />
                   </Form.Group>
 
-                        
-                    
                     <Button variant="primary" type="submit">
                     Save Changes
                     </Button>
@@ -423,6 +483,24 @@ function NurseAccount() {
                 </Button>
                 </Modal.Footer>
             </Modal>
+            {/* Delete Confirmation Modal for Nurses */}
+            <Modal show={showDeleteConfirmation} onHide={handleCloseDeleteConfirmation} backdrop="static" keyboard={false}>
+              <Modal.Header closeButton>
+                <Modal.Title>Confirm Deletion</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <p>Are you sure you want to delete this nurse?</p>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseDeleteConfirmation}>
+                  Cancel
+                </Button>
+                <Button variant="danger" onClick={handleDeleteNurse}>
+                  Delete
+                </Button>
+              </Modal.Footer>
+            </Modal>
+
             </div>
         </div>
         </div>

@@ -141,7 +141,7 @@ employee.route('/delete_doctor')
 //--------------------------------------NURSE-------------------------------------
 
 employee.get('/get_nurse', (req, res) => {
-    const sql = "SELECT * FROM nurses JOIN employees ON nurses.nurse_id = employees.employee_id";
+    const sql = "SELECT * FROM nurses JOIN employees ON nurses.nurse_id = employees.employee_id WHERE employees.status = 'active'";
 
     db.query(sql, (err, result) => {
         if(err) console.log(err);
