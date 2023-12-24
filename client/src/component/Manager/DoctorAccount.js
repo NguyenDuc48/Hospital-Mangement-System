@@ -55,18 +55,6 @@ function DoctorAccount() {
       [name]: value,
     }));
   };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const response = await axios.post('/manager/add_doctor', formData);
-  //     console.log(response.data);
-  //     fetchData();
-  //     handleClose();
-  //   } catch (error) {
-  //     console.error('Error adding doctor:', error);
-  //   }
-  // };
   
 
   const handleSubmit = async (e) => {
@@ -102,40 +90,6 @@ function DoctorAccount() {
     setEditingDoctorId(doctorId);
     setShowEditModal(true);
   };
-
-  // const handleEditSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const response = await axios.put('/manager/update_doctor', formData);
-  //     console.log(response.data);
-  //     fetchData();
-  //     handleCloseModal();
-  //   } catch (error) {
-  //     console.error('Error updating doctor:', error);
-  //   }
-  // }; 
-
-  // const handleEditSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     const response = await axios.put('/manager/update_doctor', formData);
-  //     console.log(response.data);
-  //     fetchData();
-  //     handleCloseModal();
-  
-  //     // Show success toast
-  //     toast.success('Record updated successfully!', {
-  //       position: 'bottom-right',
-  //       autoClose: 2000,
-  //       hideProgressBar: false,
-  //       closeOnClick: true,
-  //       pauseOnHover: true,
-  //       draggable: true,
-  //     });
-  //   } catch (error) {
-  //     console.error('Error updating doctor:', error);
-  //   }
-  // };
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
@@ -177,24 +131,6 @@ function DoctorAccount() {
     setShowDeleteConfirmation(false);
   };
 
-  // const handleDeleteDoctor = async () => {
-  //   try {
-  //     const response = await axios.delete('/manager/delete_doctor', {
-  //       data: { doctor_id: deletingDoctorId },
-  //     });
-
-  //     if (response.data.success) {
-  //       // setSuccessMessage('Doctor deleted successfully');
-  //       fetchData();
-  //     } else {
-  //       console.error('Error deleting doctor:', response.data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error deleting doctor:', error);
-  //   }
-
-  //   handleCloseDeleteConfirmation();
-  // };
   const handleDeleteDoctor = async () => {
     try {
       // Step 1: Delete the doctor's account
@@ -223,10 +159,6 @@ function DoctorAccount() {
     handleCloseDeleteConfirmation();
   };
   
-  
-  
-    
-
   return (
     <div>
       <Headers />
