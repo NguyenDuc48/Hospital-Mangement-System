@@ -177,24 +177,54 @@ function DoctorAccount() {
     setShowDeleteConfirmation(false);
   };
 
+  // const handleDeleteDoctor = async () => {
+  //   try {
+  //     const response = await axios.delete('/manager/delete_doctor', {
+  //       data: { doctor_id: deletingDoctorId },
+  //     });
+
+  //     if (response.data.success) {
+  //       // setSuccessMessage('Doctor deleted successfully');
+  //       fetchData();
+  //     } else {
+  //       console.error('Error deleting doctor:', response.data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error deleting doctor:', error);
+  //   }
+
+  //   handleCloseDeleteConfirmation();
+  // };
   const handleDeleteDoctor = async () => {
     try {
-      const response = await axios.delete('/manager/delete_doctor', {
+      // Step 1: Delete the doctor's account
+      const deleteResponse = await axios.delete('/manager/delete_doctor', {
         data: { doctor_id: deletingDoctorId },
       });
-
-      if (response.data.success) {
-        // setSuccessMessage('Doctor deleted successfully');
-        fetchData();
+  
+      if (deleteResponse.data.success) {
+        // Step 2: Update the doctor's status
+        const updateResponse = await axios.put('/manager/delete_doctor', {
+          doctor_id: deletingDoctorId,
+        });
+  
+        if (updateResponse.data.success) {
+          fetchData(); // Fetch updated data
+        } else {
+          console.error('Error updating doctor status:', updateResponse.data.error);
+        }
       } else {
-        console.error('Error deleting doctor:', response.data.message);
+        console.error('Error deleting doctor:', deleteResponse.data.error);
       }
     } catch (error) {
-      console.error('Error deleting doctor:', error);
+      console.error('Error deleting/updating doctor:', error);
     }
-
+  
     handleCloseDeleteConfirmation();
   };
+  
+  
+  
     
 
   return (

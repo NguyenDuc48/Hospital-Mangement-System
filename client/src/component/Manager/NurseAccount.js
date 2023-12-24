@@ -543,11 +543,13 @@ function NurseAccount() {
                   <table className="table table-striped table-hover table-bordered">
                     <thead>
                       <tr>
-                        <th>#</th>
+                        <th>ID</th>
                         <th>Name</th>
-                        <th>Address</th>
-                        <th>Email</th>
+                        <th>Birth</th>
+                        <th>Gender</th>
+                        <th>Phone</th>
                         <th>Department</th>
+                        <th>Shift</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -556,9 +558,11 @@ function NurseAccount() {
                         <tr key={nurse.nurse_id}>
                         <td>{nurse.nurse_id}</td>
                         <td>{nurse.full_name}</td>
-                        <td>{nurse.address}</td>
-                        <td>{nurse.email}</td>
+                        <td>{nurse.dob}</td>
+                        <td>{nurse.gender}</td>
+                        <td>{nurse.phone_number}</td>
                         <td>{nurse.department}</td>
+                        <td>{nurse.shift}</td>
                         <td>
                             <a
                             href="#"

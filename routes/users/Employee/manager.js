@@ -10,7 +10,7 @@ process.env.SECRET_KEY = 'Arijit';
 //-------------------------------------DOCTOR-----------------------------------
 
 employee.get('/get_doctor', (req, res) => {
-    const sql = "SELECT * FROM doctors JOIN employees ON doctors.doctor_id = employees.employee_id";
+    const sql = "SELECT * FROM doctors JOIN employees ON doctors.doctor_id = employees.employee_id WHERE employees.status = 'active'";
 
     db.query(sql, (err, result) => {
         if(err) console.log(err);
@@ -42,7 +42,7 @@ employee.post('/add_doctor', (req, res) => {
         // console.log(result1[0]);
 
         if(result1[0] == undefined) {
-            let create = `INSERT INTO employees (employee_id, full_name, dob, gender, phone_number, email, address, salary, work_from, status)
+            let create = `INSERT INTO employees (employee_id, full_name, dob, gender, phone_number, email, address, salary, work_from)
                               VALUES ("${doctorData.doctor_id}", 
                                        "${doctorData.full_name}",
                                        "${doctorData.dob}", 
@@ -51,8 +51,8 @@ employee.post('/add_doctor', (req, res) => {
                                        "${doctorData.email}",
                                        "${doctorData.address}",
                                        "${doctorData.salary}",
-                                       "${doctorData.work_from}",
-                                       "Having job")`;
+                                       "${doctorData.work_from}"
+                                       )`;
 
             db.query(create, (err2, result2) => {
                 if(err2) console.log(err2);
