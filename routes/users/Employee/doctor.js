@@ -12,48 +12,17 @@ process.env.SECRET_KEY = 'Arijit';
 
 //  Update reports for patients
 
-
-
-doctor.post('/login', (req, res) => {
-    let find = `SELECT password, doctor_id FROM doctors WHERE email = "${req.body.email}"`;
-    
-    db.query(find, (err, result) => {
-        if(err) console.log(err);
-        console.log(result);
-
-        if(result[0] != undefined) {
-            if(bcrypt.compareSync(req.body.password, result[0].password)) {
-                let token = jwt.sign(result[0].doctor_id, process.env.SECRET_KEY);
-                res.send(token);
-            } else {
-                res.send('Password incorrect');
-            }
-        } else {
-            res.send("Email not found");
-        }
-    });
-});
-
 //  View patient appointments
 doctor.get('/patient', (req,res) => {
     let doctor_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
     
-    const sql = `SELECT 
-                    p.patient_id,
-                    p.first_name,
-                    p.middle_name,
-                    p.last_name
-                FROM doctor 
-                    JOIN patient p ON p.patient_id = ad.patient_id
-                    JOIN doctors d ON d.doctor_id = ad.doctor_id
-                WHERE ad.doctor_id = ${doctor_id}
+    const get_wait_list = `SELECT p.full_name
+                FROM patient p JOIN medical_reports mr ON p.patient_id = mr.patient_id
+                WHERE mr.doctor_id = "${doctor_id.doctor_id}"`
 
-                `
-    console.log(sql);
-    db.query(sql, (err, result) => {
+    db.query(get_wait_list, (err, result) => {
         if (err) console.log(err);
-        res.send(result);
-
+        console.log("OK");
     });
 })
 
