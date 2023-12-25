@@ -74,13 +74,13 @@ patient.post('/add_patient', (req, res) => {
         password    : req.body.password
     }
 
-    let find = `SELECT * FROM patient WHERE patient_id = "${patientData.patient_id}"`;
+    let find = `SELECT patient_id FROM patient WHERE patient_id = "${patientData.patient_id}"`;
 
     db.query(find, (err1, result1) => {
         if(err1) console.log(err1);
         //console.log(result1[0]);
 
-        if(result1[0] == undefined) {  
+        if (result1[0] == undefined) {  
             let create = `INSERT INTO patient (
                 patient_id,
                 full_name,
