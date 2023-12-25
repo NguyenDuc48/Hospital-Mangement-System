@@ -43,6 +43,8 @@ import Login from './component/Login/Login';
 // import AdminEmployee from './component/Manager/AdminEmployee';
 import DoctorAccount from './component/Manager/DoctorAccount';
 import NurseAccount from './component/Manager/NurseAccount';
+import SignUp from './component/SignUp/SignUp';
+import PatientProfile from './component/Patient/PatientProfile';
 
 function App() {
   return (
@@ -61,7 +63,8 @@ function App() {
       <Route exact path="/about" component={About} />
       <Route exact path="/gallery" component={Gallery} />
       <Route exact path="/contact" component={Contact} />
-      <Route exact path="/regPatient" component = {PatientReg}/>
+      {/* <Route exact path="/regPatient" component = {PatientReg}/> */}
+      <Route exact path="/sign_up" component = {SignUp}/> 
       <Route exact path="/patient/login" component={PatientLogin} />
       <Route exact path="/doctors/login" component={DoctorLogin} />
       <Route exact path="/employee/login" component={EmployeeLogin} />
@@ -69,10 +72,14 @@ function App() {
 
 
       <Route exact path="/patient/login/patient_home" component = {PatientHome} />
+
       <Route exact path="/patient/login/home" component = {PatHome} />
+
       <Route exact path="/patient/login/about" component = {PatientAbout} />
       <Route exact path="/patient/login/gallery" component = {PatientGallery} />
       <Route exact path="/patient/login/contact" component = {PatientContact} />
+      <Route exact path="/patient/get_profile" component = {PatientProfile} />
+
      
 
       

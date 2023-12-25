@@ -45,7 +45,7 @@ const Login = (props) => {
         console.log(localStorage.getItem('token'));
 
         // Redirect to the new path upon successful login
-        props.history.push("/patient/login/patient_home");
+        props.history.push("/patient/get_profile");
       } 
      else if (response.status === 201) {
         const { message, token } = response.data;

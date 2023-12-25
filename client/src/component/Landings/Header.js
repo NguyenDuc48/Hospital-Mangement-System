@@ -40,7 +40,7 @@ const Header = () => {
                 <a className="nav-link" href="blog.html">Blog</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="contact.html">Contact</a>
+                <a className="nav-link" href="/sign_up">Sign Up Patient</a>
               </li>
             </ul>
             <div className="header-right-btn ml-3">
