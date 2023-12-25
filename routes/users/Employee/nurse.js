@@ -21,6 +21,37 @@ nurse.get('/profile', (req, res) => {
     });
 });
 
+nurse.put('/update_me', (req, res) => {
+    // let employee_id = req.body.employee_id;
+    let employee_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+    const updatedData = {
+        full_name : req.body.full_name,
+        dob : req.body.dob,
+        gender : req.body.gender,
+        phone_number : req.body.phone_number,
+        email : req.body.email,
+        address : req.body.address
+    };
+
+    let updateQuery = `UPDATE employees
+                       SET full_name = "${updatedData.full_name}",
+                           dob = "${updatedData.dob}",
+                           gender = "${updatedData.gender}",
+                           phone_number = "${updatedData.phone_number}",
+                           email = "${updatedData.email}",
+                           address = "${updatedData.address}"
+                       WHERE employee_id = "${employee_id.employee_id}"`;
+
+    db.query(updateQuery, (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json({ error: 'Error updating information' });
+        } else {
+            res.json({ success: true, message: 'Information updated successfully' });
+        }
+    });
+});
+
 //  Bill management
 nurse.post('/create_bill', (req, res) => {
     const id = {
@@ -68,6 +99,23 @@ nurse.post('/create_bill', (req, res) => {
             console.log("OK");
         })
     });
+})
+
+nurse.put('/update_health_insurance', (req, res) => {
+    const insurance_info = {
+        patient_id : req.body.patient_id,
+        health_insurance_percent : req.body.health_insurance_percent
+    }
+
+    let update = `UPDATE patient
+                  SET health_insurance_percent = "${insurance_info.health_insurance_percent}"
+                  WHERE patient_id = "${insurance_info.patient_id}"`
+
+    db.query(update, (err, result) => {
+        if (err) console.log(err);
+        console.log("OK")
+    });
+    console.log("OK x 2")
 })
 
 // View drug and equipment information
