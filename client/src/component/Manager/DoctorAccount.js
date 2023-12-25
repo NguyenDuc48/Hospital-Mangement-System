@@ -195,13 +195,13 @@ function DoctorAccount() {
                   <table className="table table-striped table-hover table-bordered">
                     <thead>
                       <tr>
-                        <th>#</th>
+                        <th>ID</th>
                         <th>Name</th>
-                        <th>Address</th>
-                        <th>Expertise</th>
-                        <th>Salary</th>
+                        <th>Date of Birth</th>
+                        <th>Gender</th>
+                        <th>Department</th>
+                        <th>Phone</th>
                         <th>Actions</th>
-                        
                       </tr>
                     </thead>
                     <tbody>
@@ -209,9 +209,11 @@ function DoctorAccount() {
                         <tr key={doctor.doctor_id}>
                           <td>{doctor.doctor_id}</td>
                           <td>{doctor.full_name}</td>
-                          <td>{doctor.address}</td>
-                          <td>{doctor.expertise}</td>
-                          <td>{doctor.salary}</td>
+                          {/* <td>{new Date(doctor.dob).toLocaleDateString()}</td> */}
+                          <td>{doctor.dob}</td>
+                          <td>{doctor.gender}</td>
+                          <td>{doctor.department}</td>
+                          <td>{doctor.phone_number}</td>
                           <td>
                             <a
                               href="#"
@@ -253,19 +255,44 @@ function DoctorAccount() {
             {/* View Doctor Modal */}
             <Modal show={showViewModal} onHide={handleToggleViewModal} backdrop="static" keyboard={false}>
             <Modal.Header closeButton>
-              <Modal.Title>View Doctor</Modal.Title>
+              <Modal.Title>Doctor's information</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               {viewingDoctor && (
                 <div className="view-doctor-details">
                   <p>
-                    <strong>Doctor ID:</strong> {viewingDoctor.doctor_id}
+                    <strong>ID:</strong> {viewingDoctor.doctor_id}
                   </p>
                   <p>
                     <strong>Full Name:</strong> {viewingDoctor.full_name}
                   </p>
                   <p>
                     <strong>Date of Birth:</strong> {viewingDoctor.dob}
+                  </p>
+                  <p>
+                    <strong>Gender:</strong> {viewingDoctor.gender}
+                  </p>
+                  <p>
+                    <strong>Expertise:</strong> {viewingDoctor.expertise}
+                  </p>
+                  <p>
+                    <strong>Department:</strong> {viewingDoctor.department}
+                  </p>
+                  <p>
+                    <strong>Phone:</strong> {viewingDoctor.phone_number}
+                  </p>
+                  <p>
+                    <strong>Email:</strong> {viewingDoctor.email}
+                  </p>
+                  <p>
+                    <strong>Address:</strong> {viewingDoctor.address}
+                  </p>
+                  <p>
+                    <strong>Salary:</strong> {viewingDoctor.salary}
+                  </p>
+                  <p>
+                    {/* <strong>Work from:</strong> {new Date(viewingDoctor.work_from).toLocaleDateString()} */}
+                    <strong>Work from:</strong> {viewingDoctor.work_from}
                   </p>
                   {/* Add similar lines for other details */}
                 </div>
@@ -280,7 +307,7 @@ function DoctorAccount() {
             {/* Add Doctor Modal */}
             <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
               <Modal.Header closeButton>
-                <Modal.Title>Add Employee</Modal.Title>
+                <Modal.Title>Add doctor</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Form onSubmit={handleSubmit}>
@@ -324,7 +351,7 @@ function DoctorAccount() {
                     <Form.Label>Gender</Form.Label>
                     <Form.Control
                       type="text"
-                      placeholder="Enter Date of Birth"
+                      placeholder="Enter Gender"
                       name="gender"
                       value={formData.gender}
                       onChange={handleInputChange}
@@ -427,7 +454,7 @@ function DoctorAccount() {
                     />
                   </Form.Group>
                   <Button variant="primary" type="submit">
-                    Add Record
+                    Submit
                   </Button>
                 </Form>
               </Modal.Body>
