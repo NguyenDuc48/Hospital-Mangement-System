@@ -30,8 +30,8 @@ login.post('/', (req, res) => {
           }
           console.log("bcryptResult:", bcryptResult)
         //  password trong database dạng hash thì sẽ dùng so sánh này
-          if (bcryptResult){ 
-          // if (password === result[0].password) {
+          // if (bcryptResult){ 
+          if (password === result[0].password) {
             let userId = result[0].id.toString();
             console.log("Userid:" , userId)
             const token = jwt.sign({ userId }, process.env.SECRET_KEY, { expiresIn: '1h' });

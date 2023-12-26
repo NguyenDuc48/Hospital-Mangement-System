@@ -20,13 +20,13 @@ const Sidebar = () => {
             className="text-decoration-none"
             style={{ color: 'inherit' }}
           >
-            Patient
+            Nurse
           </a>
         </CDBSidebarHeader>
 
         <CDBSidebarContent className="sidebar-content">
           <CDBSidebarMenu>
-            <NavLink exact to="/patient/get_profile" activeClassName="activeClicked">
+            <NavLink exact to="/nurse/get_profile" activeClassName="activeClicked">
               <CDBSidebarMenuItem icon="table">Profile</CDBSidebarMenuItem>
             </NavLink>
           </CDBSidebarMenu>

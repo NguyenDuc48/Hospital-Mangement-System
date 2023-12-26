@@ -7,7 +7,6 @@ const Header = () => {
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-fluid">
           <a className="navbar-brand" href="index.html">
-            {/* <img src="../assets/img/logo/logo.png" alt="AHHHHHHHHAHA" /> */}
             <img src={Logo} alt="Logo" />
           </a>
           <button
