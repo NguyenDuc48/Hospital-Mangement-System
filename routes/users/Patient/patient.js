@@ -124,7 +124,8 @@ patient.post('/add_patient', (req, res) => {
 patient.get('/profile', (req, res) => {
     // let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
     let patient_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
-    let patient = `SELECT * FROM patient WHERE patient_id = "${patient_id.patient_id}"`;
+    console.log(patient_id);
+    let patient = `SELECT * FROM patient WHERE patient_id = "${patient_id.userId}"`;
     db.query(patient, (err, result) => {
         if (err) console.log(err);
         res.send(result);
