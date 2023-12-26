@@ -237,6 +237,12 @@ CREATE TABLE IF NOT EXISTS `wait_list` (
   PRIMARY KEY (`wait_id`)
 ) ENGINE = InnoDB;
 
+CREATE TABLE IF NOT EXISTS `booked` (
+`patient_id` VARCHAR(5) NOT NULL,
+`booked_time` VARCHAR(3) NOT NULL,
+`description` TEXT NOT NULL,
+PRIMARY KEY (`patient_id`)
+)
 
 -- Add foreign key constraints
 
@@ -323,6 +329,11 @@ ALTER TABLE `wait_list`
   FOREIGN KEY (`patient_id`)
   REFERENCES `patient` (`patient_id`);
 
+-- Table `booked`
+ALTER TABLE `booked`
+  ADD CONSTRAINT `fk_booked_patient`
+  FOREIGN KEY (`patient_id`)
+  REFERENCES `patient` (`patient_id`);
 
 INSERT INTO `credentials` (`username`, `password`, `id`) VALUES
 ('bs001', 'abcd1234', 'BS001'),
