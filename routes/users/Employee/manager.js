@@ -59,7 +59,7 @@ employee.post('/add_doctor', (req, res) => {
             });
 
             let create_account = `INSERT INTO credentials (username, password, id) 
-                                      VALUES ("${doctorData.full_name}",
+                                      VALUES ("${doctorData.doctor_id.toLowerCase()}",
                                               "${doctorData.password}",
                                               "${doctorData.doctor_id}")`;
 
@@ -198,7 +198,7 @@ employee.post('/add_nurse', (req, res) => {
             });
     
             let create_account = `INSERT INTO credentials (username, password, id) 
-                                      VALUES ("${nurseData.full_name}",
+                                      VALUES ("${nurseData.nurse_id.toLowerCase()}",
                                               "${nurseData.password}",
                                               "${nurseData.nurse_id}")`;
     
