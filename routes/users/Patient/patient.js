@@ -12,28 +12,23 @@ patient.post('/add_patient', (req, res) => {
     var pat_id = ""
     let find_idx = 'SELECT * FROM patient ORDER BY patient_id DESC LIMIT 1';
     db.query(find_idx, (err, result) => {
-        last_id = result[0].patient_id.substring(2);
-        console.log("last_id", last_id)
-        idx = parseInt(last_id, 10)
-        console.log("idx", idx)
-        console.log(idx+1)
-        pat_id = "BN" + String(idx+1).padStart(3,'0')
-        console.log("pat_id", pat_id);
-        
+        last_id = result[0].patient_id.substring(2); //BN006 -> 006
+        idx = parseInt(last_id, 10) //006 -> 6
+        pat_id = "BN" + String(idx+1).padStart(3,'0') //idx + 1 = 7 ; padStart(3,'0') -> 007 ; "BN" + "007" = "BN007"
     });
 
     let find = `SELECT patient_id FROM patient WHERE patient_id = "${pat_id}"`;
 
     db.query(find, (err1, result1) => {
-            const patientData = {
-        patient_id  : pat_id,
-        full_name   : req.body.full_name,
-        dob         : req.body.dob,
-        gender      : req.body.gender,
-        phone_number: req.body.phone_number,
-        address     : req.body.address,
-        email       : req.body.email,
-        password    : req.body.password
+        const patientData = {
+            patient_id  : pat_id,
+            full_name   : req.body.full_name,
+            dob         : req.body.dob,
+            gender      : req.body.gender,
+            phone_number: req.body.phone_number,
+            address     : req.body.address,
+            email       : req.body.email,
+            password    : req.body.password
     }
         if(err1) console.log(err1);
         if (result1[0] == undefined) { 
@@ -74,7 +69,7 @@ patient.post('/add_patient', (req, res) => {
                 })
             });
         } else {
-            res.send("user already exist...");
+            res.send("patient already exist...");
         }
     });
 });

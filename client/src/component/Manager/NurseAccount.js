@@ -270,16 +270,7 @@ function NurseAccount() {
                 <Form onSubmit={handleSubmit}>
                     {/* Form fields for adding nurse */}
                     {/* ... (similar blocks for other form fields) */}
-                    <Form.Group controlId="formNurseID">
-                    <Form.Label>Nurse ID</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter Nurse ID"
-                      name="nurse_id"
-                      value={formData.nurse_id}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
+
                   <Form.Group controlId="formFullName">
                     <Form.Label>Full Name</Form.Label>
                     <Form.Control
@@ -405,13 +396,13 @@ function NurseAccount() {
                   
                     
                     <Button variant="primary" type="submit">
-                    Add Record
+                    Submit
                     </Button>
                 </Form>
                 </Modal.Body>
                 <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>
-                    Submit
+                    Close
                 </Button>
                 </Modal.Footer>
             </Modal>
