@@ -52,25 +52,33 @@ doctor.post('/delete', (req, res) => {
     })
 });
 
-doctor.put('/update_doctor', (req, res) => {
+doctor.put('/update_me', (req, res) => {
     // let employee_id = req.body.employee_id;
+    let employee_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
     const updatedData = {
-        expertise: req.body.expertise,
-        department: req.body.department
+        full_name : req.body.full_name,
+        dob : req.body.dob,
+        gender : req.body.gender,
+        phone_number : req.body.phone_number,
+        email : req.body.email,
+        address : req.body.address
     };
 
-    let updateQuery = `UPDATE doctor
-                       SET expertise = "${updatedData.expertise}",
-                           department = "${updatedData.department}",
+    let updateQuery = `UPDATE employees
+                       SET full_name = "${updatedData.full_name}",
+                           dob = "${updatedData.dob}",
+                           gender = "${updatedData.gender}",
+                           phone_number = "${updatedData.phone_number}",
                            email = "${updatedData.email}",
-                       WHERE doctor_id = "${doctor_id}"`;
+                           address = "${updatedData.address}"
+                       WHERE employee_id = "${employee_id.employee_id}"`;
 
     db.query(updateQuery, (err, result) => {
         if (err) {
             console.log(err);
-            res.status(500).json({ error: 'Error updating employee information' });
+            res.status(500).json({ error: 'Error updating information' });
         } else {
-            res.json({ success: true, message: 'Employee information updated successfully' });
+            res.json({ success: true, message: 'Information updated successfully' });
         }
     });
 });
