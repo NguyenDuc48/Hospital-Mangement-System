@@ -31,10 +31,10 @@ const Sidebar = () => {
               <CDBSidebarMenuItem icon="columns">Dashboard</CDBSidebarMenuItem>
             </NavLink> */}
             <NavLink exact to="/manager/doctor_account" activeClassName="activeClicked">
-              <CDBSidebarMenuItem icon="table">Doctor Account</CDBSidebarMenuItem>
+              <CDBSidebarMenuItem icon="table">List Doctor</CDBSidebarMenuItem>
             </NavLink>
             <NavLink exact to="/manager/nurse_account" activeClassName="activeClicked">
-              <CDBSidebarMenuItem icon="table">Nurse Account</CDBSidebarMenuItem>
+              <CDBSidebarMenuItem icon="table">List Nurse</CDBSidebarMenuItem>
             </NavLink>
             {/* <NavLink exact to="/profile" activeClassName="activeClicked">
               <CDBSidebarMenuItem icon="user">Profile page</CDBSidebarMenuItem>

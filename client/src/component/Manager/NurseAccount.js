@@ -205,10 +205,10 @@ function NurseAccount() {
                       <tr>
                         <th>ID</th>
                         <th>Name</th>
-                        <th>Birth</th>
+                        <th>Date of Birth</th>
                         <th>Gender</th>
-                        <th>Phone</th>
                         <th>Department</th>
+                        <th>Phone</th>
                         <th>Shift</th>
                         <th>Actions</th>
                       </tr>
@@ -220,8 +220,8 @@ function NurseAccount() {
                         <td>{nurse.full_name}</td>
                         <td>{nurse.dob}</td>
                         <td>{nurse.gender}</td>
-                        <td>{nurse.phone_number}</td>
                         <td>{nurse.department}</td>
+                        <td>{nurse.phone_number}</td>
                         <td>{nurse.shift}</td>
                         <td>
                             <a
@@ -411,7 +411,7 @@ function NurseAccount() {
                 </Modal.Body>
                 <Modal.Footer>
                 <Button variant="secondary" onClick={handleClose}>
-                    Close
+                    Submit
                 </Button>
                 </Modal.Footer>
             </Modal>
@@ -424,13 +424,37 @@ function NurseAccount() {
                 {viewModalData && (
                   <div className="view-nurse-details">
                     <p>
-                      <strong>Nurse ID:</strong> {viewModalData.nurse_id}
+                      <strong>ID:</strong> {viewModalData.nurse_id}
                     </p>
                     <p>
                       <strong>Full Name:</strong> {viewModalData.full_name}
                     </p>
                     <p>
                       <strong>Date of Birth:</strong> {viewModalData.dob}
+                    </p>
+                    <p>
+                      <strong>Gender:</strong> {viewModalData.gender}
+                    </p>
+                    <p>
+                      <strong>Department:</strong> {viewModalData.department}
+                    </p>
+                    <p>
+                      <strong>Shift:</strong> {viewModalData.shift}
+                    </p>
+                    <p>
+                      <strong>Phone number:</strong> {viewModalData.phone_number}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {viewModalData.email}
+                    </p>
+                    <p>
+                      <strong>Address:</strong> {viewModalData.address}
+                    </p>
+                    <p>
+                      <strong>Salary:</strong> {viewModalData.salary}
+                    </p>
+                    <p>
+                      <strong>Work from:</strong> {viewModalData.work_from}
                     </p>
                     {/* Add similar lines for other details */}
                   </div>

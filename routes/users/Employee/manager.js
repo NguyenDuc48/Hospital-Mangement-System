@@ -10,7 +10,7 @@ process.env.SECRET_KEY = 'Arijit';
 //-------------------------------------DOCTOR-----------------------------------
 
 employee.get('/get_doctor', (req, res) => {
-    const sql = "SELECT * FROM doctors JOIN employees ON doctors.doctor_id = employees.employee_id WHERE employees.status = 'active'";
+    const sql = "SELECT doc.doctor_id, emp.full_name, DATE_FORMAT(emp.dob,'%d/%m/%Y') AS dob, emp.gender, doc.expertise, dep.department_name as department, emp.phone_number, emp.email, emp.address, emp.salary, DATE_FORMAT(emp.work_from,'%d/%m/%Y') AS work_from FROM doctors doc JOIN employees emp ON doc.doctor_id = emp.employee_id JOIN departments dep ON doc.department = dep.department_id WHERE emp.status = 'active'";
 
     db.query(sql, (err, result) => {
         if(err) console.log(err);
@@ -59,7 +59,7 @@ employee.post('/add_doctor', (req, res) => {
             });
 
             let create_account = `INSERT INTO credentials (username, password, id) 
-                                      VALUES ("${doctorData.full_name}",
+                                      VALUES ("${doctorData.doctor_id.toLowerCase()}",
                                               "${doctorData.password}",
                                               "${doctorData.doctor_id}")`;
 
@@ -138,10 +138,19 @@ employee.route('/delete_doctor')
         });
     });
 
+
+
+
+
+
+
+
+
+
 //--------------------------------------NURSE-------------------------------------
 
 employee.get('/get_nurse', (req, res) => {
-    const sql = "SELECT * FROM nurses JOIN employees ON nurses.nurse_id = employees.employee_id WHERE employees.status = 'active'";
+    const sql = "SELECT nur.nurse_id, emp.full_name, DATE_FORMAT(emp.dob,'%d/%m/%Y') AS dob , emp.gender, dep.department_name as department,nur.shift, emp.phone_number, emp.email, emp.address, emp.salary, DATE_FORMAT(emp.work_from,'%d/%m/%Y') AS work_from FROM nurses nur JOIN employees emp ON nur.nurse_id = emp.employee_id JOIN departments dep ON nur.department = dep.department_id WHERE emp.status = 'active'";
 
     db.query(sql, (err, result) => {
         if(err) console.log(err);
@@ -189,7 +198,7 @@ employee.post('/add_nurse', (req, res) => {
             });
     
             let create_account = `INSERT INTO credentials (username, password, id) 
-                                      VALUES ("${nurseData.full_name}",
+                                      VALUES ("${nurseData.nurse_id.toLowerCase()}",
                                               "${nurseData.password}",
                                               "${nurseData.nurse_id}")`;
     
