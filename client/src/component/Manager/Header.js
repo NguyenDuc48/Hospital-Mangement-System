@@ -1,8 +1,7 @@
 import React from 'react';
-import Logo from './assets/img/logo/logo.png';
-// import About2 from './assets/img/gallery/about2.png';
-// import About1 from './assets/img/gallery/about1.png';
+import Logo from '../../../src/photo/logo.png';
 import '../Manager/manager.css';
+
 const Header = () => {
   return (
     <header>

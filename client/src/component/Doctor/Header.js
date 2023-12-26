@@ -7,6 +7,7 @@ const Header = () => {
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-fluid">
           <a className="navbar-brand" href="index.html">
+            {/* <img src="../assets/img/logo/logo.png" alt="AHHHHHHHHAHA" /> */}
             <img src={Logo} alt="Logo" />
           </a>
           <button
@@ -22,6 +23,24 @@ const Header = () => {
           </button>
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav ml-auto">
+              {/* <li className="nav-item">
+                <a className="nav-link" href="index.html">Home</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="about.html">About</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="doctor.html">Doctors</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="department.html">Department</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="blog.html">Blog</a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="contact.html">Contact</a>
+              </li> */}
             </ul>
             <div className="header-right-btn ml-3">
               <a href="/" className="custom-logout-btn">
