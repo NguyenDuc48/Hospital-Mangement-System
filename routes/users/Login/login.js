@@ -21,7 +21,7 @@ login.post('/', (req, res) => {
       if (result.length > 0) {
         const storedPassword = result[0].password;
         console.log("store pass:", storedPassword)
-        
+
         bcrypt.compare(password, storedPassword, (bcryptErr, bcryptResult) => {
           if (bcryptErr) {
             console.error(bcryptErr);
@@ -30,18 +30,18 @@ login.post('/', (req, res) => {
           }
           console.log("bcryptResult:", bcryptResult)
         //  password trong database dạng hash thì sẽ dùng so sánh này
-          if (bcryptResult){ 
-          // if (password === result[0].password) {
+          // if (bcryptResult){ 
+          if (password === result[0].password) {
             let userId = result[0].id.toString();
             console.log("Userid:" , userId)
             const token = jwt.sign({ userId }, process.env.SECRET_KEY, { expiresIn: '1h' });
             if (userId.substring(0,2)=== "QL") {
                 res.status(200).json({ message: 'Login manager successful', token });
             }
-            else if (userId.substring(0,2)=== "BS") {
+            else if (userId.substring(0,2) === "BS") {
                 res.status(201).json({ message: 'Login doctor successful', token });
             }
-            else if (userId.substring(0,2)=== "BN") {
+            else if (userId.substring(0,2) === "BN") {
                 res.status(202).json({ message: 'Login patient successful', token });
             }
             else {
