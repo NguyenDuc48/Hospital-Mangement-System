@@ -1,5 +1,5 @@
 import React from 'react';
-import heroImage from './assets/img/hero/h1_hero.png';
+import heroImage from '../../photo/h1_hero.png';
 
 const Slider = () => {
   const sliderStyle = {

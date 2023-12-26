@@ -7,64 +7,26 @@ const db = require('../../../utils/db');
 
 process.env.SECRET_KEY = 'Arijit';
 
-// patient.post('/add_patient', (req, res) => {
-
-//     const patientData = {
-//         patient_id  : req.body.patient_id,
-//         full_name   : req.body.full_name,
-//         dob         : req.body.dob,
-//         gender      : req.body.gender,
-//         phone_number: req.body.phone_number,
-//         address     : req.body.address,
-//         email       : req.body.email,
-//         password    : req.body.password
-//     }
-
-//     let find = `SELECT * FROM patient WHERE patient_id = "${patientData.patient_id}"`;
-
-//     db.query(find, (err1, result1) => {
-//         if(err1) console.log(err1);
-//         //console.log(result1[0]);
-
-//         if(result1[0] == undefined) {  
-//             let create = `INSERT INTO patient (
-//                     patient_id,
-//                     full_name,
-//                     dob,
-//                     gender,
-//                     phone_number,
-//                     address,
-//                     email)
-//                               VALUES ( "${patientData.patient_id}", 
-//                                        "${patientData.full_name}",
-//                                        "${patientData.dob}",
-//                                        "${patientData.gender}",
-//                                        "${patientData.phone_number}",
-//                                        "${patientData.address}",
-//                                        "${patientData.email}")`;
-//             db.query(create, (err2, result2) => {
-//                 if(err2) console.log(err2);
-                
-//             })
-
-//             let create_account = `INSERT INTO credentials (username, password, id) 
-//                                     VALUES ("${patientData.full_name}",
-//                                             "${patientData.password}",
-//                                             "${patientData.patient_id}")`;
-
-//             db.query(create_account, (err3, result3) => {
-//                 if(err3) console.log(err3);
-//                 res.send("Created Database ooooooooooooohhhhhh");
-//             })
-//         }else {
-//             res.send("user already exist...");
-//         }
-//     });
-// });
 patient.post('/add_patient', (req, res) => {
+    var idx = 0;
+    var pat_id = ""
+    let find_idx = 'SELECT * FROM patient ORDER BY patient_id DESC LIMIT 1';
+    db.query(find_idx, (err, result) => {
+        last_id = result[0].patient_id.substring(2);
+        console.log("last_id", last_id)
+        idx = parseInt(last_id, 10)
+        console.log("idx", idx)
+        console.log(idx+1)
+        pat_id = "BN" + String(idx+1).padStart(3,'0')
+        console.log("pat_id", pat_id);
+        
+    });
 
-    const patientData = {
-        patient_id  : req.body.patient_id,
+    let find = `SELECT patient_id FROM patient WHERE patient_id = "${pat_id}"`;
+
+    db.query(find, (err1, result1) => {
+            const patientData = {
+        patient_id  : pat_id,
         full_name   : req.body.full_name,
         dob         : req.body.dob,
         gender      : req.body.gender,
@@ -73,49 +35,45 @@ patient.post('/add_patient', (req, res) => {
         email       : req.body.email,
         password    : req.body.password
     }
-
-    let find = `SELECT patient_id FROM patient WHERE patient_id = "${patientData.patient_id}"`;
-
-    db.query(find, (err1, result1) => {
         if(err1) console.log(err1);
-        //console.log(result1[0]);
-
-        if (result1[0] == undefined) {  
-            let create = `INSERT INTO patient (
-                patient_id,
-                full_name,
-                dob,
-                gender,
-                phone_number,
-                address,
-                email,
-                health_insurance_percent
-            ) VALUES (
-                "${patientData.patient_id}",
-                "${patientData.full_name}",
-                "${patientData.dob}",
-                "${patientData.gender}",
-                "${patientData.phone_number}",
-                "${patientData.address}",
-                "${patientData.email}", 
-                0
-            )`;
-            
-            db.query(create, (err2, result2) => {
-                if(err2) console.log(err2);
+        if (result1[0] == undefined) { 
+            bcrypt.hash(req.body.password, 10, (err, hash) => {
+                patientData.password = hash; 
+                let create = `INSERT INTO patient (
+                    patient_id,
+                    full_name,
+                    dob,
+                    gender,
+                    phone_number,
+                    address,
+                    email,
+                    health_insurance_percent
+                ) VALUES (
+                    "${patientData.patient_id}",
+                    "${patientData.full_name}",
+                    "${patientData.dob}",
+                    "${patientData.gender}",
+                    "${patientData.phone_number}",
+                    "${patientData.address}",
+                    "${patientData.email}", 
+                    0
+                )`;
                 
-            })
+                db.query(create, (err2, result2) => {
+                    if(err2) console.log(err2);
+                })
 
-            let create_account = `INSERT INTO credentials (username, password, id) 
-                                    VALUES ("${patientData.full_name}",
-                                            "${patientData.password}",
-                                            "${patientData.patient_id}")`;
+                let create_account = `INSERT INTO credentials (username, password, id) 
+                                        VALUES ("${patientData.phone_number}",
+                                                "${patientData.password}",
+                                                "${patientData.patient_id}")`;
 
-            db.query(create_account, (err3, result3) => {
-                if(err3) console.log(err3);
-                res.send("Created Database ooooooooooooohhhhhh");
-            })
-        }else {
+                db.query(create_account, (err3, result3) => {
+                    if(err3) console.log(err3);
+                    res.send("Created Database ooooooooooooohhhhhh");
+                })
+            });
+        } else {
             res.send("user already exist...");
         }
     });

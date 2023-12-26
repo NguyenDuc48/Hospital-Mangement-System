@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom';  // Import useHistory
 
 function SignUp() {
   const [patientInfo, setPatientInfo] = useState({
-    patient_id: '',
+    // patient_id: '',
     full_name: '',
     dob: '',
     gender: '',
@@ -58,19 +58,6 @@ function SignUp() {
               <h3 className="mb-5 text-uppercase fw-bold">Patient Registration Form</h3>
               <form onSubmit={handleSubmit}>
                 <MDBRow>
-                  <MDBCol md='6'>
-                    <MDBInput
-                      label='Patient ID'
-                      group
-                      size='lg'
-                      id='patient_id'
-                      type='text'
-                      name='patient_id'
-                      value={patientInfo.patient_id}
-                      onChange={handleChange}
-                    />
-                  </MDBCol>
-
                   <MDBCol md='6'>
                     <MDBInput
                       label='Full Name'
