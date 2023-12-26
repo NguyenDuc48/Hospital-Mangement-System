@@ -2,9 +2,9 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const employee = express.Router();
-
 const db = require('../../../utils/db');
-
+var doc_idx = 1
+var nurse_idx = 1
 process.env.SECRET_KEY = 'Arijit';
 
 //-------------------------------------DOCTOR-----------------------------------
@@ -20,8 +20,10 @@ employee.get('/get_doctor', (req, res) => {
 });
 
 employee.post('/add_doctor', (req, res) => {
+    var doc_id = "BS" + String(doc_idx).padStart(3,'0')
     const doctorData = {
-        doctor_id   : req.body.doctor_id,
+        // doctor_id   : req.body.doctor_id,
+        doctor_id   : doc_id,
         full_name   : req.body.full_name,
         dob         : req.body.dob,
         gender      : req.body.gender,
@@ -80,6 +82,7 @@ employee.post('/add_doctor', (req, res) => {
             res.send("Doctor already exists...");
         }
     });
+    doc_idx += 1
 });
 
 employee.put('/update_doctor', (req, res) => {

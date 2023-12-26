@@ -3,7 +3,6 @@ import { Route, BrowserRouter as Router } from 'react-router-dom';
 import './App.css';
 
 import Home from './component/Home/Home';
-import About from './component/About/About';
 import Gallery from './component/Gallery/Gallery';
 import PatientLogin from './component/Login/PatientLogin';
 import DoctorLogin from './component/Login/DoctorLogin';
@@ -19,11 +18,6 @@ import Doctor from './component/Doctor/Doctor'
 import DocGallery from './component/Doctor/DocGallery'
 import Employee from './component/Employee/Employee'
 
-import Admin from './component/Admin/Admin'
-import AdHome from './component/Admin/AdHome'
-import AdminAbout from './component/Admin/AdminAbout'
-import AdminGallery from './component/Admin/AdminGallery';
-import AdminContact from './component/Admin/AdminContact';
 
 import PatientReg from './component/PatientReg/PatientReg';
 
@@ -58,7 +52,6 @@ function App() {
       <Route exact path="/" component={Landings} />
       <Route exact path="/login" component={Login} /> 
       {/* <Route exact path="/" component={Home} /> */}
-      <Route exact path="/about" component={About} />
       <Route exact path="/gallery" component={Gallery} />
       <Route exact path="/contact" component={Contact} />
       <Route exact path="/regPatient" component = {PatientReg}/>
@@ -89,11 +82,6 @@ function App() {
       <Route exact path="/employee/login/gallery" component = {EmpGallery}/>
       <Route exact path="/employee/login/contact" component = {EmpContact}/>
 
-      <Route exact path="/administrator/login/admin_home" component = {Admin} />
-      <Route exact path="/administrator/login/home" component = {AdHome}/>
-      <Route exact path="/administrator/login/about" component = {AdminAbout}/>
-      <Route exact path="/administrator/login/gallery" component = {AdminGallery}/>
-      <Route exact path="/administrator/login/contact" component = {AdminContact}/>
       <Route exact path="/manager/doctor_account" component = {DoctorAccount}/>
       <Route exact path="/manager/nurse_account" component = {NurseAccount}/>
     </Router>

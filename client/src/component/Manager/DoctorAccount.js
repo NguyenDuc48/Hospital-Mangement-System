@@ -18,7 +18,7 @@ function DoctorAccount() {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [formData, setFormData] = useState({
-    doctor_id: '',
+    // doctor_id: '',
     full_name: '',
     dob: '',
     gender: '',
@@ -311,7 +311,7 @@ function DoctorAccount() {
               </Modal.Header>
               <Modal.Body>
                 <Form onSubmit={handleSubmit}>
-                  <Form.Group controlId="formDoctorID">
+                  {/* <Form.Group controlId="formDoctorID">
                     <Form.Label>Doctor ID</Form.Label>
                     <Form.Control
                       type="text"
@@ -320,7 +320,7 @@ function DoctorAccount() {
                       value={formData.doctor_id}
                       onChange={handleInputChange}
                     />
-                  </Form.Group>
+                  </Form.Group> */}
 
                   <Form.Group controlId="formFullName">
                     <Form.Label>Full Name</Form.Label>

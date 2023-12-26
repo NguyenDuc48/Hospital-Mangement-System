@@ -10,7 +10,7 @@ process.env.SECRET_KEY = 'Arijit';
 patient.post('/add_patient', (req, res) => {
 
     const patientData = {
-        patient_id  : req.body.patient_id,
+        patient_id  : req.body.phone_number,
         full_name   : req.body.full_name,
         dob         : req.body.dob,
         gender      : req.body.gender,
@@ -19,7 +19,7 @@ patient.post('/add_patient', (req, res) => {
         email       : req.body.email,
         password    : req.body.password
     }
-
+    
     let find = `SELECT * FROM patient WHERE patient_id = "${patientData.patient_id}"`;
 
     db.query(find, (err1, result1) => {
