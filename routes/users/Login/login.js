@@ -10,7 +10,7 @@ process.env.SECRET_KEY = 'Arijit';
 login.post('/', (req, res) => {
     const find = `SELECT password, id FROM credentials WHERE username = "${req.body.username}"`;
     const { username, password } = req.body;
-  
+    console.log("reqbody:" , req.body)
     db.query(find, (err, result) => {
       if (err) {
         console.error(err);
@@ -20,17 +20,20 @@ login.post('/', (req, res) => {
   
       if (result.length > 0) {
         const storedPassword = result[0].password;
-  
+        console.log("store pass:", storedPassword)
+        
         bcrypt.compare(password, storedPassword, (bcryptErr, bcryptResult) => {
           if (bcryptErr) {
             console.error(bcryptErr);
             res.status(500).json({ message: 'Internal Server Error' });
             return;
           }
+          console.log("bcryptResult:", bcryptResult)
         //  password trong database dạng hash thì sẽ dùng so sánh này
-        //   if (bcryptResult){ 
-          if (password === result[0].password) {
+          if (bcryptResult){ 
+          // if (password === result[0].password) {
             let userId = result[0].id.toString();
+            console.log("Userid:" , userId)
             const token = jwt.sign({ userId }, process.env.SECRET_KEY, { expiresIn: '1h' });
             if (userId.substring(0,2)=== "QL") {
                 res.status(200).json({ message: 'Login manager successful', token });
