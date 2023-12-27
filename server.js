@@ -6,7 +6,7 @@ const Patient = require('./routes/users/Patient/patient');
 const Doctor = require('./routes/users/Employee/doctor');
 const Manager = require('./routes/users/Employee/manager');
 const Nurse = require('./routes/users/Employee/nurse');
-const Login = require('./routes/users/Login/login');
+const Login = require('./routes/Login/login');
 
 const app = express();
 
