@@ -294,6 +294,26 @@ employee.get("/invoices/search", (req, res) => {
     })
 })
 
-module.exports = employee;
+employee.get("/view_drugs", (res, res) => {
+    let list = `SELECT drug_id, drug_name, price, origin
+                FROM drugs`;
+
+    db.query(list, (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
+    })
+})
+
+employee.get("/view_equipments", (res, res) => {
+    let list = `SELECT equipment_id, name, quantity_left, fee_per_day
+                FROM equipments`;
+
+    db.query(list, (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
+    })
+})
+
+//Có nên viết api thêm thuốc và vật tư ở đây không ?
 
 module.exports = employee;
