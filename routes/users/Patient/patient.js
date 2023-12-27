@@ -8,26 +8,33 @@ const db = require('../../../utils/db');
 process.env.SECRET_KEY = 'Arijit';
 
 patient.post('/add_patient', (req, res) => {
+    var idx = 0;
+    var pat_id = ""
+    let find_idx = 'SELECT * FROM patient ORDER BY patient_id DESC LIMIT 1';
+    db.query(find_idx, (err, result) => {
+        last_id = result[0].patient_id.substring(2); //BN006 -> 006
+        idx = parseInt(last_id, 10) //006 -> 6
+        pat_id = "BN" + String(idx+1).padStart(3,'0') //idx + 1 = 7 ; padStart(3,'0') -> 007 ; "BN" + "007" = "BN007"
+    });
 
-    const patientData = {
-        patient_id  : req.body.patient_id,
-        full_name   : req.body.full_name,
-        dob         : req.body.dob,
-        gender      : req.body.gender,
-        phone_number: req.body.phone_number,
-        address     : req.body.address,
-        email       : req.body.email,
-        password    : req.body.password
-    }
-
-    let find = `SELECT patient_id FROM patient WHERE patient_id = "${patientData.patient_id}"`;
+    let find = `SELECT patient_id FROM patient WHERE patient_id = "${pat_id}"`;
 
     db.query(find, (err1, result1) => {
+        const patientData = {
+            patient_id  : pat_id,
+            full_name   : req.body.full_name,
+            dob         : req.body.dob,
+            gender      : req.body.gender,
+            phone_number: req.body.phone_number,
+            address     : req.body.address,
+            email       : req.body.email,
+            password    : req.body.password
+    }
         if(err1) console.log(err1);
-        //console.log(result1[0]);
-
-        if (result1[0] == undefined) {  
-            let create = `INSERT INTO patient (
+        if (result1[0] == undefined) { 
+            bcrypt.hash(req.body.password, 10, (err, hash) => {
+                patientData.password = hash; 
+                let create = `INSERT INTO patient (
                     patient_id,
                     full_name,
                     dob,
@@ -35,39 +42,42 @@ patient.post('/add_patient', (req, res) => {
                     phone_number,
                     address,
                     email,
-                    health_insurance_percent)
-                              VALUES ( "${patientData.patient_id}", 
-                                       "${patientData.full_name}",
-                                       "${patientData.dob}",
-                                       "${patientData.gender}",
-                                       "${patientData.phone_number}",
-                                       "${patientData.address}",
-                                       "${patientData.email}",
-                                       "0")`;
-            db.query(create, (err2, result2) => {
-                if(err2) console.log(err2);
+                    health_insurance_percent
+                ) VALUES (
+                    "${patientData.patient_id}",
+                    "${patientData.full_name}",
+                    "${patientData.dob}",
+                    "${patientData.gender}",
+                    "${patientData.phone_number}",
+                    "${patientData.address}",
+                    "${patientData.email}", 
+                    0
+                )`;
                 
-            })
+                db.query(create, (err2, result2) => {
+                    if(err2) console.log(err2);
+                })
 
-            let create_account = `INSERT INTO credentials (username, password, id) 
-                                    VALUES ("${patientData.full_name}",
-                                            "${patientData.password}",
-                                            "${patientData.patient_id}")`;
+                let create_account = `INSERT INTO credentials (username, password, id) 
+                                        VALUES ("${patientData.phone_number}",
+                                                "${patientData.password}",
+                                                "${patientData.patient_id}")`;
 
-            db.query(create_account, (err3, result3) => {
-                if(err3) console.log(err3);
-                res.send("Created Database ooooooooooooohhhhhh");
-            })
-        }else {
-            res.send("user already exist...");
+                db.query(create_account, (err3, result3) => {
+                    if(err3) console.log(err3);
+                    res.send("Created Database ooooooooooooohhhhhh");
+                })
+            });
+        } else {
+            res.send("patient already exist...");
         }
     });
 });
 
 patient.get('/profile', (req, res) => {
-    let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+    let patient_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
     
-    let patient = `SELECT * FROM patient WHERE patient_id = "${patient_id.patient_id}"`;
+    let patient = `SELECT * FROM patient WHERE patient_id = "${patient_id.userId}"`;
     db.query(patient, (err, result) => {
         if (err) console.log(err);
         res.send(result);
@@ -92,7 +102,7 @@ patient.put('/update_profile', (req, res) => {
                            phone_number = "${updatedData.phone_number}",
                            address      = "${updatedData.address}",
                            email        = "${updatedData.email}"
-                       WHERE patient_id = "${patient_id.patient_id}"`;
+                       WHERE patient_id = "${patient_id.userId}"`;
 
     db.query(updateQuery, (err, result) => {
         if (err) {
@@ -107,7 +117,7 @@ patient.put('/update_profile', (req, res) => {
 patient.get('/history', (req, res) => {
     let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
 
-    let get_medic_reports = `SELECT * FROM medical_reports WHERE patient_id = "${patient_id.patient_id}"`
+    let get_medic_reports = `SELECT * FROM medical_reports WHERE patient_id = "${patient_id.userId}"`
 
     db.query(get_medic_reports, (err, result) => {
         if (err) console.log(err);
@@ -138,7 +148,7 @@ patient.get('/doctor', (req, res) => {
 patient.get('/history', (req, res) => {
     let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
 
-    let get_medic_reports = `SELECT * FROM medical_report WHERE patient_id = "${patient_id.patient_id}"`
+    let get_medic_reports = `SELECT * FROM medical_report WHERE patient_id = "${patient_id.userId}"`
 
     db.query(get_medic_reports, (err, result) => {
         if (err) console.log(err);
@@ -155,7 +165,7 @@ patient.get('/history', (req, res) => {
 patient.get('/bill', (req, res) => {
     let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
 
-    const bill = `SELECT * FROM bill WHERE patient_id = ${patient_id}`;
+    const bill = `SELECT * FROM bill WHERE patient_id = ${patient_id.userId}`;
 
     db.query(bill, (err, result) => {
         res.send(result);
