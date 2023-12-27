@@ -272,9 +272,9 @@ employee.get("/invoices", (req, res) => {
                 FROM patient p JOIN medical_reports mr ON p.patient_id = mr.patient_id
                                JOIN total_bills tb ON mr.bill_id = tb.total_bill_id;`;
 
-    db.query(list, (err4, result4) => {
-        if (err4) console.log(err4);
-        console.log("OK");
+    db.query(list, (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
     })
 })
 
@@ -288,10 +288,12 @@ employee.get("/invoices/search", (req, res) => {
                    OR p.patient_id LIKE "${input}"
                    OR mr.doctor_id LIKE "${input}";`;
 
-    db.query(search_invoice, (err4, result4) => {
-        if (err4) console.log(err4);
-        console.log("OK");
+    db.query(search_invoice, (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
     })
 })
+
+module.exports = employee;
 
 module.exports = employee;
