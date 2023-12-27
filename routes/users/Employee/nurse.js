@@ -53,52 +53,63 @@ nurse.put('/update_me', (req, res) => {
 });
 
 //  Bill management
-nurse.post('/create_bill', (req, res) => {
+nurse.post('/add_waiting_patient', (req, res) => {
     const id = {
         patient_id  : req.body.patient_id,
+        description : req.body.description,
+        priority    : req.body.priority,
         doctor_id   : req.body.doctor_id
     }
 
-    let create_bill = `INSERT INTO total_bills (service_bill_id, medicine_bill_id, equipment_bill_id, total_bill_raw) 
-                       VALUES (NULL, NULL, NULL, NULL)`
+    let post_wait = `INSERT INTO wait_list (patient_id, description, priority)
+                     VALUES ("${id.patient_id}",
+                              ${id.description}",
+                              ${id.priority}")`
 
-    db.query(create_bill, (err, result) => {
-        if (err) console.log(err);
-        res.send(result);
+    db.query(post_wait, (err, result) => {
+        if (err) res.status(401).json({ message: 'ID not found' });
 
-        const time = new Date();
-        const current_time = `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`
-        const current_date = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`
+        let create_bill = `INSERT INTO total_bills (service_bill_id, medicine_bill_id, equipment_bill_id, total_bill_raw) 
+                            VALUES (NULL, NULL, NULL, NULL)`
 
-        let create_medic_report = `INSERT INTO medical_reports 
-                                       (report_id, 
-                                        patient_id, 
-                                        doctor_id, 
-                                        diagnostic, 
-                                        conclusion, 
-                                        note, 
-                                        booking_time, 
-                                        appointment_date, 
-                                        bill_id, 
-                                        money_need_to_pay)  
-                                   VALUES (NULL, 
-                                           "${id.patient_id}", 
-                                           "${id.doctor_id}", 
-                                           NULL, 
-                                           NULL, 
-                                           NULL, 
-                                           "${current_time}", 
-                                           "${current_date}", 
-                                           (SELECT total_bill_id 
-                                            FROM total_bills 
-                                            ORDER BY total_bill_id DESC LIMIT 1), 
-                                           NULL)`
-                            
-        db.query(create_medic_report, (err2, result2) => {
+        db.query(create_bill, (err2, result2) => {
             if (err2) console.log(err2);
-            console.log("OK");
-        })
-    });
+            res.send(result2);
+
+            const time = new Date();
+            const current_time = `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`
+            const current_date = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`
+
+            let create_medic_report = `INSERT INTO medical_reports 
+                                           (report_id, 
+                                            patient_id, 
+                                            doctor_id, 
+                                            diagnostic, 
+                                            conclusion, 
+                                            note, 
+                                            booking_time, 
+                                            appointment_date, 
+                                            bill_id, 
+                                            money_need_to_pay)  
+                                       VALUES (NULL, 
+                                               "${id.patient_id}", 
+                                               "${id.doctor_id}", 
+                                               NULL, 
+                                               NULL, 
+                                               NULL, 
+                                               "${current_time}", 
+                                               "${current_date}", 
+                                               (SELECT total_bill_id 
+                                                FROM total_bills 
+                                                ORDER BY total_bill_id DESC LIMIT 1), 
+                                               NULL)`
+                            
+            db.query(create_medic_report, (err3, result3) => {
+                if (err3) console.log(err3);
+                console.log("OK");
+            })
+        });
+    }) 
 })
 
 nurse.put('/update_health_insurance', (req, res) => {
