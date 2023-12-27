@@ -16,7 +16,6 @@ app.use('/patient', Patient);
 app.use('/doctor' , Doctor);
 app.use('/manager', Manager);
 app.use('/nurse', Nurse);
-app.use('/manager', Manager);
 app.use('/login', Login);
 
 app.use(express.static(path.join(__dirname + '/client/build')));
