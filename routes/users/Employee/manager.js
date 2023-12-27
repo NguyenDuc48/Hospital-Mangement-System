@@ -266,5 +266,32 @@ employee.route('/delete_nurse')
             }
         });
     });
-    
+
+employee.get("/invoices", (req, res) => {
+    let list = `SELECT p.patient_id, p.full_name, mr.doctor_id, tb.* 
+                FROM patient p JOIN medical_reports mr ON p.patient_id = mr.patient_id
+                               JOIN total_bills tb ON mr.bill_id = tb.total_bill_id;`;
+
+    db.query(list, (err4, result4) => {
+        if (err4) console.log(err4);
+        console.log("OK");
+    })
+})
+
+employee.get("/invoices/search", (req, res) => {
+    const input = req.body.input;
+
+    let search_invoice = `SELECT p.patient_id, p.full_name, mr.doctor_id, tb.* 
+                FROM patient p JOIN medical_reports mr ON p.patient_id = mr.patient_id
+                               JOIN total_bills tb ON mr.bill_id = tb.total_bill_id
+                WHERE p.full_name LIKE "${input}"
+                   OR p.patient_id LIKE "${input}"
+                   OR mr.doctor_id LIKE "${input}";`;
+
+    db.query(search_invoice, (err4, result4) => {
+        if (err4) console.log(err4);
+        console.log("OK");
+    })
+})
+
 module.exports = employee;
