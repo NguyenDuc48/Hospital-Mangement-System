@@ -7,12 +7,6 @@ const db = require('../../../utils/db');
 
 process.env.SECRET_KEY = 'Arijit';
 
-// Personal profile management
-//  View the patient's medical history
-
-//  Update reports for patients
-
-//  View patient appointments
 doctor.get('/waiting_list', (req,res) => {
     let doctor_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY)
     
@@ -34,8 +28,6 @@ doctor.get('/waiting_list', (req,res) => {
             res.send([result, result1]);
         })
     });
-
-    
 })
 
 doctor.get('/profile', (req, res) => {
