@@ -13,24 +13,36 @@ process.env.SECRET_KEY = 'Arijit';
 //  Update reports for patients
 
 //  View patient appointments
-doctor.get('/patient', (req,res) => {
-    let doctor_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+doctor.get('/waiting_list', (req,res) => {
+    let doctor_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY)
     
-    const get_wait_list = `SELECT p.full_name
-                FROM patient p JOIN medical_reports mr ON p.patient_id = mr.patient_id
-                WHERE mr.doctor_id = "${doctor_id.doctor_id}"`
+    const get_priority = `SELECT wl.wait_id, p.full_name
+                          FROM wait_list wl JOIN medical_reports mr ON wl.patient_id = mr.patient_id
+                                            JOIN patient p ON p.patient_id = wl.patient_id 
+                          WHERE mr.doctor_id = "${doctor_id.userId}" AND wl.priority = "yes"`
 
-    db.query(get_wait_list, (err, result) => {
+    db.query(get_priority, (err, result) => {
         if (err) console.log(err);
-        console.log("OK");
+
+        const get_non_priority = `SELECT wl.wait_id, p.full_name
+                                  FROM wait_list wl JOIN medical_reports mr ON wl.patient_id = mr.patient_id
+                                                    JOIN patient p ON p.patient_id = wl.patient_id 
+                                  WHERE mr.doctor_id = "${doctor_id.userId}" AND wl.priority = "no"`
+
+        db.query(get_non_priority, (err1, result1) => {
+            if (err1) console.log(err1);
+            res.send([result, result1]);
+        })
     });
+
+    
 })
 
 doctor.get('/profile', (req, res) => {
-    let doctor_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+    let doctor_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY)
     
     let user = `SELECT * FROM doctors JOIN employees ON doctors.doctor_id = employees.employee_id 
-                WHERE doctor_id = "${doctor_id.doctor_id}"`;
+                WHERE doctor_id = "${doctor_id.userId}"`;
     db.query(user, (err, result) => {
         if (err) console.log(err);
         res.send(result);
@@ -54,7 +66,7 @@ doctor.post('/delete', (req, res) => {
 
 doctor.put('/update_me', (req, res) => {
     // let employee_id = req.body.employee_id;
-    let employee_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+    let employee_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY)
     const updatedData = {
         full_name : req.body.full_name,
         dob : req.body.dob,
@@ -71,7 +83,7 @@ doctor.put('/update_me', (req, res) => {
                            phone_number = "${updatedData.phone_number}",
                            email = "${updatedData.email}",
                            address = "${updatedData.address}"
-                       WHERE employee_id = "${employee_id.employee_id}"`;
+                       WHERE employee_id = "${employee_id.userId}"`;
 
     db.query(updateQuery, (err, result) => {
         if (err) {
@@ -82,22 +94,5 @@ doctor.put('/update_me', (req, res) => {
         }
     });
 });
-
-doctor.post('/update_sal', (req, res) => {
-    const find = `SELECT * FROM doctors WHERE doctor_id = ${req.body.doctor_id}`;
-    const upd = `UPDATE doctors 
-                    SET salary =" ${req.body.salary}"
-                    WHERE doctor_id = ${req.body.doctor_id}`;
-
-    db.query(find, (err1, result1) => {
-        if(err1) console.log(err1);
-
-        if(result1[0] != undefined) {
-            db.query(upd, (err2, result2) => {
-                res.send('UPDATED');
-            })
-        }
-    })
-})
 
 module.exports = doctor;
