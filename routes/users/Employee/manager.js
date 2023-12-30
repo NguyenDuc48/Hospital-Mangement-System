@@ -7,14 +7,13 @@ const db = require('../../../utils/db');
 
 process.env.SECRET_KEY = 'Arijit';
 
-//-------------------------------------DOCTOR-----------------------------------
+// QUẢN LÍ THÊM / SỬA / XÓA NHÂN VIÊN
 
 employee.get('/get_doctor', (req, res) => {
     const sql = "SELECT * FROM doctors JOIN employees ON doctors.doctor_id = employees.employee_id";
 
     db.query(sql, (err, result) => {
         if(err) console.log(err);
-        console.log(result)
         res.json(result);
     });
 });
@@ -83,9 +82,10 @@ employee.post('/add_doctor', (req, res) => {
 
 employee.put('/update_doctor', (req, res) => {
     const updatedData = {
-        doctor_id: req.body.doctor_id,
-        expertise: req.body.expertise,
-        department: req.body.department
+        doctor_id : req.body.doctor_id,
+        expertise : req.body.expertise,
+        department : req.body.department,
+        salary : req.body.salary
     };
 
     let updateQuery = `UPDATE doctors
@@ -96,6 +96,19 @@ employee.put('/update_doctor', (req, res) => {
     db.query(updateQuery, (err, result) => {
         if (err) {
             console.log(err);
+            res.status(500).json({ error: 'Error updating doctor information' });
+        } else {
+            res.json({ success: true, message: 'Doctor information updated successfully' });
+        }
+    });
+
+    let update_salary = `UPDATE employees
+                         SET salary = "${updatedData.salary}"
+                         WHERE employee_id = "${updatedData.doctor_id}"`
+
+    db.query(update_salary, (err2, result2) => {
+        if (err2) {
+            console.log(err2);
             res.status(500).json({ error: 'Error updating doctor information' });
         } else {
             res.json({ success: true, message: 'Doctor information updated successfully' });
@@ -137,14 +150,12 @@ employee.route('/delete_doctor')
         });
     });
 
-//--------------------------------------NURSE-------------------------------------
-
 employee.get('/get_nurse', (req, res) => {
-    const sql = "SELECT * FROM nurses JOIN employees ON nurses.nurse_id = employees.employee_id";
+    const sql = `SELECT * FROM nurses JOIN employees ON nurses.nurse_id = employees.employee_id 
+                 WHERE employees.status = "active"`;
 
     db.query(sql, (err, result) => {
         if(err) console.log(err);
-        console.log(result)
         res.json(result);
     });
 });
@@ -213,9 +224,10 @@ employee.post('/add_nurse', (req, res) => {
     
 employee.put('/update_nurse', (req, res) => {
     const updatedData = {
-        nurse_id: req.body.nurse_id,
-        department: req.body.department,
-        shift: req.body.shift
+        nurse_id : req.body.nurse_id,
+        department : req.body.department,
+        shift : req.body.shift,
+        salary : req.body.salary
     };
     
     let updateQuery = `UPDATE nurses
@@ -229,6 +241,19 @@ employee.put('/update_nurse', (req, res) => {
             res.status(500).json({ error: 'Error updating nurse information' });
         } else {
             res.json({ success: true, message: 'Nurse information updated successfully' });
+        }
+    });
+
+    let update_salary = `UPDATE employees
+                         SET salary = "${updatedData.salary}"
+                         WHERE employee_id = "${updatedData.doctor_id}"`
+
+    db.query(update_salary, (err2, result2) => {
+        if (err2) {
+            console.log(err2);
+            res.status(500).json({ error: 'Error updating doctor information' });
+        } else {
+            res.json({ success: true, message: 'Doctor information updated successfully' });
         }
     });
 });
@@ -266,7 +291,8 @@ employee.route('/delete_nurse')
             }
         });
     });
-
+    
+// XEM BÁO CÁO DOANH THU VÀ HÓA ĐƠN THANH TOÁN
 employee.get("/invoices", (req, res) => {
     let list = `SELECT p.patient_id, p.full_name, mr.doctor_id, tb.* 
                 FROM patient p JOIN medical_reports mr ON p.patient_id = mr.patient_id
@@ -294,7 +320,9 @@ employee.get("/invoices/search", (req, res) => {
     })
 })
 
-employee.get("/view_drugs", (res, res) => {
+//QUẢN LÍ VẬT TƯ TRANG THIẾT BỊ Y TẾ
+
+employee.get("/view_drugs", (req, res) => {
     let list = `SELECT drug_id, drug_name, price, origin
                 FROM drugs`;
 
@@ -304,7 +332,7 @@ employee.get("/view_drugs", (res, res) => {
     })
 })
 
-employee.get("/view_equipments", (res, res) => {
+employee.get("/view_equipments", (req, res) => {
     let list = `SELECT equipment_id, name, quantity_left, fee_per_day
                 FROM equipments`;
 
@@ -315,5 +343,6 @@ employee.get("/view_equipments", (res, res) => {
 })
 
 //Có nên viết api thêm thuốc và vật tư ở đây không ?
+
 
 module.exports = employee;
