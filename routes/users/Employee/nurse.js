@@ -62,44 +62,15 @@ nurse.post('/add_waiting_patient', (req, res) => {
     }
 
     let update_query = `INSERT INTO wait_list (patient_id, description, priority)
-             VALUES (
-                     "${id.patient_id}", 
-                     "${id.description}", 
-                     "${id.priority}")`;
-
-    // if (id.priority === 'yes') {
-    //     // Nếu priority là 'yes', đưa lên đầu danh sách nếu có priority 'yes', ngược lại thì đưa xuống cuối danh sách
-    //     update_query = `
-    //         INSERT INTO wait_list (wait_id, patient_id, description, priority)
-    //         VALUES ((SELECT MAX(wait_id) - 1 
-    //                 FROM wait_list 
-    //                 WHERE priority = 'yes'), 
-    //                 "${id.patient_id}", 
-    //                 "${id.description}", 
-    //                 "${id.priority}");
-            
-    //         UPDATE wait_list 
-    //         SET wait_id = wait_id + 1 
-    //         WHERE wait_id >= (SELECT MAX(wait_id) - 1 
-    //                           FROM wait_list 
-    //                           WHERE priority = 'yes');
-    //     `;
-    // } else {
-    //     // Nếu priority là 'no', đưa xuống cuối danh sách
-    //     update_query = `
-    //         INSERT INTO wait_list (patient_id, description, priority) 
-    //         VALUES ("${id.patient_id}", "${id.description}", "${id.priority}");
-    //     `;
-    // }
+                        VALUES ("${id.patient_id}", 
+                                "${id.description}", 
+                                "${id.priority}")`;
 
     db.query(update_query, (err, result) => {
-        // if (err) res.status(401).json({ message: 'ID not found' });
         if (err) console.log(err);
 
-        let create_bill = `
-            INSERT INTO total_bills (service_bill_id, medicine_bill_id, equipment_bill_id, total_bill_raw) 
-            VALUES (NULL, NULL, NULL, NULL)
-        `;
+        let create_bill = `INSERT INTO total_bills (service_bill_id, medicine_bill_id, equipment_bill_id, total_bill_raw) 
+                           VALUES (NULL, NULL, NULL, NULL)`;
 
         db.query(create_bill, (err2, result2) => {
             if (err2) console.log(err2);
@@ -149,25 +120,8 @@ nurse.post('/add_waiting_patient', (req, res) => {
         doctor_id   : req.body.doctor_id
     }
 
-    let updateQuery;
-    
-    if (id.priority === 'yes') {
-        // Nếu priority là 'yes', đưa lên đầu danh sách nếu có priority 'yes', ngược lại thì đưa xuống cuối danh sách
-        updateQuery = `
-            INSERT INTO wait_list (wait_id, patient_id, description, priority)
-            VALUES ((SELECT MIN(wait_id) - 1 FROM wait_list WHERE priority = 'yes'), "${id.patient_id}", "${id.description}", "${id.priority}");
-            
-            UPDATE wait_list 
-            SET wait_id = wait_id + 1 
-            WHERE wait_id >= (SELECT MIN(wait_id) - 1 FROM wait_list WHERE priority = 'yes');
-        `;
-    } else {
-        // Nếu priority là 'no', đưa xuống cuối danh sách
-        updateQuery = `
-            INSERT INTO wait_list (patient_id, description, priority) 
-            VALUES ("${id.patient_id}", "${id.description}", "${id.priority}");
-        `;
-    }
+    let updateQuery = `INSERT INTO wait_list (patient_id, description, priority)
+                       VALUES ("${id.patient_id}", "${id.description}", "${id.priority}");`;
 
     db.query(updateQuery, (err, result) => {
         if (err) {
