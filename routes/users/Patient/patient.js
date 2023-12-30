@@ -115,7 +115,7 @@ patient.put('/update_profile', (req, res) => {
 });
 
 patient.get('/history', (req, res) => {
-    let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+    let patient_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
 
     let get_medic_reports = `SELECT * FROM medical_reports WHERE patient_id = "${patient_id.userId}"`
 
@@ -126,7 +126,7 @@ patient.get('/history', (req, res) => {
 })
 
 patient.get('/doctor', (req, res) => {
-    let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+    let patient_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
 
     let patient =  `SELECT 
                         d.first_name as doctor_firstname,
@@ -145,32 +145,21 @@ patient.get('/doctor', (req, res) => {
     });
 })
 
-patient.get('/history', (req, res) => {
-    let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
-
-    let get_medic_reports = `SELECT * FROM medical_report WHERE patient_id = "${patient_id.userId}"`
-
-    db.query(get_medic_reports, (err, result) => {
-        if (err) console.log(err);
-        res.send(result);
-    });
-})
-
 // patient.post('/make_appointment', (req, res) => {
 //     let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
 
 //     let add_appointment = `INSERT INTO `
 // })
 
-patient.get('/bill', (req, res) => {
-    let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+// patient.get('/bill', (req, res) => {
+//     let patient_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
 
-    const bill = `SELECT * FROM bill WHERE patient_id = ${patient_id.userId}`;
+//     const bill = `SELECT * FROM bill WHERE patient_id = ${patient_id.userId}`;
 
-    db.query(bill, (err, result) => {
-        res.send(result);
-    })
-})
+//     db.query(bill, (err, result) => {
+//         res.send(result);
+//     })
+// })
 
 
 module.exports = patient;
