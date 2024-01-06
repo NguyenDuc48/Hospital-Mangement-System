@@ -12,28 +12,23 @@ patient.post('/add_patient', (req, res) => {
     var pat_id = ""
     let find_idx = 'SELECT * FROM patient ORDER BY patient_id DESC LIMIT 1';
     db.query(find_idx, (err, result) => {
-        last_id = result[0].patient_id.substring(2);
-        console.log("last_id", last_id)
-        idx = parseInt(last_id, 10)
-        console.log("idx", idx)
-        console.log(idx+1)
-        pat_id = "BN" + String(idx+1).padStart(3,'0')
-        console.log("pat_id", pat_id);
-        
+        last_id = result[0].patient_id.substring(2); //BN006 -> 006
+        idx = parseInt(last_id, 10) //006 -> 6
+        pat_id = "BN" + String(idx+1).padStart(3,'0') //idx + 1 = 7 ; padStart(3,'0') -> 007 ; "BN" + "007" = "BN007"
     });
 
     let find = `SELECT patient_id FROM patient WHERE patient_id = "${pat_id}"`;
 
     db.query(find, (err1, result1) => {
-            const patientData = {
-        patient_id  : pat_id,
-        full_name   : req.body.full_name,
-        dob         : req.body.dob,
-        gender      : req.body.gender,
-        phone_number: req.body.phone_number,
-        address     : req.body.address,
-        email       : req.body.email,
-        password    : req.body.password
+        const patientData = {
+            patient_id  : pat_id,
+            full_name   : req.body.full_name,
+            dob         : req.body.dob,
+            gender      : req.body.gender,
+            phone_number: req.body.phone_number,
+            address     : req.body.address,
+            email       : req.body.email,
+            password    : req.body.password
     }
         if(err1) console.log(err1);
         if (result1[0] == undefined) { 
@@ -74,15 +69,14 @@ patient.post('/add_patient', (req, res) => {
                 })
             });
         } else {
-            res.send("user already exist...");
+            res.send("patient already exist...");
         }
     });
 });
 
 patient.get('/profile', (req, res) => {
-    // let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
     let patient_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
-    console.log(patient_id);
+    
     let patient = `SELECT * FROM patient WHERE patient_id = "${patient_id.userId}"`;
     db.query(patient, (err, result) => {
         if (err) console.log(err);
@@ -91,8 +85,7 @@ patient.get('/profile', (req, res) => {
 });
 
 patient.put('/update_profile', (req, res) => {
-    let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
-    
+    let patient_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
     const updatedData = {
         full_name       : req.body.full_name,
         dob             : req.body.dob,
@@ -109,7 +102,7 @@ patient.put('/update_profile', (req, res) => {
                            phone_number = "${updatedData.phone_number}",
                            address      = "${updatedData.address}",
                            email        = "${updatedData.email}"
-                       WHERE patient_id = "${patient_id.patient_id}"`;
+                       WHERE patient_id = "${patient_id.userId}"`;
 
     db.query(updateQuery, (err, result) => {
         if (err) {
@@ -122,9 +115,9 @@ patient.put('/update_profile', (req, res) => {
 });
 
 patient.get('/history', (req, res) => {
-    let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+    let patient_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
 
-    let get_medic_reports = `SELECT * FROM medical_reports WHERE patient_id = "${patient_id.patient_id}"`
+    let get_medic_reports = `SELECT * FROM medical_reports WHERE patient_id = "${patient_id.userId}"`
 
     db.query(get_medic_reports, (err, result) => {
         if (err) console.log(err);
@@ -133,7 +126,7 @@ patient.get('/history', (req, res) => {
 })
 
 patient.get('/doctor', (req, res) => {
-    let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+    let patient_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
 
     let patient =  `SELECT 
                         d.first_name as doctor_firstname,
@@ -152,32 +145,21 @@ patient.get('/doctor', (req, res) => {
     });
 })
 
-patient.get('/history', (req, res) => {
-    let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
-
-    let get_medic_reports = `SELECT * FROM medical_report WHERE patient_id = "${patient_id.patient_id}"`
-
-    db.query(get_medic_reports, (err, result) => {
-        if (err) console.log(err);
-        res.send(result);
-    });
-})
-
 // patient.post('/make_appointment', (req, res) => {
 //     let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
 
 //     let add_appointment = `INSERT INTO `
 // })
 
-patient.get('/bill', (req, res) => {
-    let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+// patient.get('/bill', (req, res) => {
+//     let patient_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
 
-    const bill = `SELECT * FROM bill WHERE patient_id = ${patient_id}`;
+//     const bill = `SELECT * FROM bill WHERE patient_id = ${patient_id.userId}`;
 
-    db.query(bill, (err, result) => {
-        res.send(result);
-    })
-})
+//     db.query(bill, (err, result) => {
+//         res.send(result);
+//     })
+// })
 
 
 module.exports = patient;

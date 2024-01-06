@@ -7,54 +7,43 @@ const db = require('../../../utils/db');
 
 process.env.SECRET_KEY = 'Arijit';
 
-// Personal profile management
-//  View the patient's medical history
-
-//  Update reports for patients
-
-//  View patient appointments
-doctor.get('/patient', (req,res) => {
-    let doctor_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+doctor.get('/waiting_list', (req,res) => {
+    let doctor_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY)
     
-    const get_wait_list = `SELECT p.full_name
-                FROM patient p JOIN medical_reports mr ON p.patient_id = mr.patient_id
-                WHERE mr.doctor_id = "${doctor_id.doctor_id}"`
+    const get_priority = `SELECT wl.wait_id, p.full_name
+                          FROM wait_list wl JOIN medical_reports mr ON wl.patient_id = mr.patient_id
+                                            JOIN patient p ON p.patient_id = wl.patient_id 
+                          WHERE mr.doctor_id = "${doctor_id.userId}" AND wl.priority = "yes"`
 
-    db.query(get_wait_list, (err, result) => {
+    db.query(get_priority, (err, result) => {
         if (err) console.log(err);
-        console.log("OK");
+
+        const get_non_priority = `SELECT wl.wait_id, p.full_name
+                                  FROM wait_list wl JOIN medical_reports mr ON wl.patient_id = mr.patient_id
+                                                    JOIN patient p ON p.patient_id = wl.patient_id 
+                                  WHERE mr.doctor_id = "${doctor_id.userId}" AND wl.priority = "no"`
+
+        db.query(get_non_priority, (err1, result1) => {
+            if (err1) console.log(err1);
+            res.send([result, result1]);
+        })
     });
 })
 
+// Personal profile management
 doctor.get('/profile', (req, res) => {
-    let doctor_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+    let doctor_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY)
     
     let user = `SELECT * FROM doctors JOIN employees ON doctors.doctor_id = employees.employee_id 
-                WHERE doctor_id = "${doctor_id.doctor_id}"`;
+                WHERE doctor_id = "${doctor_id.userId}"`;
     db.query(user, (err, result) => {
         if (err) console.log(err);
         res.send(result);
     });
 });
 
-doctor.post('/delete', (req, res) => {
-    const find = `SELECT * FROM doctors WHERE doctor_id = ${req.body.doctor_id}`;
-    let del =  `DELETE FROM doctors WHERE doctor_id = ${req.body.doctor_id}`
-
-    db.query(find, (err1, result1) => {
-        if(err1) console.log(err1);
-
-        if(result1[0] != undefined) {
-            db.query(del, (err2, result2) => {
-                res.send('DELETED');
-            })
-        }
-    })
-});
-
 doctor.put('/update_me', (req, res) => {
-    // let employee_id = req.body.employee_id;
-    let employee_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+    let employee_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY)
     const updatedData = {
         full_name : req.body.full_name,
         dob : req.body.dob,
@@ -71,7 +60,7 @@ doctor.put('/update_me', (req, res) => {
                            phone_number = "${updatedData.phone_number}",
                            email = "${updatedData.email}",
                            address = "${updatedData.address}"
-                       WHERE employee_id = "${employee_id.employee_id}"`;
+                       WHERE employee_id = "${employee_id.userId}"`;
 
     db.query(updateQuery, (err, result) => {
         if (err) {
@@ -83,21 +72,58 @@ doctor.put('/update_me', (req, res) => {
     });
 });
 
-doctor.post('/update_sal', (req, res) => {
-    const find = `SELECT * FROM doctors WHERE doctor_id = ${req.body.doctor_id}`;
-    const upd = `UPDATE doctors 
-                    SET salary =" ${req.body.salary}"
-                    WHERE doctor_id = ${req.body.doctor_id}`;
+doctor.put('/call_patient', (req, res) => {
+    let wait_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY)
+    let call = `UPDATE wait_list
+                SET status = "in progress"
+                WHERE wait_id = "${wait_id.wait_id}"`
 
-    db.query(find, (err1, result1) => {
-        if(err1) console.log(err1);
-
-        if(result1[0] != undefined) {
-            db.query(upd, (err2, result2) => {
-                res.send('UPDATED');
-            })
-        }
-    })
+    db.query(call, (err, result) => {
+        if (err) console.log(err);
+        res.send("Updated successfully");
+    });
 })
+
+//  Update reports for patients
+doctor.put('/update_report', (req, res) => {
+    const report = {
+        diagnostic  : req.body.diagnostic,
+        conclusion  : req.body.conclusion,
+        note        : req.body.note,
+        report_id   : req.body.report_id
+    }
+
+    let update = `UPDATE medical_reports
+                  SET diagnostic = "${report.diagnostic}",
+                      conclusion = "${report.conclusion}",
+                      note = "${report.note}"
+                  WHERE report_id = "${report.report_id}"`
+
+    db.query(update, (err, result) => {
+        if (err) console.log(err);
+        res.send("Updated successfully");
+    });
+})
+
+//Nếu có tạo token cho từng cái medic_report thì dùng cái này
+// doctor.put('/update_report', (req, res) => {
+//     let report_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY)
+//     const report = {
+//         diagnostic  : req.body.diagnostic,
+//         conclusion  : req.body.conclusion,
+//         note        : req.body.note,
+//     }
+
+//     let update = `UPDATE medical_reports
+//                   SET diagnostic = "${report.diagnostic}",
+//                       conclusion = "${report.conclusion}",
+//                       note = "${report.note}"
+//                   WHERE report_id = "${report_id.report_id}"`
+
+//     db.query(update, (err, result) => {
+//         if (err) console.log(err);
+//         res.send("Updated successfully");
+//     });
+// })
 
 module.exports = doctor;

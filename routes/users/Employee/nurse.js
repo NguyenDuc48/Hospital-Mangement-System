@@ -10,7 +10,7 @@ process.env.SECRET_KEY = 'Arijit';
 //  Manage examination schedules
 
 nurse.get('/profile', (req, res) => {
-    let nurse_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+    let nurse_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
     console.log(nurse_id)
 
     let user = `SELECT * FROM nurses JOIN employees ON nurses.nurse_id = employees.employee_id 
@@ -23,7 +23,7 @@ nurse.get('/profile', (req, res) => {
 
 nurse.put('/update_me', (req, res) => {
     // let employee_id = req.body.employee_id;
-    let employee_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+    let employee_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
     const updatedData = {
         full_name : req.body.full_name,
         dob : req.body.dob,
@@ -53,53 +53,86 @@ nurse.put('/update_me', (req, res) => {
 });
 
 //  Bill management
-nurse.post('/create_bill', (req, res) => {
+nurse.post('/add_waiting_patient', (req, res) => {
     const id = {
         patient_id  : req.body.patient_id,
+        description : req.body.description,
+        priority    : req.body.priority,
         doctor_id   : req.body.doctor_id
     }
 
-    let create_bill = `INSERT INTO total_bills (service_bill_id, medicine_bill_id, equipment_bill_id, total_bill_raw) 
-                       VALUES (NULL, NULL, NULL, NULL)`
+    let update_query = `INSERT INTO wait_list (patient_id, description, priority)
+                        VALUES ("${id.patient_id}", 
+                                "${id.description}", 
+                                "${id.priority}")`;
 
-    db.query(create_bill, (err, result) => {
+    db.query(update_query, (err, result) => {
         if (err) console.log(err);
-        res.send(result);
 
-        const time = new Date();
-        const current_time = `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`
-        const current_date = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`
+        let create_bill = `INSERT INTO total_bills (service_bill_id, medicine_bill_id, equipment_bill_id, total_bill_raw) 
+                           VALUES (NULL, NULL, NULL, NULL)`;
 
-        let create_medic_report = `INSERT INTO medical_reports 
-                                       (report_id, 
-                                        patient_id, 
-                                        doctor_id, 
-                                        diagnostic, 
-                                        conclusion, 
-                                        note, 
-                                        booking_time, 
-                                        appointment_date, 
-                                        bill_id, 
-                                        money_need_to_pay)  
-                                   VALUES (NULL, 
-                                           "${id.patient_id}", 
-                                           "${id.doctor_id}", 
-                                           NULL, 
-                                           NULL, 
-                                           NULL, 
-                                           "${current_time}", 
-                                           "${current_date}", 
-                                           (SELECT total_bill_id 
-                                            FROM total_bills 
-                                            ORDER BY total_bill_id DESC LIMIT 1), 
-                                           NULL)`
-                            
-        db.query(create_medic_report, (err2, result2) => {
+        db.query(create_bill, (err2, result2) => {
             if (err2) console.log(err2);
-            console.log("OK");
-        })
-    });
+            res.send(result2);
+
+            const time = new Date();
+            const current_time = `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`
+            const current_date = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`
+
+            let create_medic_report = `INSERT INTO medical_reports 
+                                           (report_id, 
+                                            patient_id, 
+                                            doctor_id, 
+                                            diagnostic, 
+                                            conclusion, 
+                                            note, 
+                                            booking_time, 
+                                            appointment_date, 
+                                            bill_id, 
+                                            money_need_to_pay)  
+                                       VALUES (NULL, 
+                                               "${id.patient_id}", 
+                                               "${id.doctor_id}", 
+                                               NULL, 
+                                               NULL, 
+                                               NULL, 
+                                               "${current_time}", 
+                                               "${current_date}", 
+                                               (SELECT total_bill_id 
+                                                FROM total_bills 
+                                                ORDER BY total_bill_id DESC LIMIT 1), 
+                                               NULL)`
+                            
+            db.query(create_medic_report, (err3, result3) => {
+                if (err3) console.log(err3);
+                console.log("OK");
+            })
+        });
+    }) 
 })
+
+nurse.post('/add_waiting_patient', (req, res) => {
+    const id = {
+        patient_id  : req.body.patient_id,
+        description : req.body.description,
+        priority    : req.body.priority,
+        doctor_id   : req.body.doctor_id
+    }
+
+    let updateQuery = `INSERT INTO wait_list (patient_id, description, priority)
+                       VALUES ("${id.patient_id}", "${id.description}", "${id.priority}");`;
+
+    db.query(updateQuery, (err, result) => {
+        if (err) {
+            console.log(err);
+            res.status(500).json({ error: 'Internal Server Error' });
+        } else {
+            res.send(result);
+            console.log("OK");
+        }
+    });
+});
 
 nurse.put('/update_health_insurance', (req, res) => {
     const insurance_info = {
@@ -121,7 +154,7 @@ nurse.put('/update_health_insurance', (req, res) => {
 // View drug and equipment information
 nurse.get('/quantity_info', (req, res) => {
     try {
-        let user_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+        let user_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
 
         // Query to get the quantity of each type of drug
         const drugQuery = `

@@ -7,14 +7,13 @@ var doc_idx = 1
 var nurse_idx = 1
 process.env.SECRET_KEY = 'Arijit';
 
-//-------------------------------------DOCTOR-----------------------------------
+// QUẢN LÍ THÊM / SỬA / XÓA NHÂN VIÊN
 
 employee.get('/get_doctor', (req, res) => {
     const sql = "SELECT doc.doctor_id, emp.full_name, DATE_FORMAT(emp.dob,'%d/%m/%Y') AS dob, emp.gender, doc.expertise, dep.department_name as department, emp.phone_number, emp.email, emp.address, emp.salary, DATE_FORMAT(emp.work_from,'%d/%m/%Y') AS work_from FROM doctors doc JOIN employees emp ON doc.doctor_id = emp.employee_id JOIN departments dep ON doc.department = dep.department_id WHERE emp.status = 'active'";
 
     db.query(sql, (err, result) => {
         if(err) console.log(err);
-        console.log(result)
         res.json(result);
     });
 });
@@ -87,9 +86,10 @@ employee.post('/add_doctor', (req, res) => {
 
 employee.put('/update_doctor', (req, res) => {
     const updatedData = {
-        doctor_id: req.body.doctor_id,
-        expertise: req.body.expertise,
-        department: req.body.department
+        doctor_id : req.body.doctor_id,
+        expertise : req.body.expertise,
+        department : req.body.department,
+        salary : req.body.salary
     };
 
     let updateQuery = `UPDATE doctors
@@ -100,6 +100,19 @@ employee.put('/update_doctor', (req, res) => {
     db.query(updateQuery, (err, result) => {
         if (err) {
             console.log(err);
+            res.status(500).json({ error: 'Error updating doctor information' });
+        } else {
+            res.json({ success: true, message: 'Doctor information updated successfully' });
+        }
+    });
+
+    let update_salary = `UPDATE employees
+                         SET salary = "${updatedData.salary}"
+                         WHERE employee_id = "${updatedData.doctor_id}"`
+
+    db.query(update_salary, (err2, result2) => {
+        if (err2) {
+            console.log(err2);
             res.status(500).json({ error: 'Error updating doctor information' });
         } else {
             res.json({ success: true, message: 'Doctor information updated successfully' });
@@ -141,23 +154,14 @@ employee.route('/delete_doctor')
         });
     });
 
-
-
-
-
-
-
-
-
-
 //--------------------------------------NURSE-------------------------------------
 
 employee.get('/get_nurse', (req, res) => {
-    const sql = "SELECT nur.nurse_id, emp.full_name, DATE_FORMAT(emp.dob,'%d/%m/%Y') AS dob , emp.gender, dep.department_name as department,nur.shift, emp.phone_number, emp.email, emp.address, emp.salary, DATE_FORMAT(emp.work_from,'%d/%m/%Y') AS work_from FROM nurses nur JOIN employees emp ON nur.nurse_id = emp.employee_id JOIN departments dep ON nur.department = dep.department_id WHERE emp.status = 'active'";
+    const sql = `SELECT * FROM nurses JOIN employees ON nurses.nurse_id = employees.employee_id 
+                 WHERE employees.status = "active"`;
 
     db.query(sql, (err, result) => {
         if(err) console.log(err);
-        console.log(result)
         res.json(result);
     });
 });
@@ -226,9 +230,10 @@ employee.post('/add_nurse', (req, res) => {
     
 employee.put('/update_nurse', (req, res) => {
     const updatedData = {
-        nurse_id: req.body.nurse_id,
-        department: req.body.department,
-        shift: req.body.shift
+        nurse_id : req.body.nurse_id,
+        department : req.body.department,
+        shift : req.body.shift,
+        salary : req.body.salary
     };
     
     let updateQuery = `UPDATE nurses
@@ -242,6 +247,19 @@ employee.put('/update_nurse', (req, res) => {
             res.status(500).json({ error: 'Error updating nurse information' });
         } else {
             res.json({ success: true, message: 'Nurse information updated successfully' });
+        }
+    });
+
+    let update_salary = `UPDATE employees
+                         SET salary = "${updatedData.salary}"
+                         WHERE employee_id = "${updatedData.doctor_id}"`
+
+    db.query(update_salary, (err2, result2) => {
+        if (err2) {
+            console.log(err2);
+            res.status(500).json({ error: 'Error updating doctor information' });
+        } else {
+            res.json({ success: true, message: 'Doctor information updated successfully' });
         }
     });
 });
@@ -280,4 +298,57 @@ employee.route('/delete_nurse')
         });
     });
     
+// XEM BÁO CÁO DOANH THU VÀ HÓA ĐƠN THANH TOÁN
+employee.get("/invoices", (req, res) => {
+    let list = `SELECT p.patient_id, p.full_name, mr.doctor_id, tb.* 
+                FROM patient p JOIN medical_reports mr ON p.patient_id = mr.patient_id
+                               JOIN total_bills tb ON mr.bill_id = tb.total_bill_id;`;
+
+    db.query(list, (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
+    })
+})
+
+employee.get("/invoices/search", (req, res) => {
+    const input = req.body.input;
+
+    let search_invoice = `SELECT p.patient_id, p.full_name, mr.doctor_id, tb.* 
+                FROM patient p JOIN medical_reports mr ON p.patient_id = mr.patient_id
+                               JOIN total_bills tb ON mr.bill_id = tb.total_bill_id
+                WHERE p.full_name LIKE "${input}"
+                   OR p.patient_id LIKE "${input}"
+                   OR mr.doctor_id LIKE "${input}";`;
+
+    db.query(search_invoice, (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
+    })
+})
+
+//QUẢN LÍ VẬT TƯ TRANG THIẾT BỊ Y TẾ
+
+employee.get("/view_drugs", (req, res) => {
+    let list = `SELECT drug_id, drug_name, price, origin
+                FROM drugs`;
+
+    db.query(list, (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
+    })
+})
+
+employee.get("/view_equipments", (req, res) => {
+    let list = `SELECT equipment_id, name, quantity_left, fee_per_day
+                FROM equipments`;
+
+    db.query(list, (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
+    })
+})
+
+//Có nên viết api thêm thuốc và vật tư ở đây không ?
+
+
 module.exports = employee;
