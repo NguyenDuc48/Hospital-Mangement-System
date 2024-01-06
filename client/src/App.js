@@ -9,6 +9,8 @@ import SignUp from './component/SignUp/SignUp';
 import PatientProfile from './component/Patient/PatientProfile';
 import DoctorProfile from './component/Doctor/DoctorProfile';
 import NurseProfile from './component/Nurse/NurseProfile';
+import PatientHistory from './component/Patient/PatientHistory'
+
 function App() {
   return (
     <div className="App">
@@ -18,6 +20,8 @@ function App() {
       {/* patient */}
       <Route exact path="/sign_up" component = {SignUp}/> 
       <Route exact path="/patient/get_profile" component = {PatientProfile} />
+      <Route exact path="/patient/get_history" component = {PatientHistory} />
+
       {/* doctor */}
       <Route exact path="/doctor/get_profile" component = {DoctorProfile}/>
       {/* nurse  */}
