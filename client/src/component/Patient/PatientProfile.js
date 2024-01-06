@@ -279,7 +279,7 @@ const PatientProfile = () => {
                     <MDBRow className="g-0">
                       <MDBCol
                         md="4"
-                        className="gradient-custom text-center text-black"
+                        className="gradient-custom text-center text-white"
                         style={{
                           borderTopLeftRadius: '.5rem',
                           borderBottomLeftRadius: '.5rem',
@@ -348,22 +348,7 @@ const PatientProfile = () => {
                                 {patientData[0].health_insurance_percent}
                               </MDBCardText>
                             </MDBCol>
-                            
-
-                            
-
-
-
-
-
-
-
-
-
-
-
-
-
+  
                           </MDBRow>
                           <div className="d-flex justify-content-start">
                             {/* Add social media icons or links here */}

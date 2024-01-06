@@ -92,6 +92,7 @@ patient.get('/profile', (req, res) => {
 
 patient.put('/update_profile', (req, res) => {
     let patient_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+    
     const updatedData = {
         full_name       : req.body.full_name,
         dob             : req.body.dob,
