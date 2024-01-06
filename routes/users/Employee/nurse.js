@@ -11,10 +11,9 @@ process.env.SECRET_KEY = 'Arijit';
 
 nurse.get('/profile', (req, res) => {
     let nurse_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
-    console.log(nurse_id)
 
     let user = `SELECT * FROM nurses JOIN employees ON nurses.nurse_id = employees.employee_id 
-                WHERE nurse_id = "${nurse_id.nurse_id}"`;
+                WHERE nurse_id = "${nurse_id.userId}"`;
     db.query(user, (err, result) => {
         if (err) console.log(err);
         res.send(result);
