@@ -39,7 +39,7 @@ nurse.put('/update_me', (req, res) => {
                            phone_number = "${updatedData.phone_number}",
                            email = "${updatedData.email}",
                            address = "${updatedData.address}"
-                       WHERE employee_id = "${employee_id.employee_id}"`;
+                       WHERE employee_id = "${employee_id.userId}"`;
 
     db.query(updateQuery, (err, result) => {
         if (err) {
