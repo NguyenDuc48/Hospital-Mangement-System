@@ -1,0 +1,84 @@
+/* DoctorWaitingList.css */
+@import url('https://fonts.googleapis.com/css?family=Assistant');
+
+body {
+  background: #eee;
+  font-family: Assistant, sans-serif;
+}
+
+.cell-1 {
+  border-collapse: separate;
+  border-spacing: 0 4em;
+  background: #fff;
+  border-bottom: 5px solid transparent;
+}
+
+.table thead th {
+  background-color: #343a40 !important; /* Dark background color for thead */
+  color: white !important; /* Text color for thead */
+}
+
+.table th, .table td {
+  text-align: center;
+}
+
+/* Set fixed width for the toggle button column */
+.toggle-btn-th {
+  width: 60px;
+  min-width: 60px;
+}
+
+.toggle-btn {
+  width: 40px;
+  height: 21px;
+  background: grey;
+  border-radius: 50px;
+  padding: 3px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out; /* Add transition to background */
+}
+
+.toggle-btn > .inner-circle {
+  width: 15px;
+  height: 15px;
+  background: #fff;
+  border-radius: 50%;
+  transition: margin-left 0.3s ease-in-out; /* Add transition to margin-left */
+}
+
+
+.toggle-btn-th.active {
+  background: blue !important;
+  transition:  0.3s ease-in-out; /* Add transition to background */
+
+}
+
+.toggle-btn.active {
+  background: #e889c0 !important;
+}
+
+.toggle-btn.active > .inner-circle {
+  margin-left: 19px;
+}
+
+/* Badge styles */
+.badge {
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.badge-success {
+  background-color: #28a745 !important; /* Green background color for success */
+  color: #fff !important; /* Text color for success */
+  padding: 5px 10px !important
+}
+
+.badge-info {
+  background-color: #17a2b8 !important; /* Blue background color for info */
+  color: #fff !important; /* Text color for info */
+  padding: 5px 10px !important
+
+
+}

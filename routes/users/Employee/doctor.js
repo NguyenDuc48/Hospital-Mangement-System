@@ -10,7 +10,7 @@ process.env.SECRET_KEY = 'Arijit';
 doctor.get('/waiting_list', (req,res) => {
     let doctor_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY)
     
-    const get_priority = `SELECT wl.wait_id, p.full_name
+    const get_priority = `SELECT wl.wait_id, p.full_name, wl.priority
                           FROM wait_list wl JOIN medical_reports mr ON wl.patient_id = mr.patient_id
                                             JOIN patient p ON p.patient_id = wl.patient_id 
                           WHERE mr.doctor_id = "${doctor_id.userId}" AND wl.priority = "yes"`
@@ -18,7 +18,7 @@ doctor.get('/waiting_list', (req,res) => {
     db.query(get_priority, (err, result) => {
         if (err) console.log(err);
 
-        const get_non_priority = `SELECT wl.wait_id, p.full_name
+        const get_non_priority = `SELECT wl.wait_id, p.full_name, wl.priority
                                   FROM wait_list wl JOIN medical_reports mr ON wl.patient_id = mr.patient_id
                                                     JOIN patient p ON p.patient_id = wl.patient_id 
                                   WHERE mr.doctor_id = "${doctor_id.userId}" AND wl.priority = "no"`

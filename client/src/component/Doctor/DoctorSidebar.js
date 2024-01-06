@@ -29,6 +29,9 @@ const Sidebar = () => {
             <NavLink exact to="/doctor/get_profile" activeClassName="activeClicked">
               <CDBSidebarMenuItem icon="table">Profile</CDBSidebarMenuItem>
             </NavLink>
+            <NavLink exact to="/doctor/waiting_list" activeClassName="activeClicked">
+              <CDBSidebarMenuItem icon="table">Waiting List</CDBSidebarMenuItem>
+            </NavLink>
           </CDBSidebarMenu>
         </CDBSidebarContent>
 
