@@ -46,6 +46,7 @@ login.post('/', (req, res) => {
             }
             else {
                 res.status(203).json({ message: 'Login nurse successful', token });
+                console.log("Token", token)
             } 
           } else {
             res.status(401).json({ message: 'Incorrect password' });
