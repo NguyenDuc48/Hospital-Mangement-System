@@ -236,4 +236,26 @@ nurse.put('/pay', (req, res) => {
     });
 })
 
+nurse.get('/all_patient', (req, res) => {
+    let patients = `SELECT * FROM patient`
+    
+    db.query(patients, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
+employee.get("/all_patient/search", (req, res) => {
+    const input = req.body.input;
+
+    let search_patient = `SELECT * FROM patient
+                          WHERE full_name LIKE "${input}"
+                             OR phone_number LIKE "${input}";`;
+
+    db.query(search_patient, (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
+    })
+})
+
 module.exports = nurse;
