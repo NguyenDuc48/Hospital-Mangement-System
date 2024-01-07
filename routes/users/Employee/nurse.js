@@ -101,7 +101,7 @@ nurse.post('/add_waiting_patient', (req, res) => {
                                                (SELECT total_bill_id 
                                                 FROM total_bills 
                                                 ORDER BY total_bill_id DESC LIMIT 1), 
-                                               NULL)`
+                                               0)`
                             
             db.query(create_medic_report, (err3, result3) => {
                 if (err3) console.log(err3);
@@ -199,5 +199,41 @@ nurse.get('/quantity_info', (req, res) => {
         res.status(500).json({ error: error.toString() });
     }
 });
+
+nurse.get("/invoices", (req, res) => {
+    let list = `SELECT p.patient_id, p.full_name, mr.doctor_id, tb.* 
+                FROM patient p JOIN medical_reports mr ON p.patient_id = mr.patient_id
+                               JOIN total_bills tb ON mr.bill_id = tb.total_bill_id;`;
+
+    db.query(list, (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
+    })
+})
+
+nurse.get('/waiting_list', (req,res) => {  
+    let get_list = `SELECT DISTINCT wl.wait_id, p.full_name, wl.money_need_to_pay
+                      FROM wait_list wl JOIN medical_reports mr ON wl.patient_id = mr.patient_id
+                                        JOIN patient p ON p.patient_id = wl.patient_id 
+                      WHERE wl.status = "paying"`
+
+    db.query(get_list, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
+nurse.put('/pay', (req, res) => {
+    const wait_id = req.body.wait_id
+    
+    let paid = `UPDATE wait_list
+                SET status = "paid"
+                WHERE wait_id = "${wait_id}"`
+
+    db.query(paid, (err, result) => {
+        if (err) console.log(err);
+        res.send("Payment success")
+    });
+})
 
 module.exports = nurse;
