@@ -235,4 +235,31 @@ nurse.put('/pay', (req, res) => {
     });
 })
 
+nurse.get('/all_patient', (req, res) => {
+    let patients = `SELECT * FROM patient`
+    
+    db.query(patients, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
+nurse.get("/all_patient/search/:input", (req, res) => {
+    const input = req.params.input;
+
+    let search_patient = `SELECT * FROM patient
+                          WHERE full_name LIKE "${input}"
+                             OR phone_number LIKE "${input}";`;
+
+    db.query(search_patient, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.send(result);
+    });
+});
+
+
 module.exports = nurse;

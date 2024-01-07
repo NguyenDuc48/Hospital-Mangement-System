@@ -8,6 +8,8 @@ import NurseAccount from './component/Manager/NurseAccount';
 import SignUp from './component/SignUp/SignUp';
 import PatientProfile from './component/Patient/PatientProfile';
 import NurseProfile from './component/Nurse/NurseProfile';
+import NursePatientList from './component/Nurse/NursePatientList';
+
 import PatientHistory from './component/Patient/PatientHistory'
 import PatientAppointment from './component/Patient/PatientAppointment'
 
@@ -15,7 +17,6 @@ import DoctorProfile from './component/Doctor/DoctorProfile';
 import DoctorWaitingList from './component/Doctor/DoctorWaitingList';
 import ManagerDrug from './component/Manager/ManagerDrug';
 import ManagerEquipment from './component/Manager/ManagerEquipment';
-
 
 function App() {
   return (
@@ -36,6 +37,8 @@ function App() {
 
       {/* nurse  */}
       <Route exact path="/nurse/get_profile" component = {NurseProfile}/>
+      <Route exact path="/nurse/patient_list" component = {NursePatientList}/>
+
       {/* manager */}
       <Route exact path="/manager/doctor_account" component = {DoctorAccount}/>
       <Route exact path="/manager/nurse_account" component = {NurseAccount}/>
