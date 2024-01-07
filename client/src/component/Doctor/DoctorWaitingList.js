@@ -3,6 +3,7 @@ import axios from 'axios';
 import Header from './Header';
 import DoctorSidebar from './DoctorSidebar';
 import './DoctorWaitingList.css';
+import { Button } from 'react-bootstrap';
 
 const DoctorWaitingList = () => {
   const [waitingList, setWaitingList] = useState([]);
@@ -92,6 +93,8 @@ const DoctorWaitingList = () => {
                           <th>Wait ID</th>
                           <th>Full name</th>
                           <th>Priority</th>
+                          <th>Medical Report</th>
+
                         </tr>
                       </thead>
                       <tbody className="table-body">
@@ -129,7 +132,7 @@ const DoctorWaitingList = () => {
                                 >
                                 {item[0].full_name}
                                 </span>
-                            </td>
+                             </td>
                               <td>
                                 {item[0].priority === 'yes' ? (
                                   <span className="badge badge-success">Yes</span>
@@ -137,6 +140,9 @@ const DoctorWaitingList = () => {
                                   <span className="badge badge-info">No</span>
                                 )}
                               </td>
+                              <td>
+                                <Button>Add Medical Report</Button>
+                             </td>
                             </tr>
                           ))
                         )}
