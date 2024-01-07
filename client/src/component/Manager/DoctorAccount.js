@@ -7,7 +7,14 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './manager.css'
 
-function DoctorAccount() {
+function DoctorAccount(props) {
+  // useEffect(() => {
+  //   const id = localStorage.getItem('id')
+  //   if (!id || id.substring(0,2) != 'QL') {
+  //     props.history.push("/")
+  //   }
+  // })
+
   const [doctors, setDoctors] = useState([]);
   const [show, setShow] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false); // Added state for edit modal
@@ -17,6 +24,7 @@ function DoctorAccount() {
   const [deletingDoctorId, setDeletingDoctorId] = useState(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
   const [formData, setFormData] = useState({
     // doctor_id: '',
     full_name: '',

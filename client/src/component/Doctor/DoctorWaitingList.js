@@ -10,6 +10,7 @@ const DoctorWaitingList = () => {
   const [error, setError] = useState(null);
   const [isToggleActive, setIsToggleActive] = useState(false);
   const [activeRows, setActiveRows] = useState([]);
+  const [selectedPatient, setSelectedPatient] = useState(null);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -25,9 +26,9 @@ const DoctorWaitingList = () => {
           },
         });
 
-        if (!response.data) {
-          throw new Error('Empty response data');
-        }
+        // if (!response.data) {
+        //   throw new Error('Empty response data');
+        // }
 
         setWaitingList(response.data);
         setLoading(false);
@@ -48,7 +49,9 @@ const DoctorWaitingList = () => {
       return newActiveRows;
     });
   };
-
+  const handleFullNameClick = (patient) => {
+    setSelectedPatient(patient);
+  };
 
   console.log("WaitingList", waitingList);
 
@@ -118,7 +121,15 @@ const DoctorWaitingList = () => {
                               </td>
 
                               <td>{item[0].wait_id}</td>
-                              <td>{item[0].full_name}</td>
+                              {/* <td>{item[0].full_name}</td> */}
+                              <td>
+                                <span
+                                className="full-name-link"
+                                onClick={() => handleFullNameClick(item[0])}
+                                >
+                                {item[0].full_name}
+                                </span>
+                            </td>
                               <td>
                                 {item[0].priority === 'yes' ? (
                                   <span className="badge badge-success">Yes</span>

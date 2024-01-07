@@ -11,6 +11,9 @@ import NurseProfile from './component/Nurse/NurseProfile';
 import PatientHistory from './component/Patient/PatientHistory'
 import DoctorProfile from './component/Doctor/DoctorProfile';
 import DoctorWaitingList from './component/Doctor/DoctorWaitingList';
+import ManagerDrug from './component/Manager/ManagerDrug';
+import ManagerEquipment from './component/Manager/ManagerEquipment';
+
 
 function App() {
   return (
@@ -27,11 +30,16 @@ function App() {
       <Route exact path="/doctor/get_profile" component = {DoctorProfile}/>
       <Route exact path="/doctor/waiting_list" component = {DoctorWaitingList}/>
 
+
       {/* nurse  */}
       <Route exact path="/nurse/get_profile" component = {NurseProfile}/>
       {/* manager */}
       <Route exact path="/manager/doctor_account" component = {DoctorAccount}/>
       <Route exact path="/manager/nurse_account" component = {NurseAccount}/>
+      <Route exact path="/manager/drug" component = {ManagerDrug}/>
+      <Route exact path="/manager/equipment" component = {ManagerEquipment}/>
+
+
     </Router>
     </div>
   );

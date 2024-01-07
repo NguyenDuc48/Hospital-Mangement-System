@@ -169,7 +169,7 @@ const NurseProfile = () => {
                           fluid
                         />
                         <MDBTypography tag="h5">{nurseData[0].full_name}</MDBTypography>
-                        <MDBCardText>Doctor</MDBCardText>
+                        <MDBCardText>Nurse</MDBCardText>
                         <MDBIcon far icon="edit mb-5" onClick={openModal} />
                     </MDBCol>
                     <MDBCol md="8">
