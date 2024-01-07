@@ -245,7 +245,7 @@ nurse.get('/all_patient', (req, res) => {
     });
 })
 
-employee.get("/all_patient/search", (req, res) => {
+nurse.get("/all_patient/search", (req, res) => {
     const input = req.body.input;
 
     let search_patient = `SELECT * FROM patient
