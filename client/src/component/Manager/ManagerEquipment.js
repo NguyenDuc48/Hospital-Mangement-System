@@ -20,6 +20,8 @@ function ManagerEquipment() {
     equipment_name: '',
     quantity: '',
     description: '',
+    fee_per_day: '',
+    status : ''
   });
 
   useEffect(() => {
@@ -34,7 +36,7 @@ function ManagerEquipment() {
       console.error('Error fetching data:', error);
     }
   };
-
+  
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -49,7 +51,12 @@ function ManagerEquipment() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/manager/add_equipment', formData);
+      const response = await axios.post('/manager/add_equipment', {
+        name: formData.equipment_name,
+        quantity_left: formData.quantity,
+        fee_per_day: formData.fee_per_day,
+      });
+
       console.log(response.data);
       fetchData();
       handleClose();
@@ -71,21 +78,39 @@ function ManagerEquipment() {
 
   const handleShowEditModal = (equipmentId) => {
     const editingEquipment = equipments.find((equipment) => equipment.equipment_id === equipmentId);
-    setFormData(editingEquipment);
+    
+    // Ensure that properties in editingEquipment match the properties in formData
+    const { equipment_id, name, quantity_left, fee_per_day, status } = editingEquipment;
+    
+    setFormData({
+      equipment_id,
+      equipment_name: name,
+      quantity: quantity_left,
+      fee_per_day,
+      status,
+    });
+  
     setEditingEquipmentId(equipmentId);
     setShowEditModal(true);
   };
-
+  
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put('http://localhost:5000/manager/update_equipment', formData);
+      const response = await axios.put('/manager/update_equipment', {
+        equipment_id: formData.equipment_id,
+        name: formData.equipment_name,
+        status: formData.status,
+        quantity_left: formData.quantity,
+        fee_per_day: formData.fee_per_day,
+      });
+  
       console.log(response.data);
       fetchData();
       handleCloseModal();
-
+  
       setShowSuccessMessage(true);
-
+  
       setTimeout(() => {
         setShowSuccessMessage(false);
       }, 5000);
@@ -93,6 +118,7 @@ function ManagerEquipment() {
       console.error('Error updating equipment:', error);
     }
   };
+  
 
   const handleShowDeleteConfirmation = (equipmentId) => {
     setDeletingEquipmentId(equipmentId);
@@ -106,21 +132,25 @@ function ManagerEquipment() {
 
   const handleDeleteEquipment = async () => {
     try {
-      const deleteResponse = await axios.delete('http://localhost:5000/manager/delete_equipment', {
+      const deleteResponse = await axios.delete('/manager/delete_equipment', {
         data: { equipment_id: deletingEquipmentId },
       });
-
+  
       if (deleteResponse.data.success) {
-        fetchData();
+        // Navigate back to the current URL, which should trigger a reload
+        window.location.href = window.location.href;
       } else {
         console.error('Error deleting equipment:', deleteResponse.data.error);
       }
     } catch (error) {
       console.error('Error deleting equipment:', error);
     }
-
+  
     handleCloseDeleteConfirmation();
   };
+  
+
+  
 
   return (
     <div>
@@ -207,17 +237,6 @@ function ManagerEquipment() {
                 </Modal.Header>
                 <Modal.Body>
                   <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="formEquipmentID">
-                      <Form.Label>Equipment ID</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter Equipment ID"
-                        name="equipment_id"
-                        value={formData.equipment_id}
-                        onChange={handleInputChange}
-                      />
-                    </Form.Group>
-
                     <Form.Group controlId="formEquipmentName">
                       <Form.Label>Equipment Name</Form.Label>
                       <Form.Control
@@ -228,7 +247,6 @@ function ManagerEquipment() {
                         onChange={handleInputChange}
                       />
                     </Form.Group>
-
                     <Form.Group controlId="formQuantity">
                       <Form.Label>Quantity</Form.Label>
                       <Form.Control
@@ -239,18 +257,16 @@ function ManagerEquipment() {
                         onChange={handleInputChange}
                       />
                     </Form.Group>
-
                     <Form.Group controlId="formDescription">
-                      <Form.Label>Description</Form.Label>
+                      <Form.Label>Fee Per Day</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Enter Description"
-                        name="description"
-                        value={formData.description}
+                        placeholder="Enter Fee"
+                        name="fee_per_day"
+                        value={formData.fee_per_day}
                         onChange={handleInputChange}
                       />
                     </Form.Group>
-
                     <Button variant="primary" type="submit">
                       Submit
                     </Button>
@@ -280,6 +296,19 @@ function ManagerEquipment() {
                       />
                     </Form.Group>
 
+                    <Form.Group controlId="formStatus">
+                      <Form.Label>Status</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter Status "
+                        name="status"
+                        value={formData.status}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+
+
+
                     <Form.Group controlId="formQuantity">
                       <Form.Label>Quantity</Form.Label>
                       <Form.Control
@@ -292,12 +321,12 @@ function ManagerEquipment() {
                     </Form.Group>
 
                     <Form.Group controlId="formDescription">
-                      <Form.Label>Description</Form.Label>
+                      <Form.Label>Fee Per Day</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Enter Description"
-                        name="description"
-                        value={formData.description}
+                        placeholder="Enter Fee"
+                        name="fee_per_day"
+                        value={formData.fee_per_day}
                         onChange={handleInputChange}
                       />
                     </Form.Group>
