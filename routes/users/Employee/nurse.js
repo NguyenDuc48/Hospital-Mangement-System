@@ -78,7 +78,7 @@ nurse.get("/invoices", (req, res) => {
     })
 })
 
-nurse.get('/waiting_list', (req,res) => {  
+nurse.get('/waiting_to_pay', (req,res) => {  
     let get_list = `SELECT DISTINCT wl.wait_id, p.full_name, mr.money_need_to_pay
                       FROM wait_list wl JOIN medical_reports mr ON wl.patient_id = mr.patient_id
                                         JOIN patient p ON p.patient_id = wl.patient_id 
@@ -133,6 +133,18 @@ nurse.get('/all_patient', (req, res) => {
     let patients = `SELECT * FROM patient`
     
     db.query(patients, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
+nurse.get('/waiting_list', (req,res) => {  
+    let get_list = `SELECT DISTINCT wl.wait_id, p.full_name, d.department_name, wl.description
+                      FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
+                                        JOIN departments d ON d.department_id = wl.department_id
+                      WHERE wl.status = "waiting"`
+
+    db.query(get_list, (err, result) => {
         if (err) console.log(err);
         res.send(result)
     });
