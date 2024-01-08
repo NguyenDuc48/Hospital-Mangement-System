@@ -90,6 +90,58 @@ nurse.get('/waiting_to_pay', (req,res) => {
     });
 })
 
+nurse.get('/show_bill_info', (req, res) => {
+    const wait_id = req.body.wait_id
+
+    let info = `SELECT p.full_name, p.health_insurance_percent, tb.total_bill_raw, mr.money_need_to_pay
+                FROM patient p JOIN wait_list wl ON wl.patient_id = p.patient_id
+                    JOIN medical_reports mr ON mr.patient_id = wl.patient_id
+                    JOIN total_bills tb ON tb.total_bill_id = mr.bill_id
+                WHERE wl.wait_id = "${wait_id}" AND mr.payment_status = "pending"`
+
+    db.query(info, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
+nurse.get('/show_list_in_bill', (req, res) => {
+    const wait_id = req.body.wait_id
+
+    let list = `SELECT s.service_name, s.service_fee AS price, NULL AS quantity_used, NULL AS day_used
+                FROM services s 
+                    JOIN services_used_per_id sui ON s.service_id = sui.service_id
+                    JOIN total_bills tb ON tb.service_bill_id = sui.service_bill_id
+                    JOIN medical_reports mr ON mr.bill_id = tb.total_bill_id
+                    JOIN wait_list wl ON wl.patient_id = mr.patient_id
+                WHERE wait_id = "${wait_id}" AND payment_status = "pending"
+
+                UNION
+
+                SELECT d.drug_name, d.price, dui.quantity_used, NULL AS day_used
+                FROM drugs d 
+                    JOIN drugs_used_per_id dui ON d.drug_id = dui.drug_id
+                    JOIN total_bills tb ON tb.medicine_bill_id = dui.medicine_bill_id
+                    JOIN medical_reports mr ON mr.bill_id = tb.total_bill_id
+                    JOIN wait_list wl ON wl.patient_id = mr.patient_id
+                WHERE wait_id = "${wait_id}" AND payment_status = "pending"
+                        
+                UNION
+                        
+                SELECT e.name, e.fee_per_day AS price, eui.quantity_used, eui.day_used
+                FROM equipments e 
+                    JOIN equipments_used_per_id eui ON e.equipment_id = eui.equipment_id
+                    JOIN total_bills tb ON tb.equipment_bill_id = eui.equipment_bill_id
+                    JOIN medical_reports mr ON mr.bill_id = tb.total_bill_id
+                    JOIN wait_list wl ON wl.patient_id = mr.patient_id
+                WHERE wait_id = "${wait_id}" AND payment_status = "pending";`
+                            
+    db.query(list, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
 nurse.put('/pay', (req, res) => {
     const wait_id = req.body.wait_id
     
@@ -129,20 +181,16 @@ nurse.get("/all_patient/search/:input", (req, res) => {
     });
 });
 
-nurse.get('/all_patient', (req, res) => {
-    let patients = `SELECT * FROM patient`
-    
-    db.query(patients, (err, result) => {
-        if (err) console.log(err);
-        res.send(result)
-    });
-})
-
 nurse.get('/waiting_list', (req,res) => {  
     let get_list = `SELECT DISTINCT wl.wait_id, p.full_name, d.department_name, wl.description
-                      FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
-                                        JOIN departments d ON d.department_id = wl.department_id
-                      WHERE wl.status = "waiting"`
+                    FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
+                                      JOIN departments d ON d.department_id = wl.department_id
+                    WHERE wl.status = "waiting" AND wl.priority = "yes"
+                    UNION
+                    SELECT DISTINCT wl.wait_id, p.full_name, d.department_name, wl.description
+                    FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
+                                      JOIN departments d ON d.department_id = wl.department_id
+                    WHERE wl.status = "waiting" AND wl.priority = "no"`
 
     db.query(get_list, (err, result) => {
         if (err) console.log(err);
@@ -159,21 +207,6 @@ nurse.get('/all_booked_patient', (req, res) => {
         res.send(result)
     });
 })
-
-// nurse.get('/all_booked_patient/search', (req, res) => {
-//     const input = req.body.input
-
-//     let search_patients = `SELECT p.full_name, p.phone_number, b.* 
-//                     FROM booked b JOIN patient p ON b.patient_id = p.patient_id
-//                     WHERE p.full_name = "${input}"
-//                        OR p.phone_number = "${input}"
-//                        OR p.patient_id = "${input}"`
-    
-//     db.query(search_patients, (err, result) => {
-//         if (err) console.log(err);
-//         res.send(result)
-//     });
-// })
 
 nurse.get('/all_booked_patient/search/:input', (req, res) => {
     const input = req.params.input;
@@ -193,7 +226,6 @@ nurse.get('/all_booked_patient/search/:input', (req, res) => {
         res.send(result);
     });
 });
-
 
 nurse.route('/add_waiting_patient')
     .post((req, res) => {
@@ -221,7 +253,7 @@ nurse.route('/add_waiting_patient')
                 // The booked_date matches the current date
                 const booked_time = result[0].booked_time;
 
-                // Calculate the end time (30 minutes later)
+                // Calculate the end time (1 hour later)
                 const end_time = calculateEndTime(booked_time);
                 // console.log(end_time, booked_time, current_time)
 
@@ -256,8 +288,8 @@ nurse.route('/add_waiting_patient')
 function calculateEndTime(startTime) {
     const [hours, minutes] = startTime.split(':').map(Number);
     const endTime = new Date();
-    endTime.setHours(hours);
-    endTime.setMinutes(minutes + 30);
+    endTime.setHours(hours + 1);
+    endTime.setMinutes(minutes);
 
     return `${endTime.getHours()}:${endTime.getMinutes()}`;
 }
