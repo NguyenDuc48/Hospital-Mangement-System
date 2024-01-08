@@ -57,7 +57,7 @@ home.post('/', (req, res) => {
     });
 });
 
-home.delete('reset_wait_list', (req, res) => {
+home.delete('/reset_wait_list', (req, res) => {
     const time = new Date();
     
     if (time.getHours() == 23) {
