@@ -45,6 +45,24 @@ const NurseBookingList = () => {
     }
   };
 
+  const deletePatientFromBookedList = async (patientId) => {
+    try {
+      const response = await axios.delete('/nurse/add_waiting_patient', {
+        data: {
+          patient_id: patientId,
+        },
+      });
+
+      if (!response.data) {
+        throw new Error('Empty response data');
+      }
+
+      // Handle success or show success toast for deletion from booked list
+    } catch (error) {
+      console.error('Error deleting patient from booked list:', error.message);
+      // Handle error or show error toast for deletion
+    }
+  };
 
   useEffect(() => {
     if (searchInput) {
@@ -73,9 +91,14 @@ const NurseBookingList = () => {
         department_id: departmentId,
         description: description,
       });
+
       if (!response.data) {
         throw new Error('Empty response data');
       }
+
+      // Successfully added to waitlist, now delete from booked list
+      await deletePatientFromBookedList(selectedPatientId);
+
       // Show success toast here
       handleCloseModal();
     } catch (error) {
@@ -87,7 +110,6 @@ const NurseBookingList = () => {
   useEffect(() => {
     fetchAllBookedPatients();
   }, []);
-  console.log("book", bookedList)
 
   return (
     <div>
@@ -132,9 +154,7 @@ const NurseBookingList = () => {
               <table className="table table-bordered table-striped">
                 <thead className="thead-light">
                   <tr>
-                    {/* <th>ID</th> */}
                     <th>Patient ID</th>
-
                     <th>Name</th>
                     <th>Phone Number</th>
                     <th>Booked Date</th>
@@ -146,16 +166,14 @@ const NurseBookingList = () => {
                 <tbody>
                   {bookedList.map((booking, index) => (
                     <tr key={booking.patient_id} className={index % 2 === 0 ? 'table-light' : 'table-white'}>
-                      {/* <td>{booking.id}</td> */}
                       <td>{booking.patient_id}</td>
-
                       <td>{booking.full_name}</td>
                       <td>{booking.phone_number}</td>
                       <td>{new Date(booking.booked_date).toLocaleDateString()}</td>
                       <td>{booking.booked_time}</td>
                       <td>{booking.description}</td>
                       <td>
-                        <Button variant="success" onClick={() => handleShowModal(booking.patient_id)}>
+                        <Button style={{backgroundColor: "#177347"}} variant="success" onClick={() => handleShowModal(booking.patient_id)}>
                           Add Waitlist
                         </Button>
                       </td>
