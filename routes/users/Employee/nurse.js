@@ -93,7 +93,7 @@ nurse.get('/waiting_to_pay', (req,res) => {
 nurse.get('/show_bill_info', (req, res) => {
     const wait_id = req.body.wait_id
 
-    let info = `SELECT p.full_name, p.health_insurance_percent, tb.total_bill_raw, mr.money_need_to_pay
+    let info = `SELECT p.full_name, mr.conclusion, mr.note, p.health_insurance_percent, tb.total_bill_raw, mr.money_need_to_pay
                 FROM patient p JOIN wait_list wl ON wl.patient_id = p.patient_id
                     JOIN medical_reports mr ON mr.patient_id = wl.patient_id
                     JOIN total_bills tb ON tb.total_bill_id = mr.bill_id
@@ -105,8 +105,8 @@ nurse.get('/show_bill_info', (req, res) => {
     });
 })
 
-nurse.get('/show_list_in_bill', (req, res) => {
-    const wait_id = req.body.wait_id
+nurse.get('/show_list_in_bill/:wait_id', (req, res) => {
+    const wait_id = req.params.wait_id
 
     let list = `SELECT s.service_name, s.service_fee AS price, NULL AS quantity_used, NULL AS day_used
                 FROM services s 
@@ -142,18 +142,29 @@ nurse.get('/show_list_in_bill', (req, res) => {
     });
 })
 
-nurse.put('/pay', (req, res) => {
-    const wait_id = req.body.wait_id
-    
-    let paid = `UPDATE wait_list
-                SET status = "paid"
-                WHERE wait_id = "${wait_id}"`
+nurse.route('/pay')
+    .put((req, res) => {
+        const wait_id = req.body.wait_id
+        
+        let paid = `UPDATE wait_list wl JOIN medical_reports mr ON wl.patient_id = mr.patient_id
+                    SET mr.payment_status = "done"
+                    WHERE wl.wait_id = "${wait_id}"`
 
-    db.query(paid, (err, result) => {
-        if (err) console.log(err);
-        res.send("Payment success")
-    });
-})
+        db.query(paid, (err, result) => {
+            if (err) console.log(err);
+            res.send("Payment success")
+        });
+    })
+    .delete((req, res) => {
+        const wait_id = req.body.wait_id
+        
+        let paid = `DELETE FROM wait_list WHERE wait_id = "${wait_id}"`
+
+        db.query(paid, (err, result) => {
+            if (err) console.log(err);
+            res.send("Payment success")
+        });
+    })
 
 nurse.get('/all_patient', (req, res) => {
     let patients = `SELECT * FROM patient`
@@ -167,11 +178,13 @@ nurse.get('/all_patient', (req, res) => {
 nurse.get("/all_patient/search/:input", (req, res) => {
     const input = req.params.input;
 
-    let search_patient = `SELECT * FROM patient
-                          WHERE full_name LIKE "${input}"
-                             OR phone_number LIKE "${input}";`;
+    let search_patients = `SELECT * FROM patient
+                           WHERE full_name LIKE "${input}"
+                              OR phone_number LIKE "${input}"
+                              OR patient_id LIKE "${input}"
+                              OR email LIKE "${input}";`;
 
-    db.query(search_patient, (err, result) => {
+    db.query(search_patients, (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).send('Internal Server Error');
@@ -186,7 +199,9 @@ nurse.get('/waiting_list', (req,res) => {
                     FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
                                       JOIN departments d ON d.department_id = wl.department_id
                     WHERE wl.status = "waiting" AND wl.priority = "yes"
+
                     UNION
+
                     SELECT DISTINCT wl.wait_id, p.full_name, d.department_name, wl.description
                     FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
                                       JOIN departments d ON d.department_id = wl.department_id
@@ -212,10 +227,10 @@ nurse.get('/all_booked_patient/search/:input', (req, res) => {
     const input = req.params.input;
 
     let search_patients = `SELECT p.full_name, p.phone_number, b.* 
-                    FROM booked b JOIN patient p ON b.patient_id = p.patient_id
-                    WHERE p.full_name LIKE "${input}%"
-                       OR p.phone_number LIKE "${input}%"
-                       OR p.patient_id LIKE "${input}%"`;
+                           FROM booked b JOIN patient p ON b.patient_id = p.patient_id
+                           WHERE p.full_name LIKE "${input}"
+                              OR p.phone_number LIKE "${input}"
+                              OR p.patient_id LIKE "${input}"`;
 
     db.query(search_patients, (err, result) => {
         if (err) {
@@ -293,5 +308,57 @@ function calculateEndTime(startTime) {
 
     return `${endTime.getHours()}:${endTime.getMinutes()}`;
 }
+
+nurse.get('/all_equipment', (req, res) => {
+    let equipments = `SELECT * FROM equipments  `
+    
+    db.query(equipments, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
+nurse.get('/all_equipment/search/:input', (req, res) => {
+    const input = req.params.input;
+
+    let search_equipments = `SELECT * FROM equipments
+                             WHERE name LIKE "${input}"
+                                OR status LIKE "${input}"`;
+
+    db.query(search_equipments, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.send(result);
+    });
+});
+
+nurse.get('/all_drug', (req, res) => {
+    let drugs = `SELECT * FROM drugs  `
+    
+    db.query(drugs, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
+nurse.get('/all_drug/search/:input', (req, res) => {
+    const input = req.params.input;
+
+    let search_drugs = `SELECT * FROM drugs
+                        WHERE drug_name LIKE "${input}"
+                           OR origin LIKE "${input}"`;
+
+    db.query(search_drugs, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.send(result);
+    });
+});
 
 module.exports = nurse;
