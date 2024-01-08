@@ -105,8 +105,8 @@ nurse.get('/show_bill_info', (req, res) => {
     });
 })
 
-nurse.get('/show_list_in_bill', (req, res) => {
-    const wait_id = req.body.wait_id
+nurse.get('/show_list_in_bill/:wait_id', (req, res) => {
+    const wait_id = req.params.wait_id
 
     let list = `SELECT s.service_name, s.service_fee AS price, NULL AS quantity_used, NULL AS day_used
                 FROM services s 
