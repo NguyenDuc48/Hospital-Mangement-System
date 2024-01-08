@@ -50,24 +50,6 @@ nurse.put('/update_me', (req, res) => {
     });
 });
 
-nurse.post('/add_waiting_patient', (req, res) => {
-    const id = {
-        patient_id  : req.body.patient_id,
-        department_id : req.body.department_id,
-        description : req.body.description
-    }
-
-    let add_to_list = `INSERT INTO wait_list (patient_id, department_id, description)
-                        VALUES ("${id.patient_id}",
-                                "${id.department_id}", 
-                                "${id.description}")`;
-
-    db.query(add_to_list, (err, result) => {
-        if (err) console.log(err);
-        res.send(result)
-    }) 
-})
-
 nurse.put('/update_health_insurance', (req, res) => {
     const insurance_info = {
         patient_id : req.body.patient_id,
@@ -147,5 +129,71 @@ nurse.get("/all_patient/search/:input", (req, res) => {
     });
 });
 
+nurse.route('/add_waiting_patient')
+    .post((req, res) => {
+        let priority = 'no'
+        const id = {
+            patient_id  : req.body.patient_id,
+            department_id : req.body.department_id,
+            description : req.body.description
+        }
+    
+        let find = `SELECT * FROM booked WHERE patient_id = "${id.patient_id}"`
+
+        db.query(find, (err, result) => {
+            if (err) console.log(err)
+
+            const time = new Date();
+            const current_date = time.toLocaleDateString('en-US');  // Format current date in local timezone
+            const current_time = `${time.getHours()}:${time.getMinutes()}`;
+
+            // Convert result[0].booked_date to a string in 'YYYY-MM-DD' format
+            const booked_date_string = result[0] ? result[0].booked_date.toLocaleDateString('en-US') : '';
+
+            // console.log(current_date, booked_date_string)
+            if (result.length > 0 && booked_date_string === current_date) {
+                // The booked_date matches the current date
+                const booked_time = result[0].booked_time;
+
+                // Calculate the end time (30 minutes later)
+                const end_time = calculateEndTime(booked_time);
+                // console.log(end_time, booked_time, current_time)
+
+                if (current_time >= booked_time && current_time <= end_time) {
+                    priority = 'yes'
+                }
+            }
+
+            let add_to_list = `INSERT INTO wait_list (patient_id, department_id, description, priority)
+                               VALUES ("${id.patient_id}",
+                                       "${id.department_id}", 
+                                       "${id.description}",
+                                       "${priority}")`;
+
+            db.query(add_to_list, (err2, result2) => {
+                if (err2) console.log(err2);
+                res.send(result)
+            }) 
+        })
+    })
+    .delete((req, res) => {
+        const patient_id = req.body.patient_id
+
+        let delete_schedule = `DELETE FROM booked WHERE patient_id = "${patient_id}"`
+
+        db.query(delete_schedule, (err, result) => {
+            if (err) console.log(err);
+            res.send("Deleted");
+        })
+    })
+
+function calculateEndTime(startTime) {
+    const [hours, minutes] = startTime.split(':').map(Number);
+    const endTime = new Date();
+    endTime.setHours(hours);
+    endTime.setMinutes(minutes + 30);
+
+    return `${endTime.getHours()}:${endTime.getMinutes()}`;
+}
 
 module.exports = nurse;
