@@ -92,9 +92,10 @@ employee.post('/add_doctor', (req, res) => {
 
 employee.put('/update_doctor', (req, res) => {
     const updatedData = {
-        doctor_id: req.body.doctor_id,
-        expertise: req.body.expertise,
-        department: req.body.department
+        doctor_id : req.body.doctor_id,
+        expertise : req.body.expertise,
+        department : req.body.department,
+        salary : req.body.salary
     };
 
     let updateQuery = `UPDATE doctors
@@ -105,6 +106,19 @@ employee.put('/update_doctor', (req, res) => {
     db.query(updateQuery, (err, result) => {
         if (err) {
             console.log(err);
+            res.status(500).json({ error: 'Error updating doctor information' });
+        } else {
+            res.json({ success: true, message: 'Doctor information updated successfully' });
+        }
+    });
+
+    let update_salary = `UPDATE employees
+                         SET salary = "${updatedData.salary}"
+                         WHERE employee_id = "${updatedData.doctor_id}"`
+
+    db.query(update_salary, (err2, result2) => {
+        if (err2) {
+            console.log(err2);
             res.status(500).json({ error: 'Error updating doctor information' });
         } else {
             res.json({ success: true, message: 'Doctor information updated successfully' });
@@ -146,23 +160,14 @@ employee.route('/delete_doctor')
         });
     });
 
-
-
-
-
-
-
-
-
-
 //--------------------------------------NURSE-------------------------------------
 
 employee.get('/get_nurse', (req, res) => {
-    const sql = "SELECT nur.nurse_id, emp.full_name, DATE_FORMAT(emp.dob,'%d/%m/%Y') AS dob , emp.gender, dep.department_name as department,nur.shift, emp.phone_number, emp.email, emp.address, emp.salary, DATE_FORMAT(emp.work_from,'%d/%m/%Y') AS work_from FROM nurses nur JOIN employees emp ON nur.nurse_id = emp.employee_id JOIN departments dep ON nur.department = dep.department_id WHERE emp.status = 'active'";
+    const sql = `SELECT * FROM nurses JOIN employees ON nurses.nurse_id = employees.employee_id 
+                 WHERE employees.status = "active"`;
 
     db.query(sql, (err, result) => {
         if(err) console.log(err);
-        console.log(result)
         res.json(result);
     });
 });
@@ -238,12 +243,14 @@ employee.post('/add_nurse', (req, res) => {
         }
     });
 });
+
     
 employee.put('/update_nurse', (req, res) => {
     const updatedData = {
-        nurse_id: req.body.nurse_id,
-        department: req.body.department,
-        shift: req.body.shift
+        nurse_id : req.body.nurse_id,
+        department : req.body.department,
+        shift : req.body.shift,
+        salary : req.body.salary
     };
     
     let updateQuery = `UPDATE nurses
@@ -257,6 +264,19 @@ employee.put('/update_nurse', (req, res) => {
             res.status(500).json({ error: 'Error updating nurse information' });
         } else {
             res.json({ success: true, message: 'Nurse information updated successfully' });
+        }
+    });
+
+    let update_salary = `UPDATE employees
+                         SET salary = "${updatedData.salary}"
+                         WHERE employee_id = "${updatedData.doctor_id}"`
+
+    db.query(update_salary, (err2, result2) => {
+        if (err2) {
+            console.log(err2);
+            res.status(500).json({ error: 'Error updating doctor information' });
+        } else {
+            res.json({ success: true, message: 'Doctor information updated successfully' });
         }
     });
 });
@@ -295,4 +315,180 @@ employee.route('/delete_nurse')
         });
     });
     
+// XEM BÁO CÁO DOANH THU VÀ HÓA ĐƠN THANH TOÁN
+
+//QUẢN LÍ VẬT TƯ TRANG THIẾT BỊ Y TẾ
+
+employee.get("/view_equipments", (req, res) => {
+    let list = `SELECT equipment_id, name, quantity_left, fee_per_day
+                FROM equipments`;
+
+    db.query(list, (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
+    })
+})
+
+employee.post('/add_equipment', (req, res) => {
+    const equipmentData = {
+        name : req.body.name,
+        quantity_left : req.body.quantity_left,
+        fee_per_day : req.body.fee_per_day
+    }
+    
+    let find = `SELECT * FROM equipments WHERE name = "${equipmentData.name}"`;
+    
+    db.query(find, (err1, result1) => {
+        if(err1) console.log(err1);
+    
+        if(result1[0] == undefined) {
+            let create = `INSERT INTO equipments (name, status, quantity_left, fee_per_day)
+                              VALUES ("${equipmentData.name}", 
+                                       "Tốt",
+                                       "${equipmentData.quantity_left}", 
+                                       "${equipmentData.fee_per_day}")`;
+    
+            db.query(create, (err2, result2) => {
+                if(err2) console.log(err2);
+                res.send("Add equipment successfully!")
+            });
+        } else {
+            res.send("Equipment already exists...");
+        }
+    });
+});
+
+employee.put('/update_equipment', (req, res) => {
+    const updatedData = {
+        equipment_id : req.body.equipment_id,
+        name : req.body.name,
+        status : req.body.status,
+        quantity_left : req.body.quantity_left,
+        fee_per_day : req.body.fee_per_day
+    };
+    
+    let updateQuery = `UPDATE equipments
+                       SET name = "${updatedData.name}",
+                           status = "${updatedData.status}",
+                           fee_per_day = "${updatedData.fee_per_day}"
+                       WHERE equipment_id = "${updatedData.equipment_id}"`;
+    
+    db.query(updateQuery, (err, result) => {
+        if (err) console.log(err);
+    });
+
+    if (updatedData.quantity_left) {
+        let update_salary = `UPDATE equipments
+                             SET quantity_left = "${updatedData.quantity_left}"
+                             WHERE equipment_id = "${updatedData.equipment_id}"`
+
+        db.query(update_salary, (err2, result2) => {
+            if (err2) console.log(err2);
+        })
+    }
+
+    res.send('Equipment information updated successfully');
+});
+
+employee.delete('/delete_equipment', (req, res) => {
+    const equipment_id = req.body.equipment_id;
+    
+    let delete_equipment = `DELETE FROM equipments WHERE equipment_id = "${equipment_id}"`;
+    
+    db.query(delete_equipment, (err, result) => {
+        if (err) {
+            res.send('Error deleting equipment');
+        } else {
+            res.send('Equipment deleted successfully');
+        }
+    });
+})
+
+employee.get("/view_drugs", (req, res) => {
+    let list = `SELECT drug_id, drug_name, price, origin, quantity_left
+                FROM drugs`;
+
+    db.query(list, (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
+    })
+})
+
+employee.post('/add_drug', (req, res) => {
+    const drugData = {
+        drug_name : req.body.drug_name,
+        dosage : req.body.dosage,
+        price : req.body.price,
+        origin : req.body.origin,
+        quantity_left : req.body.quantity_left
+    }
+    
+    let find = `SELECT * FROM drugs WHERE drug_name = "${drugData.drug_name}"`;
+    
+    db.query(find, (err1, result1) => {
+        if(err1) console.log(err1);
+    
+        if(result1[0] == undefined) {
+            let create = `INSERT INTO drugs (drug_name, dosage, price, origin, quantity_left)
+                              VALUES ("${drugData.drug_name}", 
+                                       "${drugData.dosage}",
+                                       "${drugData.price}", 
+                                       "${drugData.origin}",
+                                       "${drugData.quantity_left}")`;
+    
+            db.query(create, (err2, result2) => {
+                if(err2) console.log(err2);
+                res.send("Add drug successfully!")
+            });
+        } else {
+            res.send("Drug already exists...");
+        }
+    });
+});
+
+employee.put('/update_drug', (req, res) => {
+    const updatedData = {
+        drug_id : req.body.drug_id,
+        drug_name : req.body.drug_name,
+        dosage : req.body.dosage,
+        price : req.body.price,
+        origin : req.body.origin,
+        quantity_left : req.body.quantity_left
+    };
+    
+    let updateQuery = `UPDATE drugs
+                       SET drug_name = "${updatedData.drug_name}",
+                           dosage = "${updatedData.dosage}",
+                           price = "${updatedData.price}",
+                           origin = "${updatedData.origin}"
+                       WHERE drug_id = "${updatedData.drug_id}"`;
+    
+    db.query(updateQuery, (err, result) => {
+        if (err) console.log(err);
+    });
+
+    if (updatedData.quantity_left) {
+        let update_quantity = `UPDATE drugs
+                               SET quantity_left = "${updatedData.quantity_left}"
+                               WHERE drug_id = "${updatedData.drug_id}"`
+
+        db.query(update_quantity, (err2, result2) => {
+            if (err2) console.log(err2);
+        })
+    }
+    
+    res.send("Drug updated successfully")
+});
+
+employee.delete('/delete_drug', (req, res) => {
+    const drug_id = req.body.drug_id;
+    
+    let delete_drug = `DELETE FROM drugs WHERE drug_id = "${drug_id}"`;
+    
+    db.query(delete_drug, (err, result) => {
+        if (err) res.send('Error deleting drug');
+        res.send('Drug deleted successfully');
+    });
+})
+
 module.exports = employee;

@@ -1,12 +1,13 @@
 import React from 'react';
 import Logo from '../../../src/photo/logo.png';
-// import '../Manager/manager.css';
+import '../Manager/manager.css';
 const Header = () => {
   return (
     <header>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-fluid">
           <a className="navbar-brand" href="index.html">
+            {/* <img src="../assets/img/logo/logo.png" alt="AHHHHHHHHAHA" /> */}
             <img src={Logo} alt="Logo" />
           </a>
           <button

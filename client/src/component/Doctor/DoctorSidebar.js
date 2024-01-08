@@ -20,20 +20,17 @@ const Sidebar = () => {
             className="text-decoration-none"
             style={{ color: 'inherit' }}
           >
-            Patient
+            Doctor
           </a>
         </CDBSidebarHeader>
 
         <CDBSidebarContent className="sidebar-content">
           <CDBSidebarMenu>
-            <NavLink exact to="/patient/get_profile" activeClassName="activeClicked">
+            <NavLink exact to="/doctor/get_profile" activeClassName="activeClicked">
               <CDBSidebarMenuItem icon="table">Profile</CDBSidebarMenuItem>
             </NavLink>
-            <NavLink exact to="/patient/get_history" activeClassName="activeClicked">
-              <CDBSidebarMenuItem icon="table">History</CDBSidebarMenuItem>
-            </NavLink>
-            <NavLink exact to="/patient/make_appointment" activeClassName="activeClicked">
-              <CDBSidebarMenuItem icon="table">Make Appointment</CDBSidebarMenuItem>
+            <NavLink exact to="/doctor/waiting_list" activeClassName="activeClicked">
+              <CDBSidebarMenuItem icon="table">Waiting List</CDBSidebarMenuItem>
             </NavLink>
           </CDBSidebarMenu>
         </CDBSidebarContent>

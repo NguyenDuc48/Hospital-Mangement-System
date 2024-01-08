@@ -10,11 +10,9 @@ process.env.SECRET_KEY = 'Arijit';
 //  Manage examination schedules
 
 nurse.get('/profile', (req, res) => {
-    let nurse_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
-    console.log(nurse_id)
-
+    let nurse_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
     let user = `SELECT * FROM nurses JOIN employees ON nurses.nurse_id = employees.employee_id 
-                WHERE nurse_id = "${nurse_id.nurse_id}"`;
+                WHERE nurse_id = "${nurse_id.userId}"`;
     db.query(user, (err, result) => {
         if (err) console.log(err);
         res.send(result);
@@ -23,7 +21,7 @@ nurse.get('/profile', (req, res) => {
 
 nurse.put('/update_me', (req, res) => {
     // let employee_id = req.body.employee_id;
-    let employee_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+    let employee_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
     const updatedData = {
         full_name : req.body.full_name,
         dob : req.body.dob,
@@ -40,7 +38,7 @@ nurse.put('/update_me', (req, res) => {
                            phone_number = "${updatedData.phone_number}",
                            email = "${updatedData.email}",
                            address = "${updatedData.address}"
-                       WHERE employee_id = "${employee_id.employee_id}"`;
+                       WHERE employee_id = "${employee_id.userId}"`;
 
     db.query(updateQuery, (err, result) => {
         if (err) {
@@ -52,53 +50,22 @@ nurse.put('/update_me', (req, res) => {
     });
 });
 
-//  Bill management
-nurse.post('/create_bill', (req, res) => {
+nurse.post('/add_waiting_patient', (req, res) => {
     const id = {
         patient_id  : req.body.patient_id,
-        doctor_id   : req.body.doctor_id
+        department_id : req.body.department_id,
+        description : req.body.description
     }
 
-    let create_bill = `INSERT INTO total_bills (service_bill_id, medicine_bill_id, equipment_bill_id, total_bill_raw) 
-                       VALUES (NULL, NULL, NULL, NULL)`
+    let add_to_list = `INSERT INTO wait_list (patient_id, department_id, description)
+                        VALUES ("${id.patient_id}",
+                                "${id.department_id}", 
+                                "${id.description}")`;
 
-    db.query(create_bill, (err, result) => {
+    db.query(add_to_list, (err, result) => {
         if (err) console.log(err);
-        res.send(result);
-
-        const time = new Date();
-        const current_time = `${time.getHours()}:${time.getMinutes()}:${time.getSeconds()}`
-        const current_date = `${time.getFullYear()}-${time.getMonth() + 1}-${time.getDate()}`
-
-        let create_medic_report = `INSERT INTO medical_reports 
-                                       (report_id, 
-                                        patient_id, 
-                                        doctor_id, 
-                                        diagnostic, 
-                                        conclusion, 
-                                        note, 
-                                        booking_time, 
-                                        appointment_date, 
-                                        bill_id, 
-                                        money_need_to_pay)  
-                                   VALUES (NULL, 
-                                           "${id.patient_id}", 
-                                           "${id.doctor_id}", 
-                                           NULL, 
-                                           NULL, 
-                                           NULL, 
-                                           "${current_time}", 
-                                           "${current_date}", 
-                                           (SELECT total_bill_id 
-                                            FROM total_bills 
-                                            ORDER BY total_bill_id DESC LIMIT 1), 
-                                           NULL)`
-                            
-        db.query(create_medic_report, (err2, result2) => {
-            if (err2) console.log(err2);
-            console.log("OK");
-        })
-    });
+        res.send(result)
+    }) 
 })
 
 nurse.put('/update_health_insurance', (req, res) => {
@@ -118,54 +85,72 @@ nurse.put('/update_health_insurance', (req, res) => {
     console.log("OK x 2")
 })
 
-// View drug and equipment information
-nurse.get('/quantity_info', (req, res) => {
-    try {
-        let user_id = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY);
+nurse.get("/invoices", (req, res) => {
+    let list = `SELECT p.patient_id, p.full_name, mr.doctor_id, tb.* 
+                FROM patient p JOIN medical_reports mr ON p.patient_id = mr.patient_id
+                               JOIN total_bills tb ON mr.bill_id = tb.total_bill_id;`;
 
-        // Query to get the quantity of each type of drug
-        const drugQuery = `
-            SELECT d.drug_name, SUM(du.quantity_used) as quantity
-            FROM drugs_used_per_id du
-                JOIN drugs d ON du.drug_id = d.drug_id
-                JOIN medicine_bills mb ON du.medicine_bill_id = mb.medicine_bill_id
-                JOIN medical_reports mr ON mb.medicine_bill_id = mr.medicine_bill_id
-            WHERE mr.patient_id = ?
-            GROUP BY d.drug_id
-        `;
+    db.query(list, (err, result) => {
+        if (err) console.log(err);
+        res.send(result);
+    })
+})
 
-        // Query to get the quantity of each type of equipment
-        const equipmentQuery = `
-            SELECT e.name as equipment_name, SUM(eu.quantity_used) as quantity
-            FROM equipments_used_per_id eu
-                JOIN equipments e ON eu.equipment_id = e.equipment_id
-                JOIN equipment_bills eb ON eu.equipment_bill_id = eb.equipment_bill_id
-                JOIN total_bills tb ON eb.equipment_bill_id = tb.equipment_bill_id
-                JOIN medical_reports mr ON tb.service_bill_id = mr.bill_id
-            WHERE mr.patient_id = ?
-            GROUP BY e.equipment_id
-        `;
+nurse.get('/waiting_list', (req,res) => {  
+    let get_list = `SELECT DISTINCT wl.wait_id, p.full_name, wl.money_need_to_pay
+                      FROM wait_list wl JOIN medical_reports mr ON wl.patient_id = mr.patient_id
+                                        JOIN patient p ON p.patient_id = wl.patient_id 
+                      WHERE wl.status = "paying"`
 
-        // Execute the drug query using the db
-        db.query(drugQuery, [user_id], (drugError, drugResult) => {
-            if (drugError) throw drugError;
+    db.query(get_list, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
 
-            // Execute the equipment query using the db
-            db.query(equipmentQuery, [user_id], (equipmentError, equipmentResult) => {
-                if (equipmentError) throw equipmentError;
+nurse.put('/pay', (req, res) => {
+    const wait_id = req.body.wait_id
+    
+    let paid = `UPDATE wait_list
+                SET status = "paid"
+                WHERE wait_id = "${wait_id}"`
 
-                const drugInfo = drugResult.map(row => ({ drug_name: row.drug_name, quantity: row.quantity }));
-                const equipmentInfo = equipmentResult.map(row => ({ equipment_name: row.equipment_name, quantity: row.quantity }));
+    db.query(paid, (err, result) => {
+        if (err) console.log(err);
+        res.send("Payment success")
+    });
+})
 
-                res.json({
-                    drug_info: drugInfo,
-                    equipment_info: equipmentInfo,
-                });
-            });
-        });
-    } catch (error) {
-        res.status(500).json({ error: error.toString() });
-    }
+nurse.get('/all_patient', (req, res) => {
+    let patients = `SELECT * FROM patient`
+    
+    db.query(patients, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
+nurse.get("/all_patient/search/:input", (req, res) => {
+    const input = req.params.input;
+
+    let search_patient = `SELECT * FROM patient
+                          WHERE full_name LIKE "${input}"
+                             OR phone_number LIKE "${input}";`;
+
+    db.query(search_patient, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.send(result);
+    });
 });
+
+
+// nurse.route('/add_priority_patient')
+//     .post((req, res) => {
+
+//     })
 
 module.exports = nurse;

@@ -27,25 +27,25 @@ This is a web-based Hospital Management System built using ReactJS for the front
 
 # Project Progress
 ## Manager
-- [ ] Add, edit, and delete accounts of doctors and nurses
+- [X] Add, edit, and delete accounts of doctors and nurses
 - [ ] Management of drugs, supplies and equipment
-- [ ] Manage revenue reports and payment invoices
+- [X] Manage revenue reports and payment invoices
 
 ## Doctor
-- [ ] Personal profile management
+- [X] Personal profile management
 - [ ] View the patient's medical history
 - [ ] View patient appointments
 - [ ] Update reports for patients
 
 
 ## Nurse
-- [ ] Personal profile management
+- [X] Personal profile management
 - [ ] Manage examination schedules
 - [ ] Bill managerment
 - [ ] View drug and equipment information
 
 ## Patient
-- [ ] Personal profile management
+- [X] Personal profile management
 - [ ] schedule a medical examination
 - [ ] View the patient's medical history
 

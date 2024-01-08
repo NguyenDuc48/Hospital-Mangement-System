@@ -1,99 +1,53 @@
 import React from 'react';
 import { Route, BrowserRouter as Router } from 'react-router-dom';
 import './App.css';
-
-import Home from './component/Home/Home';
-import Gallery from './component/Gallery/Gallery';
-import PatientLogin from './component/Login/PatientLogin';
-import DoctorLogin from './component/Login/DoctorLogin';
-import EmployeeLogin from './component/Login/EmployeeLogin';
-import AdministratorLogin from './component/Login/AdministratorLogin';
-import Contact from './component/Contact/Contact';
-import PatientHome from './component/Patient/PatientHome'
-import PatHome from './component/Patient/PatHome'
-import PatientAbout from './component/Patient/PatientAbout'
-import PatientGallery from './component/Patient/PatientGallery'
-import PatientContact from './component/Patient/PatientContact'
-import Doctor from './component/Doctor/Doctor'
-import DocGallery from './component/Doctor/DocGallery'
-import Employee from './component/Employee/Employee'
-
-
-import PatientReg from './component/PatientReg/PatientReg';
-
-import DocHome from './component/Doctor/DocHome';
-import EmpHome from './component/Employee/EmpHome';
-import EmpAbout from './component/Employee/EmpAbout';
-import EmpGallery from './component/Employee/EmpGallery';
-import EmpContact from './component/Employee/EmpContact';
-
-import DocAbout from './component/Doctor/DocAbout';
-import DocContact from './component/Doctor/DocContact';
-import Header from './component/Landings/Header';
-import Slider from './component/Landings/Slider';
 import Landings from './component/Landings/Landings';
 import Login from './component/Login/Login';
-// import Sidebar from '../src/component/Sidebar/Sidebar';
-// import AdminEmployee from './component/Manager/AdminEmployee';
 import DoctorAccount from './component/Manager/DoctorAccount';
 import NurseAccount from './component/Manager/NurseAccount';
 import SignUp from './component/SignUp/SignUp';
 import PatientProfile from './component/Patient/PatientProfile';
+import NurseProfile from './component/Nurse/NurseProfile';
+import NursePatientList from './component/Nurse/NursePatientList';
+
+import PatientHistory from './component/Patient/PatientHistory'
+import PatientAppointment from './component/Patient/PatientAppointment'
+
+import DoctorProfile from './component/Doctor/DoctorProfile';
+import DoctorWaitingList from './component/Doctor/DoctorWaitingList';
+import ManagerDrug from './component/Manager/ManagerDrug';
+import ManagerEquipment from './component/Manager/ManagerEquipment';
 
 function App() {
   return (
     <div className="App">
-   
-            
-            
-
-
     <Router>
-      {/* <Route exact path="/" component={Header} /> */}
-      {/* <Route exact path="//" component={Slider} /> */}
       <Route exact path="/" component={Landings} />
       <Route exact path="/login" component={Login} /> 
-      {/* <Route exact path="/" component={Home} /> */}
-      <Route exact path="/gallery" component={Gallery} />
-      <Route exact path="/contact" component={Contact} />
-      {/* <Route exact path="/regPatient" component = {PatientReg}/> */}
+      {/* patient */}
       <Route exact path="/sign_up" component = {SignUp}/> 
-      <Route exact path="/patient/login" component={PatientLogin} />
-      <Route exact path="/doctors/login" component={DoctorLogin} />
-      <Route exact path="/employee/login" component={EmployeeLogin} />
-      <Route exact path="/administrator/login" component={AdministratorLogin} />
-
-
-      <Route exact path="/patient/login/patient_home" component = {PatientHome} />
-
-      <Route exact path="/patient/login/home" component = {PatHome} />
-
-      <Route exact path="/patient/login/about" component = {PatientAbout} />
-      <Route exact path="/patient/login/gallery" component = {PatientGallery} />
-      <Route exact path="/patient/login/contact" component = {PatientContact} />
       <Route exact path="/patient/get_profile" component = {PatientProfile} />
+      <Route exact path="/patient/get_history" component = {PatientHistory} />
+      <Route exact path="/patient/make_appointment" component = {PatientAppointment
+      } />
 
-     
+      {/* doctor */}
+      <Route exact path="/doctor/get_profile" component = {DoctorProfile}/>
+      <Route exact path="/doctor/waiting_list" component = {DoctorWaitingList}/>
 
-      
-      <Route exact path="/doctors/login/doctor_home" component = {Doctor} />
-      <Route exact path="/doctors/login/home" component = {DocHome} />
-      <Route exact path="/doctors/login/about" component = {DocAbout}/>
-      <Route exact path="/doctors/login/gallery" component = {DocGallery}/>
-      <Route exact path="/doctors/login/contact" component = {DocContact}/>
+      {/* nurse  */}
+      <Route exact path="/nurse/get_profile" component = {NurseProfile}/>
+      <Route exact path="/nurse/patient_list" component = {NursePatientList}/>
 
-
-      <Route exact path="/employee/login/employee_home" component = {Employee} />
-      <Route exact path="/employee/login/home" component = {EmpHome}/>
-      <Route exact path="/employee/login/about" component = {EmpAbout}/>
-      <Route exact path="/employee/login/gallery" component = {EmpGallery}/>
-      <Route exact path="/employee/login/contact" component = {EmpContact}/>
-
+      {/* manager */}
       <Route exact path="/manager/doctor_account" component = {DoctorAccount}/>
       <Route exact path="/manager/nurse_account" component = {NurseAccount}/>
+      <Route exact path="/manager/drug" component = {ManagerDrug}/>
+      <Route exact path="/manager/equipment" component = {ManagerEquipment}/>
+
+
     </Router>
     </div>
   );
 }
-
 export default App;

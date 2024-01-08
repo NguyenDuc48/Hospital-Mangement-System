@@ -2,7 +2,6 @@ import React from 'react';
 import {
   CDBSidebar,
   CDBSidebarContent,
-  CDBSidebarFooter,
   CDBSidebarHeader,
   CDBSidebarMenu,
   CDBSidebarMenuItem,
@@ -36,14 +35,14 @@ const Sidebar = () => {
             <NavLink exact to="/manager/nurse_account" activeClassName="activeClicked">
               <CDBSidebarMenuItem icon="table">List Nurse</CDBSidebarMenuItem>
             </NavLink>
-            {/* <NavLink exact to="/profile" activeClassName="activeClicked">
-              <CDBSidebarMenuItem icon="user">Profile page</CDBSidebarMenuItem>
-            </NavLink> */}
-            {/* <NavLink exact to="/analytics" activeClassName="activeClicked">
+            <NavLink exact to="/manager/drug" activeClassName="activeClicked">
+              <CDBSidebarMenuItem icon="user">Drug</CDBSidebarMenuItem>
+            </NavLink>
+            <NavLink exact to="/manager/equipment" activeClassName="activeClicked">
               <CDBSidebarMenuItem icon="chart-line">
-                Analytics
+                Equipment
               </CDBSidebarMenuItem>
-            </NavLink> */}
+            </NavLink>
 
             {/* <NavLink
               exact

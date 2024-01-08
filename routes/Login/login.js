@@ -3,13 +3,13 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const login = express.Router();
 
-const db = require('../../../utils/db');
+const db = require('../../utils/db');
 
 process.env.SECRET_KEY = 'Arijit';
 
 login.post('/', (req, res) => {
-    const find = `SELECT password, id FROM credentials WHERE username = "${req.body.username}"`;
     const { username, password } = req.body;
+    const find = `SELECT password, id FROM credentials WHERE username = "${username}"`;
     console.log("reqbody:" , req.body)
     db.query(find, (err, result) => {
       if (err) {
@@ -21,7 +21,7 @@ login.post('/', (req, res) => {
       if (result.length > 0) {
         const storedPassword = result[0].password;
         console.log("store pass:", storedPassword)
-
+        
         bcrypt.compare(password, storedPassword, (bcryptErr, bcryptResult) => {
           if (bcryptErr) {
             console.error(bcryptErr);
@@ -38,14 +38,15 @@ login.post('/', (req, res) => {
             if (userId.substring(0,2)=== "QL") {
                 res.status(200).json({ message: 'Login manager successful', token });
             }
-            else if (userId.substring(0,2) === "BS") {
+            else if (userId.substring(0,2)=== "BS") {
                 res.status(201).json({ message: 'Login doctor successful', token });
             }
-            else if (userId.substring(0,2) === "BN") {
+            else if (userId.substring(0,2)=== "BN") {
                 res.status(202).json({ message: 'Login patient successful', token });
             }
             else {
                 res.status(203).json({ message: 'Login nurse successful', token });
+                console.log("Token", token)
             } 
           } else {
             res.status(401).json({ message: 'Incorrect password' });
