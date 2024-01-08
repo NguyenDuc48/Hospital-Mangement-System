@@ -90,37 +90,53 @@ nurse.get('/waiting_to_pay', (req,res) => {
     });
 })
 
-nurse.get('/show_bill', (req, res) => {
+nurse.get('/show_bill_info', (req, res) => {
     const wait_id = req.body.wait_id
 
-    let bill = `SELECT
-                p.full_name AS patient_name,
-    (
-        SELECT GROUP_CONCAT(DISTINCT d.drug_name)
-        FROM drugs_used_per_id dui
-        JOIN drugs d ON dui.drug_id = d.drug_id
-        WHERE dui.medicine_bill_id = wl.wait_id
-    ) AS drug_list,
-    (
-        SELECT GROUP_CONCAT(DISTINCT s.service_name)
-        FROM services_used_per_id sui
-        JOIN services s ON sui.service_id = s.service_id
-        WHERE sui.service_bill_id = wl.wait_id
-    ) AS service_list,
-    (
-        SELECT GROUP_CONCAT(DISTINCT e.name)
-        FROM equipments_used_per_id eui
-        JOIN equipments e ON eui.equipment_id = e.equipment_id
-        WHERE eui.equipment_bill_id = wl.wait_id
-    ) AS equipment_list,
-    COALESCE(m.money_need_to_pay, 0) AS total_payment
-FROM wait_list wl
-JOIN patient p ON wl.patient_id = p.patient_id
-LEFT JOIN medical_reports m ON m.patient_id = wl.patient_id
-WHERE wl.wait_id = "${wait_id}"
-GROUP BY wl.wait_id, p.full_name, m.money_need_to_pay;`
-    
-    db.query(bill, (err, result) => {
+    let info = `SELECT p.full_name, p.health_insurance_percent, tb.total_bill_raw, mr.money_need_to_pay
+                FROM patient p JOIN wait_list wl ON wl.patient_id = p.patient_id
+                    JOIN medical_reports mr ON mr.patient_id = wl.patient_id
+                    JOIN total_bills tb ON tb.total_bill_id = mr.bill_id
+                WHERE wl.wait_id = "${wait_id}" AND mr.payment_status = "pending"`
+
+    db.query(info, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
+nurse.get('/show_list_in_bill', (req, res) => {
+    const wait_id = req.body.wait_id
+
+    let list = `SELECT s.service_name, s.service_fee AS price, NULL AS quantity_used, NULL AS day_used
+                FROM services s 
+                    JOIN services_used_per_id sui ON s.service_id = sui.service_id
+                    JOIN total_bills tb ON tb.service_bill_id = sui.service_bill_id
+                    JOIN medical_reports mr ON mr.bill_id = tb.total_bill_id
+                    JOIN wait_list wl ON wl.patient_id = mr.patient_id
+                WHERE wait_id = "${wait_id}" AND payment_status = "pending"
+
+                UNION
+
+                SELECT d.drug_name, d.price, dui.quantity_used, NULL AS day_used
+                FROM drugs d 
+                    JOIN drugs_used_per_id dui ON d.drug_id = dui.drug_id
+                    JOIN total_bills tb ON tb.medicine_bill_id = dui.medicine_bill_id
+                    JOIN medical_reports mr ON mr.bill_id = tb.total_bill_id
+                    JOIN wait_list wl ON wl.patient_id = mr.patient_id
+                WHERE wait_id = "${wait_id}" AND payment_status = "pending"
+                        
+                UNION
+                        
+                SELECT e.name, e.fee_per_day AS price, eui.quantity_used, eui.day_used
+                FROM equipments e 
+                    JOIN equipments_used_per_id eui ON e.equipment_id = eui.equipment_id
+                    JOIN total_bills tb ON tb.equipment_bill_id = eui.equipment_bill_id
+                    JOIN medical_reports mr ON mr.bill_id = tb.total_bill_id
+                    JOIN wait_list wl ON wl.patient_id = mr.patient_id
+                WHERE wait_id = "${wait_id}" AND payment_status = "pending";`
+                            
+    db.query(list, (err, result) => {
         if (err) console.log(err);
         res.send(result)
     });
