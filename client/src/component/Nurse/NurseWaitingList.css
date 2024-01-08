@@ -1,84 +1,116 @@
-/* DoctorWaitingList.css */
-@import url('https://fonts.googleapis.com/css?family=Assistant');
-
-body {
-  background: #eee;
-  font-family: Assistant, sans-serif;
+body{
+  margin-top:20px;
+  color: #484b51;
+}
+.text-secondary-d1 {
+  color: #728299!important;
+}
+.page-header {
+  margin: 0 0 1rem;
+  padding-bottom: 1rem;
+  padding-top: .5rem;
+  border-bottom: 1px dotted #e2e2e2;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -ms-flex-align: center;
+  align-items: center;
+}
+.page-title {
+  padding: 0;
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 300;
+}
+.brc-default-l1 {
+  border-color: #dce9f0!important;
 }
 
-.cell-1 {
-  border-collapse: separate;
-  border-spacing: 0 4em;
-  background: #fff;
-  border-bottom: 5px solid transparent;
+.ml-n1, .mx-n1 {
+  margin-left: -.25rem!important;
+}
+.mr-n1, .mx-n1 {
+  margin-right: -.25rem!important;
+}
+.mb-4, .my-4 {
+  margin-bottom: 1.5rem!important;
 }
 
-.table thead th {
-  background-color: #343a40 !important; /* Dark background color for thead */
-  color: white !important; /* Text color for thead */
+hr {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  border: 0;
+  border-top: 1px solid rgba(0,0,0,.1);
 }
 
-.table th, .table td {
-  text-align: center;
+.text-grey-m2 {
+  color: #888a8d!important;
 }
 
-/* Set fixed width for the toggle button column */
-.toggle-btn-th {
-  width: 60px;
-  min-width: 60px;
+.text-success-m2 {
+  color: #86bd68!important;
 }
 
-.toggle-btn {
-  width: 40px;
-  height: 21px;
-  background: grey;
-  border-radius: 50px;
-  padding: 3px;
-  cursor: pointer;
-  transition: background 0.3s ease-in-out; /* Add transition to background */
+.font-bolder, .text-600 {
+  font-weight: 600!important;
 }
 
-.toggle-btn > .inner-circle {
-  width: 15px;
-  height: 15px;
-  background: #fff;
-  border-radius: 50%;
-  transition: margin-left 0.3s ease-in-out; /* Add transition to margin-left */
+.text-110 {
+  font-size: 110%!important;
+}
+.text-blue {
+  color: #478fcc!important;
+}
+.pb-25, .py-25 {
+  padding-bottom: .75rem!important;
 }
 
-
-.toggle-btn-th.active {
-  background: blue !important;
-  transition:  0.3s ease-in-out; /* Add transition to background */
-
+.pt-25, .py-25 {
+  padding-top: .75rem!important;
+}
+.bgc-default-tp1 {
+  background-color: rgba(121,169,197,.92)!important;
+}
+.bgc-default-l4, .bgc-h-default-l4:hover {
+  background-color: #f3f8fa!important;
+}
+.page-header .page-tools {
+  -ms-flex-item-align: end;
+  align-self: flex-end;
 }
 
-.toggle-btn.active {
-  background: #e889c0 !important;
+.btn-light {
+  color: #757984;
+  background-color: #f5f6f9;
+  border-color: #dddfe4;
+}
+.w-2 {
+  width: 1rem;
 }
 
-.toggle-btn.active > .inner-circle {
-  margin-left: 19px;
+.text-120 {
+  font-size: 120%!important;
+}
+.text-primary-m1 {
+  color: #4087d4!important;
 }
 
-/* Badge styles */
-.badge {
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 12px;
-  font-weight: bold;
+.text-danger-m1 {
+  color: #dd4949!important;
 }
-
-.badge-success {
-  background-color: #28a745 !important; /* Green background color for success */
-  color: #fff !important; /* Text color for success */
-  padding: 5px 10px !important
+.text-blue-m2 {
+  color: #68a3d5!important;
 }
-
-.badge-info {
-  background-color: #17a2b8 !important; /* Blue background color for info */
-  color: #fff !important; /* Text color for info */
-  padding: 5px 10px !important
-
-
+.text-150 {
+  font-size: 150%!important;
+}
+.text-60 {
+  font-size: 60%!important;
+}
+.text-grey-m1 {
+  color: #7b7d81!important;
+}
+.align-bottom {
+  vertical-align: bottom!important;
 }

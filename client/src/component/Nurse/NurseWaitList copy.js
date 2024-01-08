@@ -154,17 +154,17 @@ const NurseWaitList = () => {
         <Modal.Body>
           <Form onSubmit={handleReportSubmit}>
             <Form.Group controlId="reportForm">
-              <Form.Label>Report Details:</Form.Label>
+              {/* <Form.Label>Report Details:</Form.Label> */}
               
                 <div class="page-content container">
                     <div class="page-header text-blue-d2">
-                        <h1 class="page-title text-secondary-d1">
+                        {/* <h1 class="page-title text-secondary-d1">
                             Invoice
                             <small class="page-info">
                                 <i class="fa fa-angle-double-right text-80"></i>
                                 ID: #111-222
                             </small>
-                        </h1>
+                        </h1> */}
 
                         <div class="page-tools">
                             <div class="action-buttons">
@@ -185,10 +185,10 @@ const NurseWaitList = () => {
                             <div class="col-12 col-lg-12">
                                 <div class="row">
                                     <div class="col-12">
-                                        <div class="text-center text-150">
+                                        {/* <div class="text-center text-150">
                                             <i class="fa fa-book fa-2x text-success-m2 mr-1"></i>
                                             <span class="text-default-d3">Bootdey.com</span>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
 
