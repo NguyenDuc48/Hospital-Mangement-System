@@ -3,8 +3,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const employee = express.Router();
 const db = require('../../../utils/db');
-var doc_idx = 1
-var nurse_idx = 1
 process.env.SECRET_KEY = 'Arijit';
 
 //-------------------------------------DOCTOR-----------------------------------
