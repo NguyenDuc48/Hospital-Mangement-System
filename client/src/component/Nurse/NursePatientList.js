@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Header from './Header';
 import NurseSidebar from './NurseSidebar';
+import { Button, InputGroup, FormControl } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const NursePatientList = () => {
   const [patientList, setPatientList] = useState([]);
@@ -38,21 +40,20 @@ const NursePatientList = () => {
 
   const searchPatients = async () => {
     try {
-        const response = await axios.get(`/nurse/all_patient/search/${encodeURIComponent(searchInput)}`);
+      const response = await axios.get(`/nurse/all_patient/search/${encodeURIComponent(searchInput)}`);
 
-        if (!response.data) {
-            throw new Error('Empty response data');
-        }
+      if (!response.data) {
+        throw new Error('Empty response data');
+      }
 
-        setPatientList(response.data);
-        setLoading(false);
+      setPatientList(response.data);
+      setLoading(false);
     } catch (error) {
-        console.error('Error searching patients:', error.message);
-        setError('Failed to search patients');
-        setLoading(false);
+      console.error('Error searching patients:', error.message);
+      setError('Failed to search patients');
+      setLoading(false);
     }
-};
-
+  };
 
   const handleSearch = () => {
     searchPatients();
@@ -80,31 +81,35 @@ const NursePatientList = () => {
         </div>
         <div
           style={{
+            display: 'flex',
+            flexDirection: 'column',
             height: '100vh',
             overflow: 'scroll',
             width: '70%',
+            padding: '20px',
           }}
         >
-          <div style={{ marginBottom: '10px' }}>
-            <input
-              type="text"
-              placeholder="Search by telephone..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-            />
-            <button onClick={handleSearch}>Search</button>
+          <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <InputGroup className="" style={{width: "50%"}}>
+              <FormControl
+                placeholder="Search by telephone..."
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+              />
+              <Button variant="outline-secondary" onClick={handleSearch}>
+                Search
+              </Button>
+            </InputGroup>
+            <Button variant="primary" style={{ marginLeft: '10px', width: "15%" }}>
+              Add Patient
+            </Button>
           </div>
           {loading ? (
             <p>Loading...</p>
           ) : error ? (
             <p>Error: {error}</p>
           ) : (
-            <table
-              className="table table-bordered table-striped"
-              style={{
-                marginTop: '20px',
-              }}
-            >
+            <table className="table table-bordered table-striped">
               <thead className="thead-light">
                 <tr>
                   <th>ID</th>

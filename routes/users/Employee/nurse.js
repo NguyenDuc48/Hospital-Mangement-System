@@ -148,9 +148,4 @@ nurse.get("/all_patient/search/:input", (req, res) => {
 });
 
 
-// nurse.route('/add_priority_patient')
-//     .post((req, res) => {
-
-//     })
-
 module.exports = nurse;
