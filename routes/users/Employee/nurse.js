@@ -228,9 +228,9 @@ nurse.get('/all_booked_patient/search/:input', (req, res) => {
 
     let search_patients = `SELECT p.full_name, p.phone_number, b.* 
                            FROM booked b JOIN patient p ON b.patient_id = p.patient_id
-                           WHERE p.full_name LIKE "${input}%"
-                              OR p.phone_number LIKE "${input}%"
-                              OR p.patient_id LIKE "${input}%"`;
+                           WHERE p.full_name LIKE "${input}"
+                              OR p.phone_number LIKE "${input}"
+                              OR p.patient_id LIKE "${input}"`;
 
     db.query(search_patients, (err, result) => {
         if (err) {
@@ -308,5 +308,57 @@ function calculateEndTime(startTime) {
 
     return `${endTime.getHours()}:${endTime.getMinutes()}`;
 }
+
+nurse.get('/all_equipment', (req, res) => {
+    let equipments = `SELECT * FROM equipments  `
+    
+    db.query(equipments, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
+nurse.get('/all_equipment/search/:input', (req, res) => {
+    const input = req.params.input;
+
+    let search_equipments = `SELECT * FROM equipments
+                             WHERE name LIKE "${input}"
+                                OR status LIKE "${input}"`;
+
+    db.query(search_equipments, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.send(result);
+    });
+});
+
+nurse.get('/all_drug', (req, res) => {
+    let drugs = `SELECT * FROM drugs  `
+    
+    db.query(drugs, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
+nurse.get('/all_drug/search/:input', (req, res) => {
+    const input = req.params.input;
+
+    let search_drugs = `SELECT * FROM drugs
+                        WHERE drug_name LIKE "${input}"
+                           OR origin LIKE "${input}"`;
+
+    db.query(search_drugs, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.send(result);
+    });
+});
 
 module.exports = nurse;
