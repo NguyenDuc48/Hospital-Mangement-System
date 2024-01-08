@@ -7,14 +7,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './manager.css'
 
-function DoctorAccount(props) {
-  // useEffect(() => {
-  //   const id = localStorage.getItem('id')
-  //   if (!id || id.substring(0,2) != 'QL') {
-  //     props.history.push("/")
-  //   }
-  // })
-
+function DoctorAccount() {
   const [doctors, setDoctors] = useState([]);
   const [show, setShow] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false); // Added state for edit modal
@@ -24,7 +17,6 @@ function DoctorAccount(props) {
   const [deletingDoctorId, setDeletingDoctorId] = useState(null);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-
   const [formData, setFormData] = useState({
     // doctor_id: '',
     full_name: '',
@@ -39,9 +31,12 @@ function DoctorAccount(props) {
     department: '',
     password: '',
   });
+  // Add departments state
+  const [departments, setDepartments] = useState([]);
 
   useEffect(() => {
     fetchData();
+    fetchDepartments();
   }, []);
 
   const fetchData = async () => {
@@ -52,6 +47,16 @@ function DoctorAccount(props) {
       console.error('Error fetching data:', error);
     }
   };
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get('/manager/get_departments');
+      setDepartments(response.data);
+    } catch (error) {
+      console.error('Error fetching departments:', error);
+    }
+  };
+
+
   //add 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -319,16 +324,6 @@ function DoctorAccount(props) {
               </Modal.Header>
               <Modal.Body>
                 <Form onSubmit={handleSubmit}>
-                  {/* <Form.Group controlId="formDoctorID">
-                    <Form.Label>Doctor ID</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter Doctor ID"
-                      name="doctor_id"
-                      value={formData.doctor_id}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group> */}
 
                   <Form.Group controlId="formFullName">
                     <Form.Label>Full Name</Form.Label>
@@ -442,12 +437,18 @@ function DoctorAccount(props) {
                   <Form.Group controlId="formDepartment">
                     <Form.Label>Department</Form.Label>
                     <Form.Control
-                      type="int"
-                      placeholder="Enter Department"
+                      as="select"
                       name="department"
                       value={formData.department}
                       onChange={handleInputChange}
-                    />
+                    >
+                      <option value="" disabled>Select Department</option>
+                      {departments.map((dept) => (
+                        <option key={dept.department_id} value={dept.department_id}>
+                          {dept.department_name}
+                        </option>
+                      ))}
+                    </Form.Control>
                   </Form.Group>
                     
                     {/* Add similar blocks for other form fields */}
@@ -495,12 +496,18 @@ function DoctorAccount(props) {
                   <Form.Group controlId="formDepartment">
                     <Form.Label>Department</Form.Label>
                     <Form.Control
-                      type="text"
-                      placeholder="Enter Department"
+                      as="select"
                       name="department"
                       value={formData.department}
                       onChange={handleInputChange}
-                    />
+                    >
+                      <option value="" disabled>Select Department</option>
+                      {departments.map((dept) => (
+                        <option key={dept.department_id} value={dept.department_id}>
+                          {dept.department_name}
+                        </option>
+                      ))}
+                    </Form.Control>
                   </Form.Group>
 
                   <Button variant="primary" type="submit">

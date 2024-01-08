@@ -8,7 +8,24 @@ process.env.SECRET_KEY = 'Arijit';
 //-------------------------------------DOCTOR-----------------------------------
 
 employee.get('/get_doctor', (req, res) => {
-    const sql = "SELECT doc.doctor_id, emp.full_name, DATE_FORMAT(emp.dob,'%d/%m/%Y') AS dob, emp.gender, doc.expertise, dep.department_name as department, emp.phone_number, emp.email, emp.address, emp.salary, DATE_FORMAT(emp.work_from,'%d/%m/%Y') AS work_from FROM doctors doc JOIN employees emp ON doc.doctor_id = emp.employee_id JOIN departments dep ON doc.department = dep.department_id WHERE emp.status = 'active'";
+    const sql = `SELECT 
+                    doc.doctor_id, 
+                    emp.full_name, 
+                    DATE_FORMAT(emp.dob,'%d/%m/%Y') AS dob, 
+                    emp.gender, doc.expertise, 
+                    dep.department_name as department, 
+                    emp.phone_number, 
+                    emp.email, 
+                    emp.address, 
+                    emp.salary, 
+                    DATE_FORMAT(emp.work_from,'%d/%m/%Y') AS work_from 
+                FROM 
+                    doctors doc 
+                JOIN employees emp ON 
+                    doc.doctor_id = emp.employee_id 
+                JOIN departments dep ON 
+                    doc.department = dep.department_id 
+                WHERE emp.status = "active"`;
 
     db.query(sql, (err, result) => {
         if(err) console.log(err);
@@ -92,10 +109,10 @@ employee.post('/add_doctor', (req, res) => {
 
 employee.put('/update_doctor', (req, res) => {
     const updatedData = {
-        doctor_id : req.body.doctor_id,
-        expertise : req.body.expertise,
-        department : req.body.department,
-        salary : req.body.salary
+        doctor_id: req.body.doctor_id,
+        expertise: req.body.expertise,
+        department: req.body.department,
+        salary: req.body.salary
     };
 
     let updateQuery = `UPDATE doctors
@@ -108,20 +125,20 @@ employee.put('/update_doctor', (req, res) => {
             console.log(err);
             res.status(500).json({ error: 'Error updating doctor information' });
         } else {
-            res.json({ success: true, message: 'Doctor information updated successfully' });
-        }
-    });
+            // Now that the first query is complete, proceed with the second query
+            let updateSalaryQuery = `UPDATE employees
+                                     SET salary = "${updatedData.salary}"
+                                     WHERE employee_id = "${updatedData.doctor_id}"`;
 
-    let update_salary = `UPDATE employees
-                         SET salary = "${updatedData.salary}"
-                         WHERE employee_id = "${updatedData.doctor_id}"`
-
-    db.query(update_salary, (err2, result2) => {
-        if (err2) {
-            console.log(err2);
-            res.status(500).json({ error: 'Error updating doctor information' });
-        } else {
-            res.json({ success: true, message: 'Doctor information updated successfully' });
+            db.query(updateSalaryQuery, (err2, result2) => {
+                if (err2) {
+                    console.log(err2);
+                    res.status(500).json({ error: 'Error updating doctor salary' });
+                } else {
+                    // Both queries are successful, send the final response
+                    res.json({ success: true, message: 'Doctor information updated successfully' });
+                }
+            });
         }
     });
 });
@@ -163,8 +180,24 @@ employee.route('/delete_doctor')
 //--------------------------------------NURSE-------------------------------------
 
 employee.get('/get_nurse', (req, res) => {
-    const sql = `SELECT * FROM nurses JOIN employees ON nurses.nurse_id = employees.employee_id 
-                 WHERE employees.status = "active"`;
+    const sql = `SELECT 
+                    nur.nurse_id, 
+                    emp.full_name, 
+                    DATE_FORMAT(emp.dob,'%d/%m/%Y') AS dob, 
+                    emp.gender, 
+                    dep.department_name as department, 
+                    emp.phone_number, 
+                    emp.email, emp.address, 
+                    nur.shift,
+                    emp.salary, 
+                    DATE_FORMAT(emp.work_from,'%d/%m/%Y') AS work_from 
+                FROM 
+                    nurses nur 
+                JOIN employees emp ON 
+                    nur.nurse_id = emp.employee_id 
+                JOIN departments dep ON 
+                    nur.department = dep.department_id 
+                WHERE emp.status = 'active';`;
 
     db.query(sql, (err, result) => {
         if(err) console.log(err);
@@ -247,36 +280,36 @@ employee.post('/add_nurse', (req, res) => {
     
 employee.put('/update_nurse', (req, res) => {
     const updatedData = {
-        nurse_id : req.body.nurse_id,
-        department : req.body.department,
-        shift : req.body.shift,
-        salary : req.body.salary
+        nurse_id: req.body.nurse_id,
+        department: req.body.department,
+        shift: req.body.shift,
+        salary: req.body.salary
     };
-    
+
     let updateQuery = `UPDATE nurses
                        SET department = "${updatedData.department}",
                            shift = "${updatedData.shift}"
                        WHERE nurse_id = "${updatedData.nurse_id}"`;
-    
+
     db.query(updateQuery, (err, result) => {
         if (err) {
             console.log(err);
             res.status(500).json({ error: 'Error updating nurse information' });
         } else {
-            res.json({ success: true, message: 'Nurse information updated successfully' });
-        }
-    });
+            // Now that the first query is complete, proceed with the second query
+            let updateSalaryQuery = `UPDATE employees
+                                     SET salary = "${updatedData.salary}"
+                                     WHERE employee_id = "${updatedData.nurse_id}"`;
 
-    let update_salary = `UPDATE employees
-                         SET salary = "${updatedData.salary}"
-                         WHERE employee_id = "${updatedData.doctor_id}"`
-
-    db.query(update_salary, (err2, result2) => {
-        if (err2) {
-            console.log(err2);
-            res.status(500).json({ error: 'Error updating doctor information' });
-        } else {
-            res.json({ success: true, message: 'Doctor information updated successfully' });
+            db.query(updateSalaryQuery, (err2, result2) => {
+                if (err2) {
+                    console.log(err2);
+                    res.status(500).json({ error: 'Error updating nurse salary' });
+                } else {
+                    // Both queries are successful, send the final response
+                    res.json({ success: true, message: 'Nurse information updated successfully' });
+                }
+            });
         }
     });
 });
@@ -404,6 +437,8 @@ employee.delete('/delete_equipment', (req, res) => {
     });
 })
 
+//                                    THUỐC
+
 employee.get("/view_drugs", (req, res) => {
     let list = `SELECT drug_id, drug_name, price, origin, quantity_left
                 FROM drugs`;
@@ -420,7 +455,7 @@ employee.post('/add_drug', (req, res) => {
         dosage : req.body.dosage,
         price : req.body.price,
         origin : req.body.origin,
-        quantity_left : req.body.quantity_left
+        quantity : req.body.quantity
     }
     
     let find = `SELECT * FROM drugs WHERE drug_name = "${drugData.drug_name}"`;
@@ -434,7 +469,7 @@ employee.post('/add_drug', (req, res) => {
                                        "${drugData.dosage}",
                                        "${drugData.price}", 
                                        "${drugData.origin}",
-                                       "${drugData.quantity_left}")`;
+                                       "${drugData.quantity}")`;
     
             db.query(create, (err2, result2) => {
                 if(err2) console.log(err2);
@@ -490,5 +525,71 @@ employee.delete('/delete_drug', (req, res) => {
         res.send('Drug deleted successfully');
     });
 })
+// Phòng ban
+employee.get('/get_departments', (req, res) => {
+    const sql = `SELECT * FROM departments`;
+
+    db.query(sql, (err, result) => {
+        if(err) console.log(err);
+        res.json(result);
+    });
+});
+
+employee.post('/add_department', (req, res) => {
+    const departmentData = {
+        department_name : req.body.department_name
+    }
+    
+    let find = `SELECT * FROM departments WHERE department_name = "${departmentData.department_name}"`;
+    
+    db.query(find, (err1, result1) => {
+        if(err1) console.log(err1);
+    
+        if(result1[0] == undefined) {
+            let create = `INSERT INTO departments (department_name)
+                              VALUES ("${departmentData.department_name}")`;
+    
+            db.query(create, (err2, result2) => {
+                if(err2) console.log(err2);
+                res.send("Add department successfully!")
+            });
+        } else {
+            res.send("Department already exists...");
+        }
+    });
+});
+
+employee.put('/update_department', (req, res) => {
+    const updatedData = {
+        department_id : req.body.department_id,
+        department_name : req.body.department_name
+    };
+    
+    let updateQuery = `UPDATE departments
+                       SET department_name = "${updatedData.department_name}"
+                       WHERE department_id = "${updatedData.department_id}"`;
+    
+    db.query(updateQuery, (err, result) => {
+        if (err) console.log(err);
+    });
+    
+    res.send("Department updated successfully")
+});
+
+employee.delete('/delete_department', (req, res) => {
+    const department_id = req.body.department_id;
+    
+    let delete_department = `DELETE FROM departments WHERE department_id = "${department_id}"`;
+    
+    db.query(delete_department, (err, result) => {
+        if (err) res.send('Error deleting department');
+        res.send('Department deleted successfully');
+    });
+})
+
+
+
+
+
 
 module.exports = employee;

@@ -163,6 +163,7 @@ function ManagerDrugs() {
                         <th>Name</th>
                         <th>Price</th>
                         <th>Origin</th>
+                        <th>Quantity left</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -173,6 +174,7 @@ function ManagerDrugs() {
                           <td>{drug.drug_name}</td>
                           <td>{drug.price}</td>
                           <td>{drug.origin}</td>
+                          <td>{drug.quantity_left}</td>
                           <td>
                             <a
                               href="#"
@@ -207,22 +209,11 @@ function ManagerDrugs() {
                 </Modal.Header>
                 <Modal.Body>
                   <Form onSubmit={handleSubmit}>
-                    <Form.Group controlId="formDrugID">
-                      <Form.Label>Drug ID</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter Drug ID"
-                        name="drug_id"
-                        value={formData.drug_id}
-                        onChange={handleInputChange}
-                      />
-                    </Form.Group>
-
                     <Form.Group controlId="formDrugName">
-                      <Form.Label>Drug Name</Form.Label>
+                      <Form.Label>Name</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Enter Drug Name"
+                        placeholder="Enter drug's name"
                         name="drug_name"
                         value={formData.drug_name}
                         onChange={handleInputChange}
@@ -233,20 +224,41 @@ function ManagerDrugs() {
                       <Form.Label>Dosage</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Enter Dosage"
+                        placeholder="Enter drug's dosage"
                         name="dosage"
                         value={formData.dosage}
                         onChange={handleInputChange}
                       />
                     </Form.Group>
 
-                    <Form.Group controlId="formDescription">
-                      <Form.Label>Description</Form.Label>
+                    <Form.Group controlId="formPrice">
+                      <Form.Label>Price</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Enter Description"
-                        name="description"
-                        value={formData.description}
+                        placeholder="Enter drug's price"
+                        name="price"
+                        value={formData.price}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+
+                    <Form.Group controlId="formOrigin">
+                      <Form.Label>Origin</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter drug's origin"
+                        name="origin"
+                        value={formData.origin}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="formQuantity">
+                      <Form.Label>Quantity</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter drug's quantity"
+                        name="quantity"
+                        value={formData.quantity}
                         onChange={handleInputChange}
                       />
                     </Form.Group>
