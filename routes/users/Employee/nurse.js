@@ -79,7 +79,7 @@ nurse.get("/invoices", (req, res) => {
 })
 
 nurse.get('/waiting_list', (req,res) => {  
-    let get_list = `SELECT DISTINCT wl.wait_id, p.full_name, wl.money_need_to_pay
+    let get_list = `SELECT DISTINCT wl.wait_id, p.full_name, mr.money_need_to_pay
                       FROM wait_list wl JOIN medical_reports mr ON wl.patient_id = mr.patient_id
                                         JOIN patient p ON p.patient_id = wl.patient_id 
                       WHERE wl.status = "paying"`
@@ -128,6 +128,40 @@ nurse.get("/all_patient/search/:input", (req, res) => {
         res.send(result);
     });
 });
+
+nurse.get('/all_patient', (req, res) => {
+    let patients = `SELECT * FROM patient`
+    
+    db.query(patients, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
+nurse.get('/all_booked_patient', (req, res) => {
+    let patients = `SELECT p.full_name, p.phone_number, b.* 
+                    FROM booked b JOIN patient p ON b.patient_id = p.patient_id`
+    
+    db.query(patients, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
+nurse.get('/all_booked_patient/search', (req, res) => {
+    const input = req.body.input
+
+    let search_patients = `SELECT p.full_name, p.phone_number, b.* 
+                    FROM booked b JOIN patient p ON b.patient_id = p.patient_id
+                    WHERE p.full_name = "${input}"
+                       OR p.phone_number = "${input}"
+                       OR p.patient_id = "${input}"`
+    
+    db.query(search_patients, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
 
 nurse.route('/add_waiting_patient')
     .post((req, res) => {
