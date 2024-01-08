@@ -167,11 +167,13 @@ nurse.get('/all_patient', (req, res) => {
 nurse.get("/all_patient/search/:input", (req, res) => {
     const input = req.params.input;
 
-    let search_patient = `SELECT * FROM patient
+    let search_patients = `SELECT * FROM patient
                           WHERE full_name LIKE "${input}"
-                             OR phone_number LIKE "${input}";`;
+                             OR phone_number LIKE "${input}"
+                             OR patient_id LIKE "${input}"
+                             OR email LIKE "${input}";`;
 
-    db.query(search_patient, (err, result) => {
+    db.query(search_patients, (err, result) => {
         if (err) {
             console.error(err);
             res.status(500).send('Internal Server Error');
