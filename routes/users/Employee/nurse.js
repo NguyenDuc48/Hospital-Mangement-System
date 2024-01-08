@@ -90,8 +90,8 @@ nurse.get('/waiting_to_pay', (req,res) => {
     });
 })
 
-nurse.get('/show_bill_info', (req, res) => {
-    const wait_id = req.body.wait_id
+nurse.get('/show_bill_info/:wait_id', (req, res) => {
+    const wait_id = req.params.wait_id
 
     let info = `SELECT p.full_name, mr.conclusion, mr.note, p.health_insurance_percent, tb.total_bill_raw, mr.money_need_to_pay
                 FROM patient p JOIN wait_list wl ON wl.patient_id = p.patient_id
