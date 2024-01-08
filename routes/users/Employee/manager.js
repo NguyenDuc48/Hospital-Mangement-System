@@ -95,7 +95,7 @@ employee.post('/add_doctor', (req, res) => {
                                         VALUES ("${doctorData.doctor_id}",
                                                 "${doctorData.expertise}",
                                                 "${doctorData.department}")`
-
+                console.log(create_doctor.toString())
                 db.query(create_doctor, (err4, result4) => {
                     if (err4) console.log(err4);
                     res.send("Doctor created successfully");
@@ -114,12 +114,13 @@ employee.put('/update_doctor', (req, res) => {
         department: req.body.department,
         salary: req.body.salary
     };
+    
 
     let updateQuery = `UPDATE doctors
                        SET expertise = "${updatedData.expertise}",
                            department = "${updatedData.department}"
                        WHERE doctor_id = "${updatedData.doctor_id}"`;
-
+    
     db.query(updateQuery, (err, result) => {
         if (err) {
             console.log(err);

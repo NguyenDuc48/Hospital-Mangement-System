@@ -442,7 +442,7 @@ function DoctorAccount() {
                       value={formData.department}
                       onChange={handleInputChange}
                     >
-                      <option value="" disabled>Select Department</option>
+                      <option value="" hidden>Select Department</option> {/* để disabled thay vì hidden là lỗi */}
                       {departments.map((dept) => (
                         <option key={dept.department_id} value={dept.department_id}>
                           {dept.department_name}
@@ -501,7 +501,7 @@ function DoctorAccount() {
                       value={formData.department}
                       onChange={handleInputChange}
                     >
-                      <option value="" disabled>Select Department</option>
+                      <option value="" hidden>Select Department</option> {/* để disabled thay vì hidden là lỗi */}
                       {departments.map((dept) => (
                         <option key={dept.department_id} value={dept.department_id}>
                           {dept.department_name}

@@ -44,9 +44,11 @@ CREATE TABLE IF NOT EXISTS `doctors` (
 CREATE TABLE IF NOT EXISTS `drugs` (
   `drug_id` INT NOT NULL AUTO_INCREMENT,
   `drug_name` VARCHAR(50) NOT NULL,
+  `description` TEXT NOT NULL,
   `dosage` TEXT NOT NULL,
   `price` DECIMAL(10,2) NOT NULL,
   `origin` VARCHAR(10) NOT NULL,
+  `quantity_left` INT NOT NULL,
   PRIMARY KEY (`drug_id`)
 ) ENGINE = InnoDB;
 
@@ -231,15 +233,17 @@ CREATE TABLE IF NOT EXISTS `total_bills` (
 CREATE TABLE IF NOT EXISTS `wait_list` (
   `wait_id` INT NOT NULL AUTO_INCREMENT,
   `patient_id` VARCHAR(5) NOT NULL,
+  `department_id` INT NOT NULL,
   `description` TEXT NOT NULL,
   `status` VARCHAR(15) DEFAULT "waiting",
-  `priority` VARCHAR(3) NOT NULL,
+  `priority` VARCHAR(3) DEFAULT "no" NOT NULL,
   PRIMARY KEY (`wait_id`)
 ) ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS `booked` (
 `patient_id` VARCHAR(5) NOT NULL,
-`booked_time` VARCHAR(3) NOT NULL,
+`booked_date` DATE NOT NULL,
+`booked_time` VARCHAR(5) NOT NULL,
 `description` TEXT NOT NULL,
 PRIMARY KEY (`patient_id`)
 ) ENGINE = InnoDB;
@@ -327,7 +331,10 @@ ALTER TABLE `total_bills`
 ALTER TABLE `wait_list`
   ADD CONSTRAINT `fk_wait_list_patient`
   FOREIGN KEY (`patient_id`)
-  REFERENCES `patient` (`patient_id`);
+  REFERENCES `patient` (`patient_id`),
+  ADD CONSTRAINT `fk_wait_list_department`
+  FOREIGN KEY (`department_id`)
+  REFERENCES `departments` (`department_id`);  
 
 -- Table `booked`
 ALTER TABLE `booked`
@@ -355,10 +362,10 @@ INSERT INTO `services` (`service_id`, `service_name`, `service_fee`) VALUES
 (4, 'Khám mắt', 80000);
 
 
-INSERT INTO `drugs` (`drug_id`, `drug_name`, `dosage`, `price`, `origin`) VALUES
-(1, 'Thuốc hạ sốt', 'sáng 1, chiều 1, trước ăn', 100, 'Mỹ'),
-(2, 'Thuốc cảm cúm', 'sáng 2, chiều 2, uống sau ăn', 200, 'Việt Nam'),
-(3, 'Thuốc ho', 'Dùng mỗi khi bị ho', 50, 'Đức');
+INSERT INTO `drugs` (`drug_id`, `drug_name`, `dosage`, `price`, `origin`, `quantity_left`) VALUES
+(1, 'Thuốc hạ sốt', 'sáng 1, chiều 1, trước ăn', 100, 'Mỹ', 100),
+(2, 'Thuốc cảm cúm', 'sáng 2, chiều 2, uống sau ăn', 200, 'Việt Nam',100),
+(3, 'Thuốc ho', 'Dùng mỗi khi bị ho', 50, 'Đức',100);
 
 
 INSERT INTO `equipments` (`equipment_id`, `name`, `status`, `quantity_left`, `fee_per_day`) VALUES
@@ -451,8 +458,12 @@ INSERT INTO `medical_reports` (`report_id`, `patient_id`, `doctor_id`, `diagnost
 (1, 'BN001', 'BS001', 'Bệnh nhân thấy đau khổ vì làm database lỗi lên lỗi xuống', 'Chịu', 'Làm ít thôi là được', '10:35:19', '2023-12-03', 2, 406629);
 
 
-INSERT INTO wait_list (wait_id, patient_id, description, status, priority) VALUES
-(1, 'BN001', 'gsfgfffdfdgfd', 'waiting', 'yes'),
-(2, 'BN005', 'fghfhfghfg', 'waiting', 'yes'),
-(3, 'BN002', 'fhfhfghfgh', 'waiting', 'no'),
-(4, 'BN003', 'ytrytryttr', 'waiting', 'no');
+INSERT INTO wait_list (wait_id, patient_id, department_id, description, status, priority) VALUES
+(1, 'BN001', 4, 'gsfgfffdfdgfd', 'waiting', 'yes'),
+(2, 'BN005', 2, 'fghfhfghfg', 'waiting', 'yes'),
+(3, 'BN002', 3, 'fhfhfghfgh', 'waiting', 'no'),
+(4, 'BN003', 1, 'ytrytryttr', 'waiting', 'no');
+
+INSERT INTO `booked` (`patient_id`, `booked_date`, `booked_time`, `description`) VALUES 
+('BN001', '2024-01-02', '10:30', 'test_test_test'), 
+('BN003', '2024-01-24', '07:00', 'test1');
