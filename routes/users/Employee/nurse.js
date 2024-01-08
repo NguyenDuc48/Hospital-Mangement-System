@@ -148,20 +148,40 @@ nurse.get('/all_booked_patient', (req, res) => {
     });
 })
 
-nurse.get('/all_booked_patient/search', (req, res) => {
-    const input = req.body.input
+// nurse.get('/all_booked_patient/search', (req, res) => {
+//     const input = req.body.input
+
+//     let search_patients = `SELECT p.full_name, p.phone_number, b.* 
+//                     FROM booked b JOIN patient p ON b.patient_id = p.patient_id
+//                     WHERE p.full_name = "${input}"
+//                        OR p.phone_number = "${input}"
+//                        OR p.patient_id = "${input}"`
+    
+//     db.query(search_patients, (err, result) => {
+//         if (err) console.log(err);
+//         res.send(result)
+//     });
+// })
+
+nurse.get('/all_booked_patient/search/:input', (req, res) => {
+    const input = req.params.input;
 
     let search_patients = `SELECT p.full_name, p.phone_number, b.* 
                     FROM booked b JOIN patient p ON b.patient_id = p.patient_id
-                    WHERE p.full_name = "${input}"
-                       OR p.phone_number = "${input}"
-                       OR p.patient_id = "${input}"`
-    
+                    WHERE p.full_name LIKE "${input}%"
+                       OR p.phone_number LIKE "${input}%"
+                       OR p.patient_id LIKE "${input}%"`;
+
     db.query(search_patients, (err, result) => {
-        if (err) console.log(err);
-        res.send(result)
+        if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.send(result);
     });
-})
+});
+
 
 nurse.route('/add_waiting_patient')
     .post((req, res) => {
