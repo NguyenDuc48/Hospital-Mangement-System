@@ -100,7 +100,7 @@ const NursePatientList = () => {
                 Search
               </Button>
             </InputGroup>
-            <Button variant="primary" style={{ marginLeft: '10px', width: "15%" }}>
+            <Button variant="secondary" style={{ marginLeft: '10px', width: "15%" }}>
               Add Patient
             </Button>
           </div>
