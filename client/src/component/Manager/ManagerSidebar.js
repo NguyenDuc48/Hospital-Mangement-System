@@ -30,20 +30,24 @@ const Sidebar = () => {
               <CDBSidebarMenuItem icon="columns">Dashboard</CDBSidebarMenuItem>
             </NavLink> */}
             <NavLink exact to="/manager/doctor_account" activeClassName="activeClicked">
-              <CDBSidebarMenuItem icon="table">List Doctor</CDBSidebarMenuItem>
-            </NavLink>
-            <NavLink exact to="/manager/nurse_account" activeClassName="activeClicked">
-              <CDBSidebarMenuItem icon="table">List Nurse</CDBSidebarMenuItem>
-            </NavLink>
-            <NavLink exact to="/manager/drug" activeClassName="activeClicked">
-              <CDBSidebarMenuItem icon="user">Drug</CDBSidebarMenuItem>
-            </NavLink>
-            <NavLink exact to="/manager/equipment" activeClassName="activeClicked">
-              <CDBSidebarMenuItem icon="chart-line">
-                Equipment
-              </CDBSidebarMenuItem>
+              <CDBSidebarMenuItem icon="user">Doctors</CDBSidebarMenuItem>
             </NavLink>
 
+            <NavLink exact to="/manager/nurse_account" activeClassName="activeClicked">
+              <CDBSidebarMenuItem icon="user">Nurses</CDBSidebarMenuItem>
+            </NavLink>
+
+            <NavLink exact to="/manager/drug" activeClassName="activeClicked">
+              <CDBSidebarMenuItem icon="table">Drugs</CDBSidebarMenuItem>
+            </NavLink>
+
+            <NavLink exact to="/manager/equipment" activeClassName="activeClicked">
+              <CDBSidebarMenuItem icon="table">Equipments</CDBSidebarMenuItem>
+            </NavLink>
+
+            <NavLink exact to="/manager/department" activeClassName="activeClicked">
+              <CDBSidebarMenuItem icon="table">Departments</CDBSidebarMenuItem>
+            </NavLink>
             {/* <NavLink
               exact
               to="/hero404"

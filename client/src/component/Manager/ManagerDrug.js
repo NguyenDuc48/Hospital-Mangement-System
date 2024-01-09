@@ -18,13 +18,16 @@ function ManagerDrugs() {
   const [formData, setFormData] = useState({
     drug_id: '',
     drug_name: '',
+    description: '',
+    dosage: '',
     price: '',
     origin: '',
+    quantity_left: ''
   });
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [drugs]);
 
   const fetchData = async () => {
     try {
@@ -49,7 +52,7 @@ function ManagerDrugs() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/manager/add_drug', formData);
+      const response = await axios.post('/manager/add_drug', formData);
       console.log(response.data);
       fetchData();
       handleClose();
@@ -79,7 +82,7 @@ function ManagerDrugs() {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put('http://localhost:5000/manager/update_drug', formData);
+      const response = await axios.put('/manager/update_drug', formData);
       console.log(response.data);
       fetchData();
       handleCloseModal();
@@ -106,7 +109,7 @@ function ManagerDrugs() {
 
   const handleDeleteDrug = async () => {
     try {
-      const deleteResponse = await axios.delete('http://localhost:5000/manager/delete_drug', {
+      const deleteResponse = await axios.delete('/manager/delete_drug', {
         data: { drug_id: deletingDrugId },
       });
 
@@ -144,7 +147,7 @@ function ManagerDrugs() {
                 <div className="row" style={{ backgroundColor: '#425D7D', padding: '0px' }}>
                   <div className="col-sm-7 offset-sm-1 mt-3 mb-2 text-gred" style={{ color: 'white' }}>
                     <h2>
-                      <b>Drug Management</b>
+                      <b>List of drugs</b>
                     </h2>
                   </div>
                   <div className="col-sm-3 offset-sm-1 mt-3 mb-2 text-gred">
@@ -159,23 +162,27 @@ function ManagerDrugs() {
                   <table className="table table-striped table-hover table-bordered">
                     <thead>
                       <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Origin</th>
-                        <th>Quantity left</th>
-                        <th>Actions</th>
+                        <th className="text-center align-middle">ID</th>
+                        <th className="text-center align-middle">Name</th>
+                        <th className="text-center align-middle">Description</th>
+                        <th className="text-center align-middle">Dosage</th>
+                        <th className="text-center align-middle">Price</th>
+                        <th className="text-center align-middle">Origin</th>
+                        <th className="text-center align-middle">Quantity left</th>
+                        <th className="text-center align-middle">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {drugs.map((drug) => (
                         <tr key={drug.drug_id}>
-                          <td>{drug.drug_id}</td>
-                          <td>{drug.drug_name}</td>
-                          <td>{drug.price}</td>
-                          <td>{drug.origin}</td>
-                          <td>{drug.quantity_left}</td>
-                          <td>
+                          <td className="text-center align-middle">{drug.drug_id}</td>
+                          <td className="text-center align-middle">{drug.drug_name}</td>
+                          <td className="text-center align-middle">{drug.description}</td>
+                          <td className="text-center align-middle">{drug.dosage}</td>
+                          <td className="text-center align-middle">{drug.price}</td>
+                          <td className="text-center align-middle">{drug.origin}</td>
+                          <td className="text-center align-middle">{drug.quantity_left}</td>
+                          <td className="text-center align-middle">
                             <a
                               href="#"
                               className="edit"
@@ -219,6 +226,18 @@ function ManagerDrugs() {
                         onChange={handleInputChange}
                       />
                     </Form.Group>
+
+                    <Form.Group controlId="formDescription">
+                      <Form.Label>Description</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter drug's description"
+                        name="description"
+                        value={formData.description}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+
 
                     <Form.Group controlId="formDosage">
                       <Form.Label>Dosage</Form.Label>
@@ -281,35 +300,25 @@ function ManagerDrugs() {
                 </Modal.Header>
                 <Modal.Body>
                   <Form onSubmit={handleEditSubmit}>
-                    <Form.Group controlId="formDrugName">
-                      <Form.Label>Drug Name</Form.Label>
+
+                    <Form.Group controlId="formPrice">
+                      <Form.Label>Price</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Enter Drug Name"
-                        name="drug_name"
-                        value={formData.drug_name}
+                        placeholder="Enter drug's price"
+                        name="price"
+                        value={formData.price}
                         onChange={handleInputChange}
                       />
                     </Form.Group>
 
-                    <Form.Group controlId="formDosage">
-                      <Form.Label>Dosage</Form.Label>
+                    <Form.Group controlId="formQuantityLeft">
+                      <Form.Label>Quantity left</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Enter Dosage"
-                        name="dosage"
-                        value={formData.dosage}
-                        onChange={handleInputChange}
-                      />
-                    </Form.Group>
-
-                    <Form.Group controlId="formDescription">
-                      <Form.Label>Description</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter Description"
-                        name="description"
-                        value={formData.description}
+                        placeholder="Enter quantity left"
+                        name="quantity_left"
+                        value={formData.quantity_left}
                         onChange={handleInputChange}
                       />
                     </Form.Group>

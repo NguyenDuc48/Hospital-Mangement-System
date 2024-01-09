@@ -28,7 +28,7 @@ employee.get('/get_doctor', (req, res) => {
                 WHERE emp.status = "active"`;
 
     db.query(sql, (err, result) => {
-        if(err) console.log(err);
+        if (err) console.log(err);
         console.log(result)
         res.json(result);
     });
@@ -41,29 +41,29 @@ employee.post('/add_doctor', (req, res) => {
     db.query(find_idx, (err, result) => {
         last_id = result[0].doctor_id.substring(2); //BS006 -> 006
         idx = parseInt(last_id, 10) //006 -> 6
-        doc_id = "BS" + String(idx+1).padStart(3,'0') //idx + 1 = 7 ; padStart(3,'0') -> 007 ; "BS" + "007" = "BN007"
+        doc_id = "BS" + String(idx + 1).padStart(3, '0') //idx + 1 = 7 ; padStart(3,'0') -> 007 ; "BS" + "007" = "BN007"
     });
 
     let find = `SELECT * FROM doctors WHERE doctor_id = "${doc_id}"`;
 
     db.query(find, (err1, result1) => {
         const doctorData = {
-            doctor_id   : doc_id,
-            full_name   : req.body.full_name,
-            dob         : req.body.dob,
-            gender      : req.body.gender,
-            phone_number : req.body.phone_number,
-            email       : req.body.email,
-            address     : req.body.address,
-            salary      : req.body.salary,
-            work_from   : req.body.work_from,
-            expertise   : req.body.expertise,
-            department  : req.body.department,
-            password    : req.body.password
+            doctor_id: doc_id,
+            full_name: req.body.full_name,
+            dob: req.body.dob,
+            gender: req.body.gender,
+            phone_number: req.body.phone_number,
+            email: req.body.email,
+            address: req.body.address,
+            salary: req.body.salary,
+            work_from: req.body.work_from,
+            expertise: req.body.expertise,
+            department: req.body.department,
+            password: req.body.password
         }
 
-        if(err1) console.log(err1);
-        if(result1[0] == undefined) {
+        if (err1) console.log(err1);
+        if (result1[0] == undefined) {
             bcrypt.hash(req.body.password, 10, (err, hash) => {
                 doctorData.password = hash;
                 let create = `INSERT INTO employees (employee_id, full_name, dob, gender, phone_number, email, address, salary, work_from)
@@ -79,7 +79,7 @@ employee.post('/add_doctor', (req, res) => {
                                         )`;
 
                 db.query(create, (err2, result2) => {
-                    if(err2) console.log(err2);
+                    if (err2) console.log(err2);
                 });
 
                 let create_account = `INSERT INTO credentials (username, password, id) 
@@ -114,13 +114,13 @@ employee.put('/update_doctor', (req, res) => {
         department: req.body.department,
         salary: req.body.salary
     };
-    
+
 
     let updateQuery = `UPDATE doctors
                        SET expertise = "${updatedData.expertise}",
                            department = "${updatedData.department}"
                        WHERE doctor_id = "${updatedData.doctor_id}"`;
-    
+
     db.query(updateQuery, (err, result) => {
         if (err) {
             console.log(err);
@@ -201,11 +201,11 @@ employee.get('/get_nurse', (req, res) => {
                 WHERE emp.status = 'active';`;
 
     db.query(sql, (err, result) => {
-        if(err) console.log(err);
+        if (err) console.log(err);
         res.json(result);
     });
 });
-    
+
 employee.post('/add_nurse', (req, res) => {
     var idx = 0;
     var nur_id = ""
@@ -213,31 +213,31 @@ employee.post('/add_nurse', (req, res) => {
     db.query(find_idx, (err, result) => {
         last_id = result[0].nurse_id.substring(2); //YT006 -> 006
         idx = parseInt(last_id, 10) //006 -> 6
-        nur_id = "YT" + String(idx+1).padStart(3,'0') //idx + 1 = 7 ; padStart(3,'0') -> 007 ; "YT" + "007" = "YT007"
+        nur_id = "YT" + String(idx + 1).padStart(3, '0') //idx + 1 = 7 ; padStart(3,'0') -> 007 ; "YT" + "007" = "YT007"
     });
 
-    
+
     let find = `SELECT * FROM nurses WHERE nurse_id = "${nur_id}"`;
-    
+
     db.query(find, (err1, result1) => {
         const nurseData = {
-            nurse_id   : nur_id,
-            full_name   : req.body.full_name,
-            dob         : req.body.dob,
-            gender      : req.body.gender,
-            phone_number : req.body.phone_number,
-            email       : req.body.email,
-            address     : req.body.address,
-            salary      : req.body.salary,
-            work_from   : req.body.work_from,
-            department  : req.body.department,
-            password    : req.body.password,
-            shift       : req.body.shift
+            nurse_id: nur_id,
+            full_name: req.body.full_name,
+            dob: req.body.dob,
+            gender: req.body.gender,
+            phone_number: req.body.phone_number,
+            email: req.body.email,
+            address: req.body.address,
+            salary: req.body.salary,
+            work_from: req.body.work_from,
+            department: req.body.department,
+            password: req.body.password,
+            shift: req.body.shift
         }
-        if(err1) console.log(err1);
-        if(result1[0] == undefined) {
+        if (err1) console.log(err1);
+        if (result1[0] == undefined) {
             bcrypt.hash(req.body.password, 10, (err, hash) => {
-                nurseData.password = hash; 
+                nurseData.password = hash;
                 let create = `INSERT INTO employees (employee_id, full_name, dob, gender, phone_number, email, address, salary, work_from)
                                 VALUES ("${nurseData.nurse_id}", 
                                         "${nurseData.full_name}",
@@ -248,25 +248,25 @@ employee.post('/add_nurse', (req, res) => {
                                         "${nurseData.address}",
                                         "${nurseData.salary}",
                                         "${nurseData.work_from}")`;
-        
+
                 db.query(create, (err2, result2) => {
-                    if(err2) console.log(err2);
+                    if (err2) console.log(err2);
                 });
-        
+
                 let create_account = `INSERT INTO credentials (username, password, id) 
                                         VALUES ("${nurseData.nurse_id.toLowerCase()}",
                                                 "${nurseData.password}",
                                                 "${nurseData.nurse_id}")`;
-        
+
                 db.query(create_account, (err3, result3) => {
                     if (err3) console.log(err3);
                 });
-        
+
                 let create_nurse = `INSERT INTO nurses (nurse_id, department, shift)
                                         VALUES ("${nurseData.nurse_id}",
                                                 "${nurseData.department}",
                                                 "${nurseData.shift}")`
-        
+
                 db.query(create_nurse, (err4, result4) => {
                     if (err4) console.log(err4);
                     res.send("nurse created successfully");
@@ -278,7 +278,7 @@ employee.post('/add_nurse', (req, res) => {
     });
 });
 
-    
+
 employee.put('/update_nurse', (req, res) => {
     const updatedData = {
         nurse_id: req.body.nurse_id,
@@ -314,13 +314,13 @@ employee.put('/update_nurse', (req, res) => {
         }
     });
 });
-    
+
 employee.route('/delete_nurse')
     .delete((req, res) => {
         const nurse_id = req.body.nurse_id;
-    
+
         let delete_account = `DELETE FROM credentials WHERE id = "${nurse_id}"`;
-    
+
         db.query(delete_account, (err, result) => {
             if (err) {
                 console.log(err);
@@ -333,11 +333,11 @@ employee.route('/delete_nurse')
     })
     .put((req, res) => {
         const nurse_id = req.body.nurse_id;
-    
+
         let update_status = `UPDATE employees
                              SET status = "retired"
                              WHERE employee_id = "${nurse_id}"`;
-    
+
         db.query(update_status, (err, result) => {
             if (err) {
                 console.log(err);
@@ -348,7 +348,7 @@ employee.route('/delete_nurse')
             }
         });
     });
-    
+
 // XEM BÁO CÁO DOANH THU VÀ HÓA ĐƠN THANH TOÁN
 
 //QUẢN LÍ VẬT TƯ TRANG THIẾT BỊ Y TẾ
@@ -365,25 +365,24 @@ employee.get("/view_equipments", (req, res) => {
 
 employee.post('/add_equipment', (req, res) => {
     const equipmentData = {
-        name : req.body.name,
-        quantity_left : req.body.quantity_left,
-        fee_per_day : req.body.fee_per_day
+        name: req.body.name,
+        quantity_left: req.body.quantity_left,
+        fee_per_day: req.body.fee_per_day
     }
-    
+
     let find = `SELECT * FROM equipments WHERE name = "${equipmentData.name}"`;
-    
+
     db.query(find, (err1, result1) => {
-        if(err1) console.log(err1);
-    
-        if(result1[0] == undefined) {
-            let create = `INSERT INTO equipments (name, status, quantity_left, fee_per_day)
+        if (err1) console.log(err1);
+
+        if (result1[0] == undefined) {
+            let create = `INSERT INTO equipments (name, quantity_left, fee_per_day)
                               VALUES ("${equipmentData.name}", 
-                                       "Tốt",
-                                       "${equipmentData.quantity_left}", 
-                                       "${equipmentData.fee_per_day}")`;
-    
+                                    "${equipmentData.quantity_left}", 
+                                    "${equipmentData.fee_per_day}")`;
+
             db.query(create, (err2, result2) => {
-                if(err2) console.log(err2);
+                if (err2) console.log(err2);
                 res.send("Add equipment successfully!")
             });
         } else {
@@ -394,54 +393,44 @@ employee.post('/add_equipment', (req, res) => {
 
 employee.put('/update_equipment', (req, res) => {
     const updatedData = {
-        equipment_id : req.body.equipment_id,
-        name : req.body.name,
-        status : req.body.status,
-        quantity_left : req.body.quantity_left,
-        fee_per_day : req.body.fee_per_day
+        equipment_id: req.body.equipment_id,
+        quantity_left: req.body.quantity_left,
+        fee_per_day: req.body.fee_per_day
     };
-    
+
     let updateQuery = `UPDATE equipments
-                       SET name = "${updatedData.name}",
-                           status = "${updatedData.status}",
-                           fee_per_day = "${updatedData.fee_per_day}"
-                       WHERE equipment_id = "${updatedData.equipment_id}"`;
-    
+                       SET 
+                       fee_per_day = "${updatedData.fee_per_day}",
+                       quantity_left = "${updatedData.quantity_left}"
+                       WHERE 
+                       equipment_id = "${updatedData.equipment_id}"`;
+
     db.query(updateQuery, (err, result) => {
         if (err) console.log(err);
     });
-
-    if (updatedData.quantity_left) {
-        let update_salary = `UPDATE equipments
-                             SET quantity_left = "${updatedData.quantity_left}"
-                             WHERE equipment_id = "${updatedData.equipment_id}"`
-
-        db.query(update_salary, (err2, result2) => {
-            if (err2) console.log(err2);
-        })
-    }
-
     res.send('Equipment information updated successfully');
 });
 
 employee.delete('/delete_equipment', (req, res) => {
     const equipment_id = req.body.equipment_id;
-    
+    console.log('Equipment ID to delete:', equipment_id);
+
     let delete_equipment = `DELETE FROM equipments WHERE equipment_id = "${equipment_id}"`;
-    
+
     db.query(delete_equipment, (err, result) => {
         if (err) {
-            res.send('Error deleting equipment');
+            console.error(err);
+            res.status(500).send('Error deleting equipment');
         } else {
             res.send('Equipment deleted successfully');
         }
     });
-})
+});
 
 //                                    THUỐC
 
 employee.get("/view_drugs", (req, res) => {
-    let list = `SELECT drug_id, drug_name, price, origin, quantity_left
+    let list = `SELECT drug_id, drug_name, description, dosage, price, origin, quantity_left
                 FROM drugs`;
 
     db.query(list, (err, result) => {
@@ -452,28 +441,30 @@ employee.get("/view_drugs", (req, res) => {
 
 employee.post('/add_drug', (req, res) => {
     const drugData = {
-        drug_name : req.body.drug_name,
-        dosage : req.body.dosage,
-        price : req.body.price,
-        origin : req.body.origin,
-        quantity : req.body.quantity
+        drug_name: req.body.drug_name,
+        description: req.body.description,
+        dosage: req.body.dosage,
+        price: req.body.price,
+        origin: req.body.origin,
+        quantity: req.body.quantity
     }
-    
+    console.log(drugData);
     let find = `SELECT * FROM drugs WHERE drug_name = "${drugData.drug_name}"`;
-    
+
     db.query(find, (err1, result1) => {
-        if(err1) console.log(err1);
-    
-        if(result1[0] == undefined) {
-            let create = `INSERT INTO drugs (drug_name, dosage, price, origin, quantity_left)
-                              VALUES ("${drugData.drug_name}", 
+        if (err1) console.log(err1);
+
+        if (result1[0] == undefined) {
+            let create = `INSERT INTO drugs (drug_name, description, dosage, price, origin, quantity_left)
+                              VALUES ("${drugData.drug_name}",
+                                       "${drugData.description}", 
                                        "${drugData.dosage}",
                                        "${drugData.price}", 
                                        "${drugData.origin}",
                                        "${drugData.quantity}")`;
-    
+
             db.query(create, (err2, result2) => {
-                if(err2) console.log(err2);
+                if (err2) console.log(err2);
                 res.send("Add drug successfully!")
             });
         } else {
@@ -484,21 +475,16 @@ employee.post('/add_drug', (req, res) => {
 
 employee.put('/update_drug', (req, res) => {
     const updatedData = {
-        drug_id : req.body.drug_id,
-        drug_name : req.body.drug_name,
-        dosage : req.body.dosage,
-        price : req.body.price,
-        origin : req.body.origin,
-        quantity_left : req.body.quantity_left
+        drug_id: req.body.drug_id,
+        price: req.body.price,
+        quantity_left: req.body.quantity_left
     };
-    
+
     let updateQuery = `UPDATE drugs
-                       SET drug_name = "${updatedData.drug_name}",
-                           dosage = "${updatedData.dosage}",
-                           price = "${updatedData.price}",
-                           origin = "${updatedData.origin}"
-                       WHERE drug_id = "${updatedData.drug_id}"`;
-    
+                        SET 
+                        price = "${updatedData.price}"
+                        WHERE drug_id = "${updatedData.drug_id}"`;
+
     db.query(updateQuery, (err, result) => {
         if (err) console.log(err);
     });
@@ -512,46 +498,60 @@ employee.put('/update_drug', (req, res) => {
             if (err2) console.log(err2);
         })
     }
-    
+
     res.send("Drug updated successfully")
 });
 
 employee.delete('/delete_drug', (req, res) => {
     const drug_id = req.body.drug_id;
-    
+
     let delete_drug = `DELETE FROM drugs WHERE drug_id = "${drug_id}"`;
-    
+
     db.query(delete_drug, (err, result) => {
-        if (err) res.send('Error deleting drug');
+        if (err) {
+            return res.send('Error deleting drug');
+        }
         res.send('Drug deleted successfully');
     });
-})
+});
+
+
 // Phòng ban
-employee.get('/get_departments', (req, res) => {
+employee.get('/view_departments', (req, res) => {
     const sql = `SELECT * FROM departments`;
 
     db.query(sql, (err, result) => {
-        if(err) console.log(err);
+        if (err) console.log(err);
         res.json(result);
     });
 });
 
 employee.post('/add_department', (req, res) => {
     const departmentData = {
-        department_name : req.body.department_name
+        department_name: req.body.department_name,
+        description: req.body.description,
+        head_of_department: req.body.head_of_department,
+        department_phone: req.body.department_phone,
+        department_email: req.body.department_email,
+        department_address: req.body.department_address
     }
-    
+
     let find = `SELECT * FROM departments WHERE department_name = "${departmentData.department_name}"`;
-    
+
     db.query(find, (err1, result1) => {
-        if(err1) console.log(err1);
-    
-        if(result1[0] == undefined) {
-            let create = `INSERT INTO departments (department_name)
-                              VALUES ("${departmentData.department_name}")`;
-    
+        if (err1) console.log(err1);
+
+        if (result1[0] == undefined) {
+            let create = `INSERT INTO departments (department_name, description, head_of_department, department_phone, department_email, department_address)
+                              VALUES ("${departmentData.department_name}",
+                                     "${departmentData.description}",
+                                     "${departmentData.head_of_department}",
+                                     "${departmentData.department_phone}",
+                                     "${departmentData.department_email}",
+                                     "${departmentData.department_address}")`;
+
             db.query(create, (err2, result2) => {
-                if(err2) console.log(err2);
+                if (err2) console.log(err2);
                 res.send("Add department successfully!")
             });
         } else {
@@ -562,31 +562,47 @@ employee.post('/add_department', (req, res) => {
 
 employee.put('/update_department', (req, res) => {
     const updatedData = {
-        department_id : req.body.department_id,
-        department_name : req.body.department_name
+        department_name: req.body.department_name,
+        description: req.body.description,
+        head_of_department: req.body.head_of_department,
+        department_phone: req.body.department_phone,
+        department_email: req.body.department_email,
+        department_address: req.body.department_address
     };
-    
+
     let updateQuery = `UPDATE departments
-                       SET department_name = "${updatedData.department_name}"
-                       WHERE department_id = "${updatedData.department_id}"`;
-    
+                        SET department_name = "${updatedData.department_name}",
+                            description = "${updatedData.description}",
+                            head_of_department = "${updatedData.head_of_department}",
+                            department_phone = "${updatedData.department_phone}",
+                            department_email = "${updatedData.department_email}",
+                            department_address = "${updatedData.department_address}"
+                        WHERE department_id = "${req.body.department_id}"`;
+
     db.query(updateQuery, (err, result) => {
-        if (err) console.log(err);
+        if (err) {
+            console.log(err);
+            res.status(500).json({ error: 'Error updating department' });
+        } else {
+            res.send("Department updated successfully");
+        }
     });
-    
-    res.send("Department updated successfully")
 });
 
 employee.delete('/delete_department', (req, res) => {
     const department_id = req.body.department_id;
-    
+
     let delete_department = `DELETE FROM departments WHERE department_id = "${department_id}"`;
-    
+
     db.query(delete_department, (err, result) => {
-        if (err) res.send('Error deleting department');
-        res.send('Department deleted successfully');
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Error deleting department');
+        }
+
+        return res.send('Department deleted successfully');
     });
-})
+});
 
 
 

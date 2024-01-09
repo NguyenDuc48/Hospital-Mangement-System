@@ -20,13 +20,12 @@ function ManagerEquipment() {
     equipment_name: '',
     quantity: '',
     description: '',
-    fee_per_day: '',
-    status : ''
+    fee_per_day: ''
   });
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [equipments]);
 
   const fetchData = async () => {
     try {
@@ -36,7 +35,7 @@ function ManagerEquipment() {
       console.error('Error fetching data:', error);
     }
   };
-  
+
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
@@ -78,39 +77,37 @@ function ManagerEquipment() {
 
   const handleShowEditModal = (equipmentId) => {
     const editingEquipment = equipments.find((equipment) => equipment.equipment_id === equipmentId);
-    
+
     // Ensure that properties in editingEquipment match the properties in formData
-    const { equipment_id, name, quantity_left, fee_per_day, status } = editingEquipment;
-    
+    const { equipment_id, name, quantity_left, fee_per_day } = editingEquipment;
+
     setFormData({
       equipment_id,
       equipment_name: name,
       quantity: quantity_left,
-      fee_per_day,
-      status,
+      fee_per_day
     });
-  
+
     setEditingEquipmentId(equipmentId);
     setShowEditModal(true);
   };
-  
+
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.put('/manager/update_equipment', {
         equipment_id: formData.equipment_id,
         name: formData.equipment_name,
-        status: formData.status,
         quantity_left: formData.quantity,
-        fee_per_day: formData.fee_per_day,
+        fee_per_day: formData.fee_per_day
       });
-  
+
       console.log(response.data);
       fetchData();
       handleCloseModal();
-  
+
       setShowSuccessMessage(true);
-  
+
       setTimeout(() => {
         setShowSuccessMessage(false);
       }, 5000);
@@ -118,7 +115,7 @@ function ManagerEquipment() {
       console.error('Error updating equipment:', error);
     }
   };
-  
+
 
   const handleShowDeleteConfirmation = (equipmentId) => {
     setDeletingEquipmentId(equipmentId);
@@ -135,22 +132,22 @@ function ManagerEquipment() {
       const deleteResponse = await axios.delete('/manager/delete_equipment', {
         data: { equipment_id: deletingEquipmentId },
       });
-  
+
       if (deleteResponse.data.success) {
-        // Navigate back to the current URL, which should trigger a reload
-        window.location.href = window.location.href;
+        // Update the state to remove the deleted equipment
+        setEquipments((prevEquipments) =>
+          prevEquipments.filter((equipment) => equipment.equipment_id !== deletingEquipmentId)
+        );
       } else {
         console.error('Error deleting equipment:', deleteResponse.data.error);
       }
     } catch (error) {
       console.error('Error deleting equipment:', error);
     }
-  
+
     handleCloseDeleteConfirmation();
   };
-  
 
-  
 
   return (
     <div>
@@ -174,7 +171,7 @@ function ManagerEquipment() {
                 <div className="row" style={{ backgroundColor: '#425D7D', padding: '0px' }}>
                   <div className="col-sm-7 offset-sm-1 mt-3 mb-2 text-gred" style={{ color: 'white' }}>
                     <h2>
-                      <b>Equipment Management</b>
+                      <b>List of equipments</b>
                     </h2>
                   </div>
                   <div className="col-sm-3 offset-sm-1 mt-3 mb-2 text-gred">
@@ -189,21 +186,21 @@ function ManagerEquipment() {
                   <table className="table table-striped table-hover table-bordered">
                     <thead>
                       <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Quantity Left</th>
-                        <th>Fee Per Day</th>
-                        <th>Actions</th>
+                        <th className="text-center align-middle">ID</th>
+                        <th className="text-center align-middle">Name</th>
+                        <th className="text-center align-middle">Quantity left</th>
+                        <th className="text-center align-middle">Fee per day</th>
+                        <th className="text-center align-middle">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {equipments.map((equipment) => (
                         <tr key={equipment.equipment_id}>
-                          <td>{equipment.equipment_id}</td>
-                          <td>{equipment.name}</td>
-                          <td>{equipment.quantity_left}</td>
-                          <td>{equipment.fee_per_day}</td>
-                          <td>
+                          <td className="text-center align-middle">{equipment.equipment_id}</td>
+                          <td className="text-center align-middle">{equipment.name}</td>
+                          <td className="text-center align-middle">{equipment.quantity_left}</td>
+                          <td className="text-center align-middle">{equipment.fee_per_day}</td>
+                          <td className="text-center align-middle">
                             <a
                               href="#"
                               className="edit"
@@ -238,10 +235,10 @@ function ManagerEquipment() {
                 <Modal.Body>
                   <Form onSubmit={handleSubmit}>
                     <Form.Group controlId="formEquipmentName">
-                      <Form.Label>Equipment Name</Form.Label>
+                      <Form.Label>Name</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Enter Equipment Name"
+                        placeholder="Enter equipment's name"
                         name="equipment_name"
                         value={formData.equipment_name}
                         onChange={handleInputChange}
@@ -251,17 +248,17 @@ function ManagerEquipment() {
                       <Form.Label>Quantity</Form.Label>
                       <Form.Control
                         type="number"
-                        placeholder="Enter Quantity"
+                        placeholder="Enter quantity"
                         name="quantity"
                         value={formData.quantity}
                         onChange={handleInputChange}
                       />
                     </Form.Group>
                     <Form.Group controlId="formDescription">
-                      <Form.Label>Fee Per Day</Form.Label>
+                      <Form.Label>Fee per day</Form.Label>
                       <Form.Control
                         type="text"
-                        placeholder="Enter Fee"
+                        placeholder="Enter fee"
                         name="fee_per_day"
                         value={formData.fee_per_day}
                         onChange={handleInputChange}
@@ -295,19 +292,6 @@ function ManagerEquipment() {
                         onChange={handleInputChange}
                       />
                     </Form.Group>
-
-                    <Form.Group controlId="formStatus">
-                      <Form.Label>Status</Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Enter Status "
-                        name="status"
-                        value={formData.status}
-                        onChange={handleInputChange}
-                      />
-                    </Form.Group>
-
-
 
                     <Form.Group controlId="formQuantity">
                       <Form.Label>Quantity</Form.Label>

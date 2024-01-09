@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `doctors` (
 CREATE TABLE IF NOT EXISTS `drugs` (
   `drug_id` INT NOT NULL AUTO_INCREMENT,
   `drug_name` VARCHAR(50) NOT NULL,
-  `description` TEXT NOT NULL,
+  `description` TEXT DEFAULT NULL,
   `dosage` TEXT NOT NULL,
   `price` DECIMAL(10,2) NOT NULL,
   `origin` VARCHAR(10) NOT NULL,
@@ -99,7 +99,6 @@ CREATE TABLE IF NOT EXISTS `equipment_bills` (
 CREATE TABLE IF NOT EXISTS `equipments` (
   `equipment_id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
-  `status` VARCHAR(45) NOT NULL,
   `quantity_left` INT NOT NULL,
   `fee_per_day` DECIMAL(10,2) NOT NULL,
   PRIMARY KEY (`equipment_id`)
@@ -142,6 +141,7 @@ CREATE TABLE IF NOT EXISTS `medical_reports` (
   `appointment_date` DATE NOT NULL,
   `bill_id` INT NOT NULL,
   `money_need_to_pay` DECIMAL(10,2) NULL,
+  `payment_status` VARCHAR(7) NOT NULL DEFAULT 'pending',
   PRIMARY KEY (`report_id`, `patient_id`,`doctor_id`)
 ) ENGINE = InnoDB;
 
@@ -235,6 +235,7 @@ CREATE TABLE IF NOT EXISTS `wait_list` (
   `patient_id` VARCHAR(5) NOT NULL,
   `department_id` INT NOT NULL,
   `description` TEXT NOT NULL,
+  `doctor_handle` VARCHAR(5) NOT NULL,
   `status` VARCHAR(15) DEFAULT "waiting",
   `priority` VARCHAR(3) DEFAULT "no" NOT NULL,
   PRIMARY KEY (`wait_id`)
@@ -334,7 +335,10 @@ ALTER TABLE `wait_list`
   REFERENCES `patient` (`patient_id`),
   ADD CONSTRAINT `fk_wait_list_department`
   FOREIGN KEY (`department_id`)
-  REFERENCES `departments` (`department_id`);  
+  REFERENCES `departments` (`department_id`),
+  ADD CONSTRAINT `fk_wait_list_doctors`
+  FOREIGN KEY (`doctor_handle`)
+  REFERENCES `doctors` (`doctor_id`);  
 
 -- Table `booked`
 ALTER TABLE `booked`
@@ -362,17 +366,17 @@ INSERT INTO `services` (`service_id`, `service_name`, `service_fee`) VALUES
 (4, 'Khám mắt', 80000);
 
 
-INSERT INTO `drugs` (`drug_id`, `drug_name`, `dosage`, `price`, `origin`, `quantity_left`) VALUES
-(1, 'Thuốc hạ sốt', 'sáng 1, chiều 1, trước ăn', 100, 'Mỹ', 100),
-(2, 'Thuốc cảm cúm', 'sáng 2, chiều 2, uống sau ăn', 200, 'Việt Nam',100),
-(3, 'Thuốc ho', 'Dùng mỗi khi bị ho', 50, 'Đức',100);
+INSERT INTO `drugs` (`drug_id`, `drug_name`,`description`, `dosage`, `price`, `origin`, `quantity_left`) VALUES
+(1, 'Paracetamol', 'Giảm đau', 'sáng 1, chiều 1, trước ăn', 100, 'Mỹ', 100),
+(2, 'Traflu' ,'Thuốc cảm cúm', 'sáng 2, chiều 2, uống sau ăn', 200, 'Việt Nam',100),
+(3, 'Bảo thanh', 'Thuốc ho', 'Dùng mỗi khi bị ho', 50, 'Đức',100);
 
 
-INSERT INTO `equipments` (`equipment_id`, `name`, `status`, `quantity_left`, `fee_per_day`) VALUES
-(2, 'Quần áo', 'Tốt', 100, 20),
-(3, 'Hộp đựng nước tiểu', 'Tốt', 100, 5),
-(4, 'Khăn', 'Tốt', 100, 10),
-(5, 'Bình nước', 'Tốt', 100, 15);
+INSERT INTO `equipments` (`equipment_id`, `name`, `quantity_left`, `fee_per_day`) VALUES
+(2, 'Quần áo', 100, 20),
+(3, 'Hộp đựng nước tiểu', 100, 5),
+(4, 'Khăn', 100, 10),
+(5, 'Bình nước', 100, 15);
 
 
 INSERT INTO `patient` (`patient_id`, `full_name`, `dob`, `gender`, `phone_number`, `address`, `email`, `health_insurance_percent`) VALUES
@@ -458,11 +462,11 @@ INSERT INTO `medical_reports` (`report_id`, `patient_id`, `doctor_id`, `diagnost
 (1, 'BN001', 'BS001', 'Bệnh nhân thấy đau khổ vì làm database lỗi lên lỗi xuống', 'Chịu', 'Làm ít thôi là được', '10:35:19', '2023-12-03', 2, 406629);
 
 
-INSERT INTO wait_list (wait_id, patient_id, department_id, description, status, priority) VALUES
-(1, 'BN001', 4, 'gsfgfffdfdgfd', 'waiting', 'yes'),
-(2, 'BN005', 2, 'fghfhfghfg', 'waiting', 'yes'),
-(3, 'BN002', 3, 'fhfhfghfgh', 'waiting', 'no'),
-(4, 'BN003', 1, 'ytrytryttr', 'waiting', 'no');
+INSERT INTO wait_list (wait_id, patient_id, department_id, description, status,doctor_handle, priority) VALUES
+(1, 'BN001', 4, 'gsfgfffdfdgfd', 'waiting','BS001', 'yes'),
+(2, 'BN005', 2, 'fghfhfghfg', 'waiting','BS002', 'yes'),
+(3, 'BN002', 3, 'fhfhfghfgh', 'waiting','BS001', 'no'),
+(4, 'BN003', 1, 'ytrytryttr', 'waiting','BS002', 'no');
 
 INSERT INTO `booked` (`patient_id`, `booked_date`, `booked_time`, `description`) VALUES 
 ('BN001', '2024-01-02', '10:30', 'test_test_test'), 

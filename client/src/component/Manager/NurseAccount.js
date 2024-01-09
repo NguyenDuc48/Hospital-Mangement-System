@@ -31,9 +31,13 @@ function NurseAccount() {
     shift: '',
   });
 
+  // Add departments state
+  const [departments, setDepartments] = useState([]);
+
   useEffect(() => {
     fetchNurses();
-  }, []);
+    fetchDepartments();
+  }, [nurses]);
 
   const fetchNurses = async () => {
     try {
@@ -41,6 +45,15 @@ function NurseAccount() {
       setNurses(response.data);
     } catch (error) {
       console.error('Error fetching nurse data:', error);
+    }
+  };
+
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get('/manager/view_departments');
+      setDepartments(response.data);
+    } catch (error) {
+      console.error('Error fetching departments:', error);
     }
   };
 
@@ -89,16 +102,16 @@ function NurseAccount() {
     setViewingNurse(null);
     setShowViewModal(!showViewModal);
   };
-  
+
   const handleShowViewModal = (nurseId) => {
     // Assuming you have a state variable to store the details of the selected nurse
     const selectedNurse = nurses.find((nurse) => nurse.nurse_id === nurseId);
-  
+
     // Assuming you have a state variable to control the visibility of the view modal
     setViewModalData(selectedNurse);
     setShowViewModal(true);
   };
-  
+
   const handleShowEditModal = (nurseId) => {
     const editingNurse = nurses.find((nurse) => nurse.nurse_id === nurseId);
     setFormData(editingNurse);
@@ -125,7 +138,7 @@ function NurseAccount() {
       console.error('Error updating nurse:', error);
     }
   };
-//delete
+  //delete
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deletingNurseId, setDeletingNurseId] = useState(null);
   const handleShowDeleteConfirmation = (nurseId) => {
@@ -142,13 +155,13 @@ function NurseAccount() {
       const deleteResponse = await axios.delete('/manager/delete_nurse', {
         data: { nurse_id: deletingNurseId },
       });
-  
+
       if (deleteResponse.data.success) {
         // Step 2: Update the nurse's status
         const updateResponse = await axios.put('/manager/delete_nurse', {
           nurse_id: deletingNurseId,
         });
-  
+
         if (updateResponse.data.success) {
           fetchNurses(); // Fetch updated data
         } else {
@@ -160,10 +173,10 @@ function NurseAccount() {
     } catch (error) {
       console.error('Error deleting/updating nurse:', error);
     }
-  
+
     handleCloseDeleteConfirmation();
   };
-  
+
 
   return (
     <div>
@@ -188,7 +201,7 @@ function NurseAccount() {
                 <div className="row" style={{ backgroundColor: '#425D7D', padding: '0px' }}>
                   <div className="col-sm-7 offset-sm-1 mt-3 mb-2 text-gred" style={{ color: 'white' }}>
                     <h2>
-                      <b>Nurse Management</b>
+                      <b>List of nurses</b>
                     </h2>
                   </div>
                   <div className="col-sm-3 offset-sm-1  mt-3 mb-2 text-gred">
@@ -203,27 +216,27 @@ function NurseAccount() {
                   <table className="table table-striped table-hover table-bordered">
                     <thead>
                       <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Date of Birth</th>
-                        <th>Gender</th>
-                        <th>Department</th>
-                        <th>Phone</th>
-                        <th>Shift</th>
-                        <th>Actions</th>
+                        <th className="text-center align-middle">ID</th>
+                        <th className="text-center align-middle">Name</th>
+                        <th className="text-center align-middle">Date of Birth</th>
+                        <th className="text-center align-middle">Gender</th>
+                        <th className="text-center align-middle">Department</th>
+                        <th className="text-center align-middle">Phone</th>
+                        <th className="text-center align-middle">Shift</th>
+                        <th className="center align-middle">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {nurses.map((nurse) => (
                         <tr key={nurse.nurse_id}>
-                        <td>{nurse.nurse_id}</td>
-                        <td>{nurse.full_name}</td>
-                        <td>{nurse.dob}</td>
-                        <td>{nurse.gender}</td>
-                        <td>{nurse.department}</td>
-                        <td>{nurse.phone_number}</td>
-                        <td>{nurse.shift}</td>
-                        <td>
+                          <td className="text-center align-middle">{nurse.nurse_id}</td>
+                          <td className="text-center align-middle">{nurse.full_name}</td>
+                          <td className="text-center align-middle">{nurse.dob}</td>
+                          <td className="text-center align-middle">{nurse.gender}</td>
+                          <td className="text-center align-middle">{nurse.department}</td>
+                          <td className="text-center align-middle">{nurse.phone_number}</td>
+                          <td className="text-center align-middle">{nurse.shift}</td>
+                          <td className="text-center align-middle">
                             <a
                               href="#"
                               className="view"
@@ -235,13 +248,13 @@ function NurseAccount() {
                               <i className="material-icons">&#xE417;</i>
                             </a>
                             <a
-                            href="#"
-                            className="edit"
-                            title="Edit"
-                            data-toggle="tooltip"
-                            onClick={() => handleShowEditModal(nurse.nurse_id)}
+                              href="#"
+                              className="edit"
+                              title="Edit"
+                              data-toggle="tooltip"
+                              onClick={() => handleShowEditModal(nurse.nurse_id)}
                             >
-                            <i className="material-icons">&#xE254;</i>
+                              <i className="material-icons">&#xE254;</i>
                             </a>
                             <a
                               href="#"
@@ -253,284 +266,296 @@ function NurseAccount() {
                             >
                               <i className="material-icons">&#xE872;</i>
                             </a>
-                        </td>
+                          </td>
                         </tr>
-                    ))}
+                      ))}
                     </tbody>
-                </table>
+                  </table>
                 </div>
-            </div>
+              </div>
 
-            {/* Add Nurse Modal */}
-            <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
+              {/* Add Nurse Modal */}
+              <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
-                <Modal.Title>Add Nurse</Modal.Title>
+                  <Modal.Title>Add Nurse</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                <Form onSubmit={handleSubmit}>
-                    {/* Form fields for adding nurse */}
-                    {/* ... (similar blocks for other form fields) */}
-                    {/* <Form.Group controlId="formNurseID">
-                    <Form.Label>Nurse ID</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter Nurse ID"
-                      name="nurse_id"
-                      value={formData.nurse_id}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group> */}
-                  <Form.Group controlId="formFullName">
-                    <Form.Label>Full Name</Form.Label>
-                    <Form.Control
+                  <Form onSubmit={handleSubmit}>
 
-                      type="text"
-                      placeholder="Enter Full Name"
-                      name="full_name"
-                      value={formData.full_name}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="formDOB">
-                    <Form.Label>Date of Birth</Form.Label>
-                    <Form.Control
-                      type="date"
-                      placeholder="Enter Date of Birth"
-                      name="dob"
-                      value={formData.dob}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="formGender">
-                    <Form.Label>Gender</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder='Enter gender'
-                      name="gender"
-                      value={formData.gender}
+                    <Form.Group controlId="formFullName">
+                      <Form.Label>Full Name</Form.Label>
+                      <Form.Control
 
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="formPhoneNumber">
-                    <Form.Label>Phone Number</Form.Label>
-                    <Form.Control
-
-                      type="text"
-                      placeholder="Enter Phone Number"
-                      name="phone_number"
-                      value={formData.phone_number}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="formEmail">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                    type='text'
-                      placeholder="Enter Email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="formAddress">
-                    <Form.Label>Address</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter Address"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                    
-                    {/* Add similar blocks for other form fields */}
-                  <Form.Group controlId="formSalary">
-                    <Form.Label>Salary</Form.Label>
-                    <Form.Control
-                      type="decimal"
-                      placeholder="Enter Salary"
-                      name="salary"
-                      value={formData.salary}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                    
-                    {/* Add similar blocks for other form fields */}
-                  <Form.Group controlId="formWorkFrom">
-                    <Form.Label>Work From</Form.Label>
-                    <Form.Control
-                      type="date"
-                      placeholder="Enter Work From"
-                      name="work_from"
-                      value={formData.work_from}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                   
-                    {/* Add similar blocks for other form fields */}
-                  <Form.Group controlId="formDepartment">
-                    <Form.Label>Department</Form.Label>
-                    <Form.Control
-                      type="int"
-                      placeholder="Enter Department"
-                      name="department"
-                      value={formData.department}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                    
-                    {/* Add similar blocks for other form fields */}
-                  <Form.Group controlId="formPassword">
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter Password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  <Form.Group controlId="formShift">
-                    <Form.Label>Shift</Form.Label>
-                    <Form.Control
-
-                      type="text"
-                      placeholder="Enter Shift"
-                      name="shift"
-                      value={formData.shift}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
-                  
-                    
-                    <Button variant="primary" type="submit">
-                    Submit
-                    </Button>
-                </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                    Close
-                </Button>
-                </Modal.Footer>
-            </Modal>
-            {/* view nurse modal */}
-            <Modal show={showViewModal} onHide={handleToggleViewModal} backdrop="static" keyboard={false}>
-              <Modal.Header closeButton>
-                <Modal.Title>View Nurse</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                {viewModalData && (
-                  <div className="view-nurse-details">
-                    <p>
-                      <strong>ID:</strong> {viewModalData.nurse_id}
-                    </p>
-                    <p>
-                      <strong>Full Name:</strong> {viewModalData.full_name}
-                    </p>
-                    <p>
-                      <strong>Date of Birth:</strong> {viewModalData.dob}
-                    </p>
-                    <p>
-                      <strong>Gender:</strong> {viewModalData.gender}
-                    </p>
-                    <p>
-                      <strong>Department:</strong> {viewModalData.department}
-                    </p>
-                    <p>
-                      <strong>Shift:</strong> {viewModalData.shift}
-                    </p>
-                    <p>
-                      <strong>Phone number:</strong> {viewModalData.phone_number}
-                    </p>
-                    <p>
-                      <strong>Email:</strong> {viewModalData.email}
-                    </p>
-                    <p>
-                      <strong>Address:</strong> {viewModalData.address}
-                    </p>
-                    <p>
-                      <strong>Salary:</strong> {viewModalData.salary}
-                    </p>
-                    <p>
-                      <strong>Work from:</strong> {viewModalData.work_from}
-                    </p>
-                    {/* Add similar lines for other details */}
-                  </div>
-                )}
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleToggleViewModal}>
-                  Close
-                </Button>
-              </Modal.Footer>
-            </Modal>
-
-
-            {/* Edit Nurse Modal */}
-            <Modal show={showEditModal} onHide={handleCloseModal} backdrop="static" keyboard={false}>
-                <Modal.Header closeButton>
-                <Modal.Title>Edit Nurse</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                <Form onSubmit={handleEditSubmit}>
-                    <Form.Group controlId="formDepartment">
-                    <Form.Label>Department</Form.Label>
-                    <Form.Control
                         type="text"
-                        placeholder="Enter Department"
+                        placeholder="Enter Full Name"
+                        name="full_name"
+                        value={formData.full_name}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="formDOB">
+                      <Form.Label>Date of Birth</Form.Label>
+                      <Form.Control
+                        type="date"
+                        placeholder="Enter Date of Birth"
+                        name="dob"
+                        value={formData.dob}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="formGender">
+                      <Form.Label>Gender</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder='Enter gender'
+                        name="gender"
+                        value={formData.gender}
+
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="formPhoneNumber">
+                      <Form.Label>Phone Number</Form.Label>
+                      <Form.Control
+
+                        type="text"
+                        placeholder="Enter Phone Number"
+                        name="phone_number"
+                        value={formData.phone_number}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="formEmail">
+                      <Form.Label>Email</Form.Label>
+                      <Form.Control
+                        type='text'
+                        placeholder="Enter Email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="formAddress">
+                      <Form.Label>Address</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter Address"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+
+                    {/* Add similar blocks for other form fields */}
+                    <Form.Group controlId="formSalary">
+                      <Form.Label>Salary</Form.Label>
+                      <Form.Control
+                        type="decimal"
+                        placeholder="Enter Salary"
+                        name="salary"
+                        value={formData.salary}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+
+                    {/* Add similar blocks for other form fields */}
+                    <Form.Group controlId="formWorkFrom">
+                      <Form.Label>Work From</Form.Label>
+                      <Form.Control
+                        type="date"
+                        placeholder="Enter Work From"
+                        name="work_from"
+                        value={formData.work_from}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+
+                    {/* Add similar blocks for other form fields */}
+                    <Form.Group controlId="formDepartment">
+                      <Form.Label>Department</Form.Label>
+                      <Form.Control
+                        as="select"
                         name="department"
                         value={formData.department}
                         onChange={handleInputChange}
-                    />
+                      >
+                        <option value="" hidden>Select Department</option> {/* để disabled thay vì hidden là lỗi */}
+                        {departments.map((dept) => (
+                          <option key={dept.department_id} value={dept.department_id}>
+                            {dept.department_name}
+                          </option>
+                        ))}
+                      </Form.Control>
                     </Form.Group>
-                  <Form.Group controlId="formShift">
-                    <Form.Label>Shift</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Enter Shift"
-                      name="shift"
-                      value={formData.shift}
-                      onChange={handleInputChange}
-                    />
-                  </Form.Group>
+
+                    {/* Add similar blocks for other form fields */}
+                    <Form.Group controlId="formPassword">
+                      <Form.Label>Password</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter Password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="formShift">
+                      <Form.Label>Shift</Form.Label>
+                      <Form.Control
+
+                        type="text"
+                        placeholder="Enter Shift"
+                        name="shift"
+                        value={formData.shift}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+
 
                     <Button variant="primary" type="submit">
-                    Save Changes
+                      Submit
                     </Button>
-                </Form>
+                  </Form>
                 </Modal.Body>
                 <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseModal}>
+                  <Button variant="secondary" onClick={handleClose}>
                     Close
-                </Button>
+                  </Button>
                 </Modal.Footer>
-            </Modal>
-            {/* Delete Confirmation Modal for Nurses */}
-            <Modal show={showDeleteConfirmation} onHide={handleCloseDeleteConfirmation} backdrop="static" keyboard={false}>
-              <Modal.Header closeButton>
-                <Modal.Title>Confirm Deletion</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <p>Are you sure you want to delete this nurse?</p>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseDeleteConfirmation}>
-                  Cancel
-                </Button>
-                <Button variant="danger" onClick={handleDeleteNurse}>
-                  Delete
-                </Button>
-              </Modal.Footer>
-            </Modal>
+              </Modal>
+              {/* view nurse modal */}
+              <Modal show={showViewModal} onHide={handleToggleViewModal} backdrop="static" keyboard={false}>
+                <Modal.Header closeButton>
+                  <Modal.Title>View Nurse</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  {viewModalData && (
+                    <div className="view-nurse-details">
+                      <p>
+                        <strong>ID:</strong> {viewModalData.nurse_id}
+                      </p>
+                      <p>
+                        <strong>Full Name:</strong> {viewModalData.full_name}
+                      </p>
+                      <p>
+                        <strong>Date of Birth:</strong> {viewModalData.dob}
+                      </p>
+                      <p>
+                        <strong>Gender:</strong> {viewModalData.gender}
+                      </p>
+                      <p>
+                        <strong>Department:</strong> {viewModalData.department}
+                      </p>
+                      <p>
+                        <strong>Shift:</strong> {viewModalData.shift}
+                      </p>
+                      <p>
+                        <strong>Phone number:</strong> {viewModalData.phone_number}
+                      </p>
+                      <p>
+                        <strong>Email:</strong> {viewModalData.email}
+                      </p>
+                      <p>
+                        <strong>Address:</strong> {viewModalData.address}
+                      </p>
+                      <p>
+                        <strong>Salary:</strong> {viewModalData.salary}
+                      </p>
+                      <p>
+                        <strong>Work from:</strong> {viewModalData.work_from}
+                      </p>
+                      {/* Add similar lines for other details */}
+                    </div>
+                  )}
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleToggleViewModal}>
+                    Close
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+
+
+              {/* Edit Nurse Modal */}
+              <Modal show={showEditModal} onHide={handleCloseModal} backdrop="static" keyboard={false}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Edit Nurse</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <Form onSubmit={handleEditSubmit}>
+                    {/* Add similar blocks for other form fields */}
+                    <Form.Group controlId="formDepartment">
+                      <Form.Label>Department</Form.Label>
+                      <Form.Control
+                        as="select"
+                        name="department"
+                        value={formData.department}
+                        onChange={handleInputChange}
+                      >
+                        <option value="" hidden>Select Department</option> {/* để disabled thay vì hidden là lỗi */}
+                        {departments.map((dept) => (
+                          <option key={dept.department_id} value={dept.department_id}>
+                            {dept.department_name}
+                          </option>
+                        ))}
+                      </Form.Control>
+                    </Form.Group>
+                    <Form.Group controlId="formShift">
+                      <Form.Label>Shift</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter Shift"
+                        name="shift"
+                        value={formData.shift}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="formSalary">
+                      <Form.Label>Salary</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter new salary"
+                        name="salary"
+                        value={formData.salary}
+                        onChange={handleInputChange}
+                      />
+                    </Form.Group>
+
+                    <Button variant="primary" type="submit">
+                      Save Changes
+                    </Button>
+                  </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleCloseModal}>
+                    Close
+                  </Button>
+                </Modal.Footer>
+              </Modal>
+              {/* Delete Confirmation Modal for Nurses */}
+              <Modal show={showDeleteConfirmation} onHide={handleCloseDeleteConfirmation} backdrop="static" keyboard={false}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Confirm Deletion</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <p>Are you sure you want to delete this nurse?</p>
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button variant="secondary" onClick={handleCloseDeleteConfirmation}>
+                    Cancel
+                  </Button>
+                  <Button variant="danger" onClick={handleDeleteNurse}>
+                    Delete
+                  </Button>
+                </Modal.Footer>
+              </Modal>
 
             </div>
+          </div>
         </div>
-        </div>
+      </div>
     </div>
-    </div>
-);
+  );
 }
 
 export default NurseAccount;
