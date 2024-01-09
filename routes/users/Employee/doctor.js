@@ -201,24 +201,61 @@ doctor.get('/get_equipments', (req, res) => {
     })
 })
 
+doctor.route('/take_services/:total_bill_id')
+    .post((req, res) => {
+        const total_bill_id = req.params.total_bill_id
+        let services_list = []
 
-doctor.post('/add_services', (req, res) => {
-    let total_bill_id = req.body.total_bill_id
-    let add_services = `INSERT INTO service_bills(total_service_bill) 
-                        VALUES (0)`;
+        if (Array.isArray(req.body)) {
+            req.body.forEach((item) => {
+                if (item.services_id) {
+                    services_list.push(item.services_id);
+                }
+            });
+        }
 
-    db.query(add_services, (err, result) => {
-        if (err) console.log(err);
+        let add_services = `INSERT INTO service_bills(total_service_bill) 
+                            VALUES (0)`;
 
-        let put_total_bill = `UPDATE total_bills
-                          SET services_bill_id = service_bills.service_bill_id
-                          WHERE total_bill_id = "${total_bill_id}"`
+        db.query(add_services, (err, result) => {
+            if (err) console.log(err);
 
-        db.query(put_total_bill, (err2, result2) => {
-            if (err2) console.log(err2);
-            res.send("Created successfully");
-        });
-    });
-})
+            let put_total_bill = `UPDATE total_bills
+                                  SET service_bill_id = (SELECT service_bill_id 
+                                                         FROM service_bills 
+                                                         ORDER BY service_bill_id DESC LIMIT 1)
+                                  WHERE total_bill_id = "${total_bill_id}"`
+
+            db.query(put_total_bill, (err2, result2) => {
+                if (err2) console.log(err2);
+                    
+                services_list.forEach((service_id) => {
+                    let append = `INSERT INTO services_used_per_id(service_bill_id, service_id)
+                                  VALUES ((SELECT service_bill_id
+                                          FROM total_bills
+                                          WHERE total_bill_id = "${total_bill_id}"),
+                                          "${service_id}")`
+
+                    db.query(append, (err3, result3) => {
+                        if (err3) console.log(err3)
+                        res.send(result3)
+                    })
+                });
+            });
+        }); 
+    })
+    .put((req, res) => {
+        let calculate = `UPDATE service_bills
+                         SET total_service_bill = (SELECT SUM(services.service_fee)
+                                                   FROM services_used_per_id
+                                                   INNER JOIN services ON services_used_per_id.service_id = services.service_id
+                                                   WHERE service_bills.service_bill_id = services_used_per_id.service_bill_id
+                                                   GROUP BY services_used_per_id.service_bill_id)`
+
+        db.query(calculate, (err, result) => {
+            if (err) console.log(err)
+            res.send("Calculate bill completed")
+        })                                           
+    })
 
 module.exports = doctor;
