@@ -203,8 +203,8 @@ doctor.get('/get_equipments', (req, res) => {
 
 doctor.route('/take_services/:total_bill_id')
     .post((req, res) => {
-        const total_bill_id = req.params.total_bill_id
-        let services_list = []
+        const total_bill_id = req.params.total_bill_id;
+        let services_list = [];
 
         if (Array.isArray(req.body)) {
             req.body.forEach((item) => {
@@ -218,7 +218,10 @@ doctor.route('/take_services/:total_bill_id')
                             VALUES (0)`;
 
         db.query(add_services, (err, result) => {
-            if (err) console.log(err);
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ success: false, message: 'Internal Server Error' });
+            }
 
             let put_total_bill = `UPDATE total_bills
                                   SET service_bill_id = (SELECT service_bill_id 
@@ -227,9 +230,14 @@ doctor.route('/take_services/:total_bill_id')
                                   WHERE total_bill_id = "${total_bill_id}"`
 
             db.query(put_total_bill, (err2, result2) => {
-                if (err2) console.log(err2);
-                    
-                services_list.forEach((service_id) => {
+                if (err2) {
+                    console.log(err2);
+                    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+                }
+
+                let responseSent = false;
+
+                services_list.forEach((service_id, index, array) => {
                     let append = `INSERT INTO services_used_per_id(service_bill_id, service_id)
                                   VALUES ((SELECT service_bill_id
                                           FROM total_bills
@@ -237,12 +245,20 @@ doctor.route('/take_services/:total_bill_id')
                                           "${service_id}")`
 
                     db.query(append, (err3, result3) => {
-                        if (err3) console.log(err3)
-                        res.send(result3)
-                    })
+                        if (err3) {
+                            console.log(err3);
+                            responseSent = true;
+                            return res.status(500).json({ success: false, message: 'Internal Server Error' });
+                        }
+
+                        // Check if this is the last iteration before sending the response
+                        if (index === array.length - 1 && !responseSent) {
+                            res.json({ success: true, message: 'Services added successfully' });
+                        }
+                    });
                 });
             });
-        }); 
+        });
     })
     .put((req, res) => {
         let calculate = `UPDATE service_bills
@@ -253,9 +269,196 @@ doctor.route('/take_services/:total_bill_id')
                                                    GROUP BY services_used_per_id.service_bill_id)`
 
         db.query(calculate, (err, result) => {
-            if (err) console.log(err)
-            res.send("Calculate bill completed")
-        })                                           
-    })
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ success: false, message: 'Internal Server Error' });
+            }
 
+            res.json({ success: true, message: 'Calculate bill completed' });
+        });
+    });
+
+doctor.route('/take_drugs/:total_bill_id')
+    .post((req, res) => {
+        const total_bill_id = req.params.total_bill_id;
+        let drugs_list = [];
+
+        if (Array.isArray(req.body)) {
+            req.body.forEach((item) => {
+                if (item.drug_id && item.quantity_used) {
+                    drugs_list.push({
+                        drug_id : item.drug_id,
+                        quantity_used : item.quantity_used
+                    });
+                }
+            });
+        }
+
+        let add_drugs = `INSERT INTO medicine_bills(total_medicine_bill) 
+                         VALUES (0)`;
+
+        db.query(add_drugs, (err, result) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ success: false, message: 'Internal Server Error' });
+            }
+
+            let put_total_bill = `UPDATE total_bills
+                                  SET medicine_bill_id = (SELECT medicine_bill_id 
+                                                          FROM medicine_bills 
+                                                          ORDER BY medicine_bill_id DESC LIMIT 1)
+                                  WHERE total_bill_id = "${total_bill_id}"`
+
+            db.query(put_total_bill, (err2, result2) => {
+                if (err2) {
+                    console.log(err2);
+                    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+                }
+
+                let responseSent = false;
+
+                drugs_list.forEach((drug_info, index, array) => {
+                    let append = `INSERT INTO drugs_used_per_id(medicine_bill_id, drug_id, quantity_used)
+                                  VALUES ((SELECT medicine_bill_id
+                                           FROM total_bills
+                                           WHERE total_bill_id = "${total_bill_id}"),
+                                          "${drug_info.drug_id}",
+                                          "${drug_info.quantity_used}")`
+
+                    db.query(append, (err3, result3) => {
+                        if (err3) {
+                            console.log(err3);
+                            responseSent = true;
+                            return res.status(500).json({ success: false, message: 'Internal Server Error' });
+                        }
+
+                        // Check if this is the last iteration before sending the response
+                        if (index === array.length - 1 && !responseSent) {
+                            res.json({ success: true, message: 'Drug took successfully' });
+                        }
+                    });
+                });
+            });
+        }); 
+    })
+    .put((req, res) => {
+        let calculate = `UPDATE medicine_bills
+                         SET total_medicine_bill = (SELECT SUM(drugs.price)
+                                                    FROM drugs_used_per_id
+                                                    INNER JOIN drugs ON drugs_used_per_id.drug_id = drugs.drug_id
+                                                    WHERE medicine_bills.medicine_bill_id = drugs_used_per_id.medicine_bill_id
+                                                    GROUP BY drugs_used_per_id.medicine_bill_id)`
+
+        db.query(calculate, (err, result) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ success: false, message: 'Internal Server Error' });
+            }
+
+            res.json({ success: true, message: 'Calculate bill completed' });
+        })                                           
+    });
+
+doctor.route('/take_equipments/:total_bill_id')
+    .post((req, res) => {
+        const total_bill_id = req.params.total_bill_id;
+        let equipments_list = [];
+
+        if (Array.isArray(req.body)) {
+            req.body.forEach((item) => {
+                if (item.equipment_id && item.quantity_used && item.day_used) {
+                    equipments_list.push({
+                        equipment_id : item.equipment_id,
+                        quantity_used : item.quantity_used,
+                        day_used : item.day_used
+                    });
+                }
+            });
+        }
+
+        let add_equipments = `INSERT INTO equipment_bills(total_equipment_bill) 
+                              VALUES (0)`;
+
+        db.query(add_equipments, (err, result) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ success: false, message: 'Internal Server Error' });
+            }
+
+            let put_total_bill = `UPDATE total_bills
+                                  SET equipment_bill_id = (SELECT equipment_bill_id 
+                                                          FROM equipment_bills 
+                                                          ORDER BY equipment_bill_id DESC LIMIT 1)
+                                  WHERE total_bill_id = "${total_bill_id}"`
+
+            db.query(put_total_bill, (err2, result2) => {
+                if (err2) {
+                    console.log(err2);
+                    return res.status(500).json({ success: false, message: 'Internal Server Error' });
+                }
+
+                let responseSent = false;
+
+                equipments_list.forEach((equipment_info, index, array) => {
+                    let append = `INSERT INTO equipments_used_per_id(equipment_bill_id, equipment_id, quantity_used, day_used)
+                                  VALUES ((SELECT equipment_bill_id
+                                           FROM total_bills
+                                           WHERE total_bill_id = "${total_bill_id}"),
+                                          "${equipment_info.equipment_id}",
+                                          "${equipment_info.quantity_used}",
+                                          "${equipment_info.day_used}")`
+
+                    db.query(append, (err3, result3) => {
+                        if (err3) {
+                            console.log(err3);
+                            responseSent = true;
+                            return res.status(500).json({ success: false, message: 'Internal Server Error' });
+                        }
+
+                        // Check if this is the last iteration before sending the response
+                        if (index === array.length - 1 && !responseSent) {
+                            res.json({ success: true, message: 'Equipments took successfully' });
+                        }
+                    });
+                });
+            });
+        }); 
+    })
+    .put((req, res) => {
+        let calculate = `UPDATE equipment_bills
+                         SET total_equipment_bill = (SELECT SUM(equipments.fee_per_day * equipments_used_per_id.quantity_used * equipments_used_per_id.day_used) AS total_fee
+                                                     FROM equipments_used_per_id
+                                                        INNER JOIN equipments ON equipments_used_per_id.equipment_id = equipments.equipment_id
+                         WHERE equipment_bills.equipment_bill_id = equipments_used_per_id.equipment_bill_id
+                         GROUP BY equipments_used_per_id.equipment_bill_id
+                         );`
+
+        db.query(calculate, (err, result) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).json({ success: false, message: 'Internal Server Error' });
+            }
+
+            res.json({ success: true, message: 'Calculate bill completed' });
+        })                                           
+    });
+
+doctor.put('/calculate_bill/:total_bill_id', (req, res) => {
+    const total_bill_id = req.params.total_bill_id
+
+    let total_bill = `UPDATE total_bills
+                      SET total_bill_raw = (SELECT (COALESCE(SUM(service_bills.total_service_bill), 0)
+                                                  + COALESCE(SUM(medicine_bills.total_medicine_bill), 0)
+                                                  + COALESCE(SUM(equipment_bills.total_equipment_bill), 0)) AS total_raw
+                                            FROM total_bills
+                                                LEFT JOIN service_bills ON total_bills.service_bill_id = service_bills.service_bill_id
+                                                LEFT JOIN medicine_bills ON total_bills.medicine_bill_id = medicine_bills.medicine_bill_id
+                                                LEFT JOIN equipment_bills ON total_bills.equipment_bill_id = equipment_bills.equipment_bill_id)
+                      WHERE total_bill_id = "${total_bill_id}"`
+    
+    db.query(total_bill, (err, result) => {
+        if (err) console.log(err);
+        res.send("Updated successfully");
+    });
+})
 module.exports = doctor;
