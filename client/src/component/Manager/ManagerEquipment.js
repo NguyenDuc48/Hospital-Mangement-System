@@ -24,9 +24,6 @@ function ManagerEquipment() {
     status : ''
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const fetchData = async () => {
     try {
@@ -106,9 +103,8 @@ function ManagerEquipment() {
       });
   
       console.log(response.data);
-      fetchData();
+      // fetchData();
       handleCloseModal();
-  
       setShowSuccessMessage(true);
   
       setTimeout(() => {
@@ -150,6 +146,9 @@ function ManagerEquipment() {
   };
   
 
+  useEffect(() => {
+    fetchData();
+  }, [equipments]);
   
 
   return (

@@ -50,20 +50,20 @@ const NurseWaitList = () => {
   
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("/nurse/waiting_list");
-        setWaitingList(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching waiting list:", error.message);
-        setError("Failed to fetch waiting list");
-        setLoading(false);
-      }
-    };
+    // const fetchData = async () => {
+    //   try {
+    //     const response = await axios.get("/nurse/waiting_list");
+    //     setWaitingList(response.data);
+    //     setLoading(false);
+    //   } catch (error) {
+    //     console.error("Error fetching waiting list:", error.message);
+    //     setError("Failed to fetch waiting list");
+    //     setLoading(false);
+    //   }
+    // };
 
     fetchData();
-  }, []);
+  }, [waitingList]);
 
   const handleToggle = (index) => {
     setActiveRows((prevActiveRows) => {
@@ -159,7 +159,7 @@ const NurseWaitList = () => {
       // Set payment success state to true
       handleCloseModal();
       setPaymentSuccess(true);
-      fetchData();
+      // fetchData();
     } catch (error) {
       console.error("Error processing payment:", error.message);
       // Handle error as needed (e.g., show an error message)
@@ -170,8 +170,8 @@ const NurseWaitList = () => {
   }, [paymentSuccess]);
   
 
-  console.log(modalTableData);
-  console.log("total datA", totalData);
+  // console.log(modalTableData);
+  // console.log("total datA", totalData);
 
   return (
     <div>

@@ -123,22 +123,22 @@ const DoctorWaitingList = () => {
                                 </div>
                               </td>
 
-                              <td>{item[0].wait_id}</td>
+                              {/* <td>{item[0].wait_id}</td> */}
                               {/* <td>{item[0].full_name}</td> */}
                               <td>
                                 <span
                                 className="full-name-link"
                                 onClick={() => handleFullNameClick(item[0])}
                                 >
-                                {item[0].full_name}
+                                {/* {item[0].full_name} */}
                                 </span>
                              </td>
                               <td>
-                                {item[0].priority === 'yes' ? (
+                                {/* {item[0].priority === 'yes' ? (
                                   <span className="badge badge-success">Yes</span>
                                 ) : (
                                   <span className="badge badge-info">No</span>
-                                )}
+                                )} */}
                               </td>
                               <td>
                                 <Button>Add Medical Report</Button>

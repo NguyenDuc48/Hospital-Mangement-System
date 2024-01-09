@@ -162,4 +162,45 @@ patient.get('/doctor', (req, res) => {
 // })
 
 
+
+patient.get('/time', (req, res) => {
+    // let patient_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
+    const date = req.query.date;
+    // console.log("date:", date)
+    let patient =  `SELECT booked_time
+    FROM booked
+    WHERE booked_date = "${date}"
+    GROUP BY booked_time
+    HAVING COUNT(*) >= 4`;
+    db.query(patient, (err, result) => {
+        if (err) console.log(err);
+        console.log("result:", result);
+        res.send(result);
+    });
+})
+
+
+patient.post('/booked', (req, res) => {
+    try {
+      let data_token = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
+        // console.log("id benh nhan:", data_token.userId)
+      const { date, timeOfDay, diseaseDescription } = req.body;
+ 
+      // SQL query to insert data into the "booked" table
+    //   const insertQuery = `INSERT INTO `booked` (`patient_id`, `booked_date`, `booked_time`, `description`) VALUES (`${}`, '2024-01-15', '11:00', 'a')`;
+      let create_booked = `INSERT INTO booked (patient_id, booked_date,booked_time, description) VALUES ("${data_token.userId}", "${date}", "${timeOfDay}", "${diseaseDescription}")`;
+      // Execute the query with the received data
+      db.query(create_booked, (err3, result3) => {
+        if(err3) console.log(err3);
+        else
+        res.send("Created booked!");
+    })
+    } catch (error) {
+      console.error('Error handling request:', error);
+      res.status(500).json({ success: false, message: 'Error handling request.' });
+    }
+  });
+
+
+
 module.exports = patient;
