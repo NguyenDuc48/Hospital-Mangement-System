@@ -98,39 +98,6 @@ doctor.put('/call_patient', (req, res) => {
     });
 })
 
-doctor.put('/completed_examination_patient', (req, res) => {
-    let wait_id = req.body.wait_id
-    let call = `UPDATE wait_list
-                SET status = "paying"
-                WHERE wait_id = "${wait_id}"`
-
-    db.query(call, (err, result) => {
-        if (err) console.log(err);
-        res.send("Updated successfully");
-    });
-})
-
-//  Update reports for patients
-doctor.put('/update_report', (req, res) => {
-    const report = {
-        diagnostic  : req.body.diagnostic,
-        conclusion  : req.body.conclusion,
-        note        : req.body.note,
-        report_id   : req.body.report_id
-    }
-
-    let update = `UPDATE medical_reports
-                  SET diagnostic = "${report.diagnostic}",
-                      conclusion = "${report.conclusion}",
-                      note = "${report.note}"
-                  WHERE report_id = "${report.report_id}"`
-
-    db.query(update, (err, result) => {
-        if (err) console.log(err);
-        res.send("Updated successfully");
-    });
-})
-
 doctor.post('/create_report/:patient_id', (req, res) => {
     const doctor_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY) 
     const patient_id = req.params.patient_id
@@ -461,4 +428,38 @@ doctor.put('/calculate_bill/:total_bill_id', (req, res) => {
         res.send("Updated successfully");
     });
 })
+
+doctor.put('/completed_patient/:wait_id', (req, res) => {
+    let wait_id = req.params.wait_id
+    let call = `UPDATE wait_list
+                SET status = "paying"
+                WHERE wait_id = "${wait_id}"`
+
+    db.query(call, (err, result) => {
+        if (err) console.log(err);
+        res.send("Updated successfully");
+    });
+})
+
+//  Update reports for patients
+doctor.put('/update_report', (req, res) => {
+    const report = {
+        diagnostic  : req.body.diagnostic,
+        conclusion  : req.body.conclusion,
+        note        : req.body.note,
+        report_id   : req.body.report_id
+    }
+
+    let update = `UPDATE medical_reports
+                  SET diagnostic = "${report.diagnostic}",
+                      conclusion = "${report.conclusion}",
+                      note = "${report.note}"
+                  WHERE report_id = "${report.report_id}"`
+
+    db.query(update, (err, result) => {
+        if (err) console.log(err);
+        res.send("Updated successfully");
+    });
+})
+
 module.exports = doctor;
