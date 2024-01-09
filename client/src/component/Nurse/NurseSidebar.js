@@ -38,7 +38,12 @@ const Sidebar = () => {
             <NavLink exact to="/nurse/wait_list" activeClassName="activeClicked">
               <CDBSidebarMenuItem icon="table">Waiting List</CDBSidebarMenuItem>
             </NavLink>
-            
+            <NavLink exact to="/nurse/get_equipment" activeClassName="activeClicked">
+              <CDBSidebarMenuItem icon="table">Equipment List</CDBSidebarMenuItem>
+            </NavLink>
+            <NavLink exact to="/nurse/get_drugs" activeClassName="activeClicked">
+              <CDBSidebarMenuItem icon="table">Drugs List</CDBSidebarMenuItem>
+            </NavLink>
           </CDBSidebarMenu>
         </CDBSidebarContent>
 

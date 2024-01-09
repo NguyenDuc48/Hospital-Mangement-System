@@ -3,12 +3,11 @@ body{
   color: #484b51;
 }
 .text-secondary-d1 {
-  color: #728299!important;
+  color: #02152e!important;
 }
 .page-header {
-  margin: 0 0 1rem;
+  /* margin: 0 0 1rem; */
   padding-bottom: 1rem;
-  padding-top: .5rem;
   border-bottom: 1px dotted #e2e2e2;
   display: -ms-flexbox;
   display: flex;
@@ -109,8 +108,25 @@ hr {
   font-size: 60%!important;
 }
 .text-grey-m1 {
-  color: #7b7d81!important;
+  color: #080b12!important;
 }
 .align-bottom {
   vertical-align: bottom!important;
+}
+
+
+/* Add this style to your CSS */
+.custom-modal-dialog {
+  max-width: 80%;
+}
+
+/* If you also want to adjust the modal content size, you can add the following */
+.custom-modal-dialog .modal-content {
+  max-width: 100%;
+  width: 100%;
+}
+
+/* If you want to center the modal horizontally, you can use the following */
+.custom-modal-dialog .modal-dialog {
+  margin: auto;
 }

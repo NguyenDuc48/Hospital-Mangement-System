@@ -90,8 +90,8 @@ nurse.get('/waiting_to_pay', (req,res) => {
     });
 })
 
-nurse.get('/show_bill_info', (req, res) => {
-    const wait_id = req.body.wait_id
+nurse.get('/show_bill_info/:wait_id', (req, res) => {
+    const wait_id = req.params.wait_id
 
     let info = `SELECT p.full_name, mr.conclusion, mr.note, p.health_insurance_percent, tb.total_bill_raw, mr.money_need_to_pay
                 FROM patient p JOIN wait_list wl ON wl.patient_id = p.patient_id
@@ -142,9 +142,10 @@ nurse.get('/show_list_in_bill/:wait_id', (req, res) => {
     });
 })
 
-nurse.route('/pay')
+nurse.route('/pay/:wait_id')
     .put((req, res) => {
-        const wait_id = req.body.wait_id
+        const wait_id = req.params.wait_id
+        console.log(wait_id)
         
         let paid = `UPDATE wait_list wl JOIN medical_reports mr ON wl.patient_id = mr.patient_id
                     SET mr.payment_status = "done"
@@ -156,7 +157,7 @@ nurse.route('/pay')
         });
     })
     .delete((req, res) => {
-        const wait_id = req.body.wait_id
+        const wait_id = req.params.wait_id
         
         let paid = `DELETE FROM wait_list WHERE wait_id = "${wait_id}"`
 
@@ -179,10 +180,10 @@ nurse.get("/all_patient/search/:input", (req, res) => {
     const input = req.params.input;
 
     let search_patients = `SELECT * FROM patient
-                           WHERE full_name LIKE "${input}"
-                              OR phone_number LIKE "${input}"
-                              OR patient_id LIKE "${input}"
-                              OR email LIKE "${input}";`;
+                           WHERE full_name LIKE "${input}%"
+                              OR phone_number LIKE "${input}%"
+                              OR patient_id LIKE "${input}%"
+                              OR email LIKE "${input}%";`;
 
     db.query(search_patients, (err, result) => {
         if (err) {
@@ -322,8 +323,8 @@ nurse.get('/all_equipment/search/:input', (req, res) => {
     const input = req.params.input;
 
     let search_equipments = `SELECT * FROM equipments
-                             WHERE name LIKE "${input}"
-                                OR status LIKE "${input}"`;
+                             WHERE name LIKE "${input}%"
+                                OR status LIKE "${input}%"`;
 
     db.query(search_equipments, (err, result) => {
         if (err) {
@@ -348,8 +349,8 @@ nurse.get('/all_drug/search/:input', (req, res) => {
     const input = req.params.input;
 
     let search_drugs = `SELECT * FROM drugs
-                        WHERE drug_name LIKE "${input}"
-                           OR origin LIKE "${input}"`;
+                        WHERE drug_name LIKE "${input}%"
+                           OR origin LIKE "${input}%"`;
 
     db.query(search_drugs, (err, result) => {
         if (err) {

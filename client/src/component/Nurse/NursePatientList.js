@@ -100,12 +100,14 @@ const NursePatientList = () => {
   const handleCloseModal = () => {
     setShowModal(false);
   };
-
   useEffect(() => {
-    if (!searchInput) {
+    if (searchInput) {
+      searchPatients(searchInput);
+    } else {
       fetchAllPatients();
     }
   }, [searchInput]);
+
 
   return (
     <div>
@@ -138,9 +140,9 @@ const NursePatientList = () => {
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
-              <Button variant="outline-secondary" onClick={handleSearch}>
+              {/* <Button variant="outline-secondary" onClick={handleSearch}>
                 Search
-              </Button>
+              </Button> */}
             </InputGroup>
             <Button
               variant="secondary"
