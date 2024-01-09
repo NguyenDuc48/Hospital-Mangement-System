@@ -174,6 +174,34 @@ doctor.post('/create_report/:patient_id', (req, res) => {
     });
 })
 
+doctor.get('/get_services', (req, res) => {
+    let services = `SELECT service_name FROM services`
+
+    db.query(services, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    })
+})
+
+doctor.get('/get_drugs', (req, res) => {
+    let drugs = `SELECT drug_name FROM drugs WHERE quantity_left > 0`
+
+    db.query(drugs, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    })
+})
+
+doctor.get('/get_equipments', (req, res) => {
+    let equipments = `SELECT name FROM equipments WHERE quantity_left > 0`
+
+    db.query(equipments, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    })
+})
+
+
 doctor.post('/add_services', (req, res) => {
     let total_bill_id = req.body.total_bill_id
     let add_services = `INSERT INTO service_bills(total_service_bill) 
@@ -182,11 +210,11 @@ doctor.post('/add_services', (req, res) => {
     db.query(add_services, (err, result) => {
         if (err) console.log(err);
 
-        put_total_bill = `UPDATE total_bills
+        let put_total_bill = `UPDATE total_bills
                           SET services_bill_id = service_bills.service_bill_id
                           WHERE total_bill_id = "${total_bill_id}"`
 
-        db.query(create_bill, (err2, result2) => {
+        db.query(put_total_bill, (err2, result2) => {
             if (err2) console.log(err2);
             res.send("Created successfully");
         });
