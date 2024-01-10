@@ -22,6 +22,7 @@ body {
 
 .table th, .table td {
   text-align: center;
+  vertical-align: middle;
 }
 
 /* Set fixed width for the toggle button column */
@@ -89,16 +90,33 @@ body {
 
 /* Styles for the "Status" buttons */
 .status-waiting {
-  background-color: blue; /* Adjust the color as needed */
-  padding : "100px"
+  /* background-color: rgb(135, 182, 201); Adjust the color as needed */
+  background-color: #17a2b8 !important; /* Blue background color for info */
+
+  border-color: #fff!important;
+  font-size: 14px ;
+  
 }
 
 
 .status-in-progress {
-  background-color: green; /* Adjust the color as needed */
+  background-color: #28a745 !important; /* Green background color for success */
+  border-color: #fff!important;
+  font-size: 14px ;
+
+
+  /* background-color: rgba(89, 166, 94, 0.647); Adjust the color as needed */
 }
 
 /* Styles for the "Add Medical Report" button */
 .add-medical-report {
   /* Add your specific styles for the "Add Medical Report" button */
+}
+
+
+.add-report {
+  border-color: #fff!important;
+  font-size: 14px ;
+  background-color: #d79d67 !important;
+
 }

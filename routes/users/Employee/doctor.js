@@ -17,21 +17,21 @@ doctor.get('/waiting_list', (req,res) => {
         console.log(result0)
         const department = result0[0].department
 
-        const get_in_progress = `SELECT p.full_name, wl.priority, wl.wait_id, wl.status
+        const get_in_progress = `SELECT p.full_name, p.patient_id, wl.priority, wl.wait_id, wl.status
                              FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
                              WHERE wl.doctor_id = "${doctor_id.userId}"`
 
         db.query(get_in_progress, (err, result) => {
             if (err) console.log(err);
 
-            const get_priority = `SELECT DISTINCT p.full_name, wl.priority, wl.doctor_id, wl.wait_id, wl.status
+            const get_priority = `SELECT DISTINCT p.full_name , p.patient_id, wl.priority, wl.doctor_id, wl.wait_id, wl.status
                                 FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
                                 WHERE wl.priority = "yes" AND wl.status = "waiting" AND department_id = "${department}"`
 
             db.query(get_priority, (err1, result1) => {
                 if (err1) console.log(err1);
 
-                const get_non_priority = `SELECT DISTINCT p.full_name, wl.priority, wl.doctor_id, wl.wait_id, wl.status
+                const get_non_priority = `SELECT DISTINCT p.full_name, p.patient_id, wl.priority, wl.doctor_id, wl.wait_id, wl.status
                                         FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
                                         WHERE wl.priority = "no" AND wl.status = "waiting" AND department_id = "${department}"`
 
@@ -152,7 +152,7 @@ doctor.post('/create_report/:patient_id', (req, res) => {
 })
 
 doctor.get('/get_services', (req, res) => {
-    let services = `SELECT service_name FROM services`
+    let services = `SELECT service_name, service_id FROM services`
 
     db.query(services, (err, result) => {
         if (err) console.log(err);
@@ -161,7 +161,7 @@ doctor.get('/get_services', (req, res) => {
 })
 
 doctor.get('/get_drugs', (req, res) => {
-    let drugs = `SELECT drug_name FROM drugs WHERE quantity_left > 0`
+    let drugs = `SELECT drug_name, drug_id FROM drugs WHERE quantity_left > 0`
 
     db.query(drugs, (err, result) => {
         if (err) console.log(err);
@@ -170,7 +170,7 @@ doctor.get('/get_drugs', (req, res) => {
 })
 
 doctor.get('/get_equipments', (req, res) => {
-    let equipments = `SELECT name FROM equipments WHERE quantity_left > 0`
+    let equipments = `SELECT name, equipment_id FROM equipments WHERE quantity_left > 0`
 
     db.query(equipments, (err, result) => {
         if (err) console.log(err);
