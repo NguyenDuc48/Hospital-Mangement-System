@@ -9,9 +9,33 @@ const DoctorWaitingList = () => {
   const [waitingList, setWaitingList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isToggleActive, setIsToggleActive] = useState(false);
   const [activeRows, setActiveRows] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [medicalActive, setMedicalActive] = useState(false)
+  const [showMedicalReportButton, setShowMedicalReportButton] = useState(false);
+
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token not found in localStorage');
+      }
+
+      const response = await axios.get('/doctor/waiting_list', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      setWaitingList(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching waiting list:', error.message);
+      setError('Failed to fetch waiting list');
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -27,10 +51,6 @@ const DoctorWaitingList = () => {
           },
         });
 
-        // if (!response.data) {
-        //   throw new Error('Empty response data');
-        // }
-
         setWaitingList(response.data);
         setLoading(false);
       } catch (error) {
@@ -43,18 +63,30 @@ const DoctorWaitingList = () => {
     fetchData();
   }, []);
 
-  const handleToggle = (index) => {
-    setActiveRows((prevActiveRows) => {
-      const newActiveRows = [...prevActiveRows];
-      newActiveRows[index] = !newActiveRows[index];
-      return newActiveRows;
-    });
-  };
   const handleFullNameClick = (patient) => {
     setSelectedPatient(patient);
   };
-
-  console.log("WaitingList", waitingList);
+  const handleWaitingButtonClick = async (waitId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token not found in localStorage');
+      }
+      await axios.put(
+        `/doctor/call_patient`,
+        { wait_id: waitId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    fetchData();
+    } catch (error) {
+      console.error('Error calling patient:', error.message);
+    }
+  };
 
   return (
     <div>
@@ -85,14 +117,10 @@ const DoctorWaitingList = () => {
                     <table className="table table-hover">
                       <thead>
                         <tr>
-                        <th className="text-center toggle-btn-th">
-                            <div className="toggle-btn">
-                              <div className="inner-circle"></div>
-                            </div>
-                          </th>
                           <th>Wait ID</th>
                           <th>Full name</th>
                           <th>Priority</th>
+                          <th>Status</th>
                           <th>Medical Report</th>
 
                         </tr>
@@ -111,40 +139,71 @@ const DoctorWaitingList = () => {
                             <td colSpan="4" className="text-center">No data available.</td>
                           </tr>
                         ) : (
-                          waitingList.map((item, index) => (
-                            <tr key={item.wait_id} className="cell-1">
+                          waitingList.map((innerArray, index) => (
+                            <React.Fragment key={index}>
+                              {innerArray.length > 0 ? (
+                                innerArray.map((item, innerIndex) => (
+                                  <tr key={innerIndex} className="cell-1">
+                                    <td>{item.wait_id}</td>
 
-                                <td className="text-center">
-                                <div
-                                  className={`toggle-btn ${activeRows[index] ? 'active' : ''}`}
-                                  onClick={() => handleToggle(index)}
-                                >
-                                  <div className="inner-circle"></div>
-                                </div>
-                              </td>
+                                    <td>
+                                      <span
+                                        className="full-name-link"
+                                        onClick={() => handleFullNameClick(item)}
+                                      >
+                                        {item.full_name}
+                                      </span>
+                                    </td>
+                                    <td>
+                                      {item.priority === 'yes' ? (
+                                        <span className="badge badge-success">Yes</span>
+                                      ) : (
+                                        <span className="badge badge-info">No</span>
+                                      )}
+                                    </td>
+                                    <td>
 
-                              {/* <td>{item[0].wait_id}</td> */}
-                              {/* <td>{item[0].full_name}</td> */}
-                              <td>
-                                <span
-                                className="full-name-link"
-                                onClick={() => handleFullNameClick(item[0])}
-                                >
-                                {/* {item[0].full_name} */}
-                                </span>
-                             </td>
-                              <td>
-                                {/* {item[0].priority === 'yes' ? (
-                                  <span className="badge badge-success">Yes</span>
-                                ) : (
-                                  <span className="badge badge-info">No</span>
-                                )} */}
-                              </td>
-                              <td>
-                                <Button>Add Medical Report</Button>
-                             </td>
-                            </tr>
+                                      {
+                                        item.status === 'waiting' ? (
+                                          <Button 
+                                            onClick={() => handleWaitingButtonClick(item.wait_id)}
+                                            variant='primary'
+                                            
+                                          >
+                                            {item.status}
+                                          </Button>
+
+                                        ) : (
+                                          <Button 
+                                          onClick={() => handleWaitingButtonClick(item.wait_id)}
+                                          variant='secondary'
+                                          
+                                        >
+                                          {item.status}
+                                        </Button>
+
+                                        )
+                                      }
+                                    </td>
+                                    <td>
+                                      {item.status === 'in progress' && (
+                                        <Button>Add Medical Report</Button>
+                                      )}
+                                    </td>
+                                  
+                                  </tr>
+                                ))
+                              ) : (
+                                <tr>
+                                  {/* <td colSpan="5" className="text-center">
+                                    No data available.
+                                  </td> */}
+                                </tr>
+                              )}
+                            </React.Fragment>
                           ))
+                          
+                          
                         )}
                       </tbody>
                     </table>
