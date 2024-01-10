@@ -2,31 +2,54 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Header from './Header';
 import NurseSidebar from './NurseSidebar';
-import { Button, InputGroup, FormControl, Modal, Form, Toast } from 'react-bootstrap';
+import { Button, InputGroup, FormControl, Modal, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-const NursePatientList = () => {
-  const [patientList, setPatientList] = useState([]);
+const NurseBookingList = () => {
+  const [bookedList, setBookedList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchInput, setSearchInput] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedPatientId, setSelectedPatientId] = useState(null);
   const [departmentId, setDepartmentId] = useState('');
   const [description, setDescription] = useState('');
-  const [showToast, setShowToast] = useState(false);
 
-  const fetchAllPatients = async () => {
+  const fetchAllBookedPatients = async () => {
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token not found in localStorage');
+      const response = await axios.get('/nurse/all_booked_patient');
+      if (!response.data) {
+        throw new Error('Empty response data');
       }
+      setBookedList(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching booked patients:', error.message);
+      setError('Failed to fetch booked patient list');
+      setLoading(false);
+    }
+  };
 
-      const response = await axios.get('/nurse/all_patient', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+  const searchBookedPatients = async (input) => {
+    try {
+      const response = await axios.get(`/nurse/all_booked_patient/search/${encodeURIComponent(input)}`);
+      if (!response.data) {
+        throw new Error('Empty response data');
+      }
+      setBookedList(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error searching booked patients:', error.message);
+      setError('Failed to search booked patients');
+      setLoading(false);
+    }
+  };
+
+  const deletePatientFromBookedList = async (patientId) => {
+    try {
+      const response = await axios.delete('/nurse/add_waiting_patient', {
+        data: {
+          patient_id: patientId,
         },
       });
 
@@ -34,80 +57,59 @@ const NursePatientList = () => {
         throw new Error('Empty response data');
       }
 
-      setPatientList(response.data);
-      setLoading(false);
+      // Handle success or show success toast for deletion from booked list
     } catch (error) {
-      console.error('Error fetching all patients:', error.message);
-      setError('Failed to fetch patient list');
-      setLoading(false);
+      console.error('Error deleting patient from booked list:', error.message);
+      // Handle error or show error toast for deletion
     }
   };
 
-  const searchPatients = async () => {
-    try {
-      const response = await axios.get(`/nurse/all_patient/search/${encodeURIComponent(searchInput)}`);
-
-      if (!response.data) {
-        throw new Error('Empty response data');
-      }
-
-      setPatientList(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error searching patients:', error.message);
-      setError('Failed to search patients');
-      setLoading(false);
+  useEffect(() => {
+    if (searchInput) {
+      searchBookedPatients(searchInput);
+    } else {
+      fetchAllBookedPatients();
     }
-  };
+  }, [searchInput]);
 
-  const addPatientToWaitlist = async () => {
-    try {
-      const response = await axios.post('/nurse/add_waiting_patient', {
-        patient_id: selectedPatient.patient_id,
-        department_id: departmentId,
-        description: description,
-      });
-
-      console.log('Add to waitlist response:', response.data);
-
-      // Display the success toast
-      setShowToast(true);
-
-      // Hide the toast after 3 seconds
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-
-      // You may want to update the state or perform additional actions based on the response
-      handleCloseModal();
-    } catch (error) {
-      console.error('Error adding patient to waitlist:', error.message);
-      // Handle error
-    }
-  };
-
-  const handleSearch = () => {
-    searchPatients();
-  };
-
-  const handleShowModal = (patient) => {
-    setSelectedPatient(patient);
-    setDepartmentId('');
-    setDescription('');
+  const handleShowModal = (patientId) => {
+    setSelectedPatientId(patientId);
     setShowModal(true);
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
+    setSelectedPatientId(null);
+    setDepartmentId('');
+    setDescription('');
   };
-  useEffect(() => {
-    if (searchInput) {
-      searchPatients(searchInput);
-    } else {
-      fetchAllPatients();
-    }
-  }, [searchInput]);
 
+  const addPatientToWaitlist = async () => {
+    try {
+      const response = await axios.post('/nurse/add_waiting_patient', {
+        patient_id: selectedPatientId,
+        department_id: departmentId,
+        description: description,
+      });
+
+      if (!response.data) {
+        throw new Error('Empty response data');
+      }
+
+      // Successfully added to waitlist, now delete from booked list
+      await deletePatientFromBookedList(selectedPatientId);
+
+      // Show success toast here
+      handleCloseModal();
+    } catch (error) {
+      console.error('Error adding patient to waitlist:', error.message);
+      // Show error toast here
+    }
+  };
+
+  useEffect(() => {
+    fetchAllBookedPatients();
+  }, []);
 
   return (
     <div>
@@ -136,28 +138,13 @@ const NursePatientList = () => {
           <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <InputGroup className="" style={{ width: '50%' }}>
               <FormControl
-                placeholder="Search by telephone..."
+                placeholder="Search by patient name, phone, or ID..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
-              {/* <Button variant="outline-secondary" onClick={handleSearch}>
-                Search
-              </Button> */}
             </InputGroup>
-            <Button
-              variant="secondary"
-              style={{ marginLeft: '10px', width: '15%' }}
-              onClick={() => {
-                const departmentId = prompt('Enter the department_id:');
-                const description = prompt('Enter the description:');
-                if (departmentId && description) {
-                  addPatientToWaitlist(selectedPatient.patient_id, departmentId, description);
-                }
-              }}
-            >
-              Add Patient
-            </Button>
           </div>
+
           {loading ? (
             <p>Loading...</p>
           ) : error ? (
@@ -167,30 +154,26 @@ const NursePatientList = () => {
               <table className="table table-bordered table-striped">
                 <thead className="thead-light">
                   <tr>
-                    <th>ID</th>
+                    <th>Patient ID</th>
                     <th>Name</th>
-                    <th>Date of Birth</th>
-                    <th>Gender</th>
                     <th>Phone Number</th>
-                    <th>Address</th>
-                    <th>Email</th>
-                    <th>Health Insurance Percent</th>
+                    <th>Booked Date</th>
+                    <th>Booked Time</th>
+                    <th>Description</th>
                     <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {patientList.map((patient, index) => (
-                    <tr key={patient.patient_id} className={index % 2 === 0 ? 'table-light' : 'table-white'}>
-                      <td>{patient.patient_id}</td>
-                      <td>{patient.full_name}</td>
-                      <td>{new Date(patient.dob).toLocaleDateString()}</td>
-                      <td>{patient.gender}</td>
-                      <td>{patient.phone_number}</td>
-                      <td>{patient.address}</td>
-                      <td>{patient.email}</td>
-                      <td>{`${patient.health_insurance_percent}%`}</td>
+                  {bookedList.map((booking, index) => (
+                    <tr key={booking.patient_id} className={index % 2 === 0 ? 'table-light' : 'table-white'}>
+                      <td>{booking.patient_id}</td>
+                      <td>{booking.full_name}</td>
+                      <td>{booking.phone_number}</td>
+                      <td>{new Date(booking.booked_date).toLocaleDateString()}</td>
+                      <td>{booking.booked_time}</td>
+                      <td>{booking.description}</td>
                       <td>
-                        <Button style={{backgroundColor: "#177347"}} onClick={() => handleShowModal(patient)}>
+                        <Button style={{backgroundColor: "#177347"}} variant="success" onClick={() => handleShowModal(booking.patient_id)}>
                           Add Waitlist
                         </Button>
                       </td>
@@ -234,25 +217,6 @@ const NursePatientList = () => {
                   </Button>
                 </Modal.Footer>
               </Modal>
-
-              <Toast
-                show={showToast}
-                onClose={() => setShowToast(false)}
-                delay={3000}
-                autohide
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  backgroundColor: 'green',
-                  color: 'white',
-                }}
-              >
-                <Toast.Header>
-                  <strong className="mr-auto">Success</strong>
-                </Toast.Header>
-                <Toast.Body>Patient added to waitlist successfully!</Toast.Body>
-              </Toast>
             </>
           )}
         </div>
@@ -261,4 +225,4 @@ const NursePatientList = () => {
   );
 };
 
-export default NursePatientList;
+export default NurseBookingList;

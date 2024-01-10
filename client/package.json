@@ -11,14 +11,18 @@
     "cdbreact": "^1.5.18",
     "jwt-decode": "^4.0.0",
     "mdbreact": "^4.23.0",
+    "moment": "^2.30.1",
     "react": "^16.12.0",
     "react-bootstrap": "^1.0.0-beta.16",
+    "react-calendar": "^4.8.0",
+    "react-datepicker": "^4.25.0",
     "react-dom": "^16.12.0",
     "react-helmet": "^6.1.0",
     "react-images": "^1.0.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.2.0",
-    "react-spinners": "^0.13.8"
+    "react-spinners": "^0.13.8",
+    "react-time-picker": "^6.6.0"
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",

@@ -13,7 +13,7 @@ const Slider = () => {
   };
 
   return (
-    <div className="slider-area position-relative">
+    <div id = "home" className="slider-area position-relative">
       <div className="slider-active">
         {/* Single Slider 1 */}
         <div className="single-slider" style={sliderStyle}>

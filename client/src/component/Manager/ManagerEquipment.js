@@ -103,7 +103,7 @@ function ManagerEquipment() {
       });
 
       console.log(response.data);
-      fetchData();
+      // fetchData();
       handleCloseModal();
 
       setShowSuccessMessage(true);
