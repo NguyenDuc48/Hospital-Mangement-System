@@ -6,7 +6,9 @@ const Patient = require('./routes/users/Patient/patient');
 const Doctor = require('./routes/users/Employee/doctor');
 const Manager = require('./routes/users/Employee/manager');
 const Nurse = require('./routes/users/Employee/nurse');
-const Home = require('./routes/Home/home');
+// const Home = require('./routes/Home/home');
+const Login = require('./routes/Login/login');
+
 
 const app = express();
 
@@ -16,7 +18,7 @@ app.use('/patient', Patient);
 app.use('/doctor' , Doctor);
 app.use('/manager', Manager);
 app.use('/nurse', Nurse);
-app.use('/home', Home);
+app.use('/login', Login);
 
 app.use(express.static(path.join(__dirname + '/client/build')));
 

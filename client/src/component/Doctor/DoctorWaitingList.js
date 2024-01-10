@@ -111,40 +111,52 @@ const DoctorWaitingList = () => {
                             <td colSpan="4" className="text-center">No data available.</td>
                           </tr>
                         ) : (
-                          waitingList.map((item, index) => (
-                            <tr key={item.wait_id} className="cell-1">
-
-                                <td className="text-center">
-                                <div
-                                  className={`toggle-btn ${activeRows[index] ? 'active' : ''}`}
-                                  onClick={() => handleToggle(index)}
-                                >
-                                  <div className="inner-circle"></div>
-                                </div>
-                              </td>
-
-                              {/* <td>{item[0].wait_id}</td> */}
-                              {/* <td>{item[0].full_name}</td> */}
-                              <td>
-                                <span
-                                className="full-name-link"
-                                onClick={() => handleFullNameClick(item[0])}
-                                >
-                                {/* {item[0].full_name} */}
-                                </span>
-                             </td>
-                              <td>
-                                {/* {item[0].priority === 'yes' ? (
-                                  <span className="badge badge-success">Yes</span>
-                                ) : (
-                                  <span className="badge badge-info">No</span>
-                                )} */}
-                              </td>
-                              <td>
-                                <Button>Add Medical Report</Button>
-                             </td>
-                            </tr>
+                          waitingList.map((innerArray, index) => (
+                            <React.Fragment key={index}>
+                              {innerArray.length > 0 ? (
+                                innerArray.map((item, innerIndex) => (
+                                  <tr key={innerIndex} className="cell-1">
+                                    <td className="text-center">
+                                      <div
+                                        className={`toggle-btn ${activeRows[index] ? 'active' : ''}`}
+                                        onClick={() => handleToggle(index)}
+                                      >
+                                        <div className="inner-circle"></div>
+                                      </div>
+                                    </td>
+                                    <td>{/* Add your logic for wait_id here */}</td>
+                                    <td>
+                                      <span
+                                        className="full-name-link"
+                                        onClick={() => handleFullNameClick(item)}
+                                      >
+                                        {item.full_name}
+                                      </span>
+                                    </td>
+                                    <td>
+                                      {item.priority === 'yes' ? (
+                                        <span className="badge badge-success">Yes</span>
+                                      ) : (
+                                        <span className="badge badge-info">No</span>
+                                      )}
+                                    </td>
+                                    <td>
+                                      <Button>Add Medical Report</Button>
+                                    </td>
+                                  </tr>
+                                ))
+                              ) : (
+                                // Handle the case when the inner array is empty
+                                <tr>
+                                  {/* <td colSpan="5" className="text-center">
+                                    No data available.
+                                  </td> */}
+                                </tr>
+                              )}
+                            </React.Fragment>
                           ))
+                          
+                          
                         )}
                       </tbody>
                     </table>
