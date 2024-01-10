@@ -87,9 +87,11 @@ doctor.put('/update_me', (req, res) => {
 });
 
 doctor.put('/call_patient', (req, res) => {
+    const doctor_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY)
     let wait_id = req.body.wait_id
     let call = `UPDATE wait_list
-                SET status = "in progress"
+                SET status = "in progress",
+                    doctor_id = "${doctor_id.userId}"
                 WHERE wait_id = "${wait_id.wait_id}"`
 
     db.query(call, (err, result) => {
