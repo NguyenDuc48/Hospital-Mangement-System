@@ -235,7 +235,7 @@ CREATE TABLE IF NOT EXISTS `wait_list` (
   `patient_id` VARCHAR(5) NOT NULL,
   `department_id` INT NOT NULL,
   `description` TEXT NOT NULL,
-  `doctor_handle` VARCHAR(5) NOT NULL,
+  `doctor_in_charge` VARCHAR(5) DEFAULT NULL,
   `status` VARCHAR(15) DEFAULT "waiting",
   `priority` VARCHAR(3) DEFAULT "no" NOT NULL,
   PRIMARY KEY (`wait_id`)
@@ -337,7 +337,7 @@ ALTER TABLE `wait_list`
   FOREIGN KEY (`department_id`)
   REFERENCES `departments` (`department_id`),
   ADD CONSTRAINT `fk_wait_list_doctors`
-  FOREIGN KEY (`doctor_handle`)
+  FOREIGN KEY (`doctor_in_charge`)
   REFERENCES `doctors` (`doctor_id`);  
 
 -- Table `booked`
@@ -462,7 +462,7 @@ INSERT INTO `medical_reports` (`report_id`, `patient_id`, `doctor_id`, `diagnost
 (1, 'BN001', 'BS001', 'Bệnh nhân thấy đau khổ vì làm database lỗi lên lỗi xuống', 'Chịu', 'Làm ít thôi là được', '10:35:19', '2023-12-03', 2, 406629);
 
 
-INSERT INTO wait_list (wait_id, patient_id, department_id, description, status,doctor_handle, priority) VALUES
+INSERT INTO wait_list (wait_id, patient_id, department_id, description, status,doctor_in_charge, priority) VALUES
 (1, 'BN001', 4, 'gsfgfffdfdgfd', 'waiting','BS001', 'yes'),
 (2, 'BN005', 2, 'fghfhfghfg', 'waiting','BS002', 'yes'),
 (3, 'BN002', 3, 'fhfhfghfgh', 'waiting','BS001', 'no'),
