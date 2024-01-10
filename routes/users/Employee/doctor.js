@@ -92,7 +92,7 @@ doctor.put('/call_patient', (req, res) => {
     let call = `UPDATE wait_list
                 SET status = "in progress",
                     doctor_id = "${doctor_id.userId}"
-                WHERE wait_id = "${wait_id.wait_id}"`
+                WHERE wait_id = "${wait_id}"`
 
     db.query(call, (err, result) => {
         if (err) console.log(err);
