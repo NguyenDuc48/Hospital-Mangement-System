@@ -103,7 +103,15 @@ doctor.put('/call_patient', (req, res) => {
 doctor.post('/create_report/:patient_id', (req, res) => {
     const doctor_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY) 
     const patient_id = req.params.patient_id
+    const report = {
+        diagnostic : req.body.diagnostic,
+        conclusion : req.body.conclusion,
+    }
 
+    let note = ''
+    if (req.body.note) {
+        note = req.body.note
+    }
     let create_bill = `INSERT INTO total_bills (service_bill_id, medicine_bill_id, equipment_bill_id, total_bill_raw) 
                        VALUES (NULL, NULL, NULL, NULL)`;
 
@@ -126,9 +134,9 @@ doctor.post('/create_report/:patient_id', (req, res) => {
                                         money_need_to_pay)  
                                      VALUES ("${patient_id}", 
                                              "${doctor_id.userId}", 
-                                             NULL, 
-                                             NULL, 
-                                             NULL, 
+                                             "${report.diagnostic}", 
+                                             "${report.conclusion}", 
+                                             "${note}", 
                                              "${current_time}", 
                                              "${current_date}", 
                                              (SELECT total_bill_id 
