@@ -238,19 +238,21 @@ doctor.route('/take_services/:total_bill_id')
         });
     })
     .put((req, res) => {
-        let calculate = `UPDATE service_bills
+        const total_bill_id = req.params.total_bill_id
+
+        let calculate = `UPDATE service_bills JOIN total_bills
                          SET total_service_bill = (SELECT SUM(services.service_fee)
                                                    FROM services_used_per_id
-                                                   INNER JOIN services ON services_used_per_id.service_id = services.service_id
+                                                        INNER JOIN services ON services_used_per_id.service_id = services.service_id
                                                    WHERE service_bills.service_bill_id = services_used_per_id.service_bill_id
-                                                   GROUP BY services_used_per_id.service_bill_id)`
+                                                   GROUP BY services_used_per_id.service_bill_id)
+                         WHERE total_bills.total_bill_id = "${total_bill_id}"`
 
         db.query(calculate, (err, result) => {
             if (err) {
                 console.log(err);
                 return res.status(500).json({ success: false, message: 'Internal Server Error' });
             }
-
             res.json({ success: true, message: 'Calculate bill completed' });
         });
     });
@@ -319,19 +321,21 @@ doctor.route('/take_drugs/:total_bill_id')
         }); 
     })
     .put((req, res) => {
-        let calculate = `UPDATE medicine_bills
+        const total_bill_id = req.params.total_bill_id
+
+        let calculate = `UPDATE medicine_bills JOIN total_bill_id
                          SET total_medicine_bill = (SELECT SUM(drugs.price)
                                                     FROM drugs_used_per_id
-                                                    INNER JOIN drugs ON drugs_used_per_id.drug_id = drugs.drug_id
+                                                        INNER JOIN drugs ON drugs_used_per_id.drug_id = drugs.drug_id
                                                     WHERE medicine_bills.medicine_bill_id = drugs_used_per_id.medicine_bill_id
-                                                    GROUP BY drugs_used_per_id.medicine_bill_id)`
+                                                    GROUP BY drugs_used_per_id.medicine_bill_id)
+                         WHERE total_bills.total_bill_id = "${total_bill_id}"`
 
         db.query(calculate, (err, result) => {
             if (err) {
                 console.log(err);
                 return res.status(500).json({ success: false, message: 'Internal Server Error' });
             }
-
             res.json({ success: true, message: 'Calculate bill completed' });
         })                                           
     });
@@ -402,20 +406,21 @@ doctor.route('/take_equipments/:total_bill_id')
         }); 
     })
     .put((req, res) => {
-        let calculate = `UPDATE equipment_bills
+        const total_bill_id = req.params.total_bill_id
+
+        let calculate = `UPDATE equipment_bills JOIN total_bills
                          SET total_equipment_bill = (SELECT SUM(equipments.fee_per_day * equipments_used_per_id.quantity_used * equipments_used_per_id.day_used) AS total_fee
                                                      FROM equipments_used_per_id
                                                         INNER JOIN equipments ON equipments_used_per_id.equipment_id = equipments.equipment_id
                          WHERE equipment_bills.equipment_bill_id = equipments_used_per_id.equipment_bill_id
                          GROUP BY equipments_used_per_id.equipment_bill_id
-                         );`
+                         WHERE total_bills.total_bill_id = "${total_bill_id}");`
 
         db.query(calculate, (err, result) => {
             if (err) {
                 console.log(err);
                 return res.status(500).json({ success: false, message: 'Internal Server Error' });
             }
-
             res.json({ success: true, message: 'Calculate bill completed' });
         })                                           
     });
