@@ -17,21 +17,21 @@ doctor.get('/waiting_list', (req,res) => {
         console.log(result0)
         const department = result0[0].department
 
-        const get_in_progress = `SELECT p.full_name, wl.priority, wl.doctor_id
+        const get_in_progress = `SELECT p.full_name, wl.priority, wl.wait_id, wl.status
                              FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
                              WHERE wl.doctor_id = "${doctor_id.userId}"`
 
         db.query(get_in_progress, (err, result) => {
             if (err) console.log(err);
 
-            const get_priority = `SELECT DISTINCT p.full_name, wl.priority, wl.doctor_id
+            const get_priority = `SELECT DISTINCT p.full_name, wl.priority, wl.doctor_id, wl.wait_id, wl.status
                                 FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
                                 WHERE wl.priority = "yes" AND wl.status = "waiting" AND department_id = "${department}"`
 
             db.query(get_priority, (err1, result1) => {
                 if (err1) console.log(err1);
 
-                const get_non_priority = `SELECT DISTINCT p.full_name, wl.priority, wl.doctor_id
+                const get_non_priority = `SELECT DISTINCT p.full_name, wl.priority, wl.doctor_id, wl.wait_id, wl.status
                                         FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
                                         WHERE wl.priority = "no" AND wl.status = "waiting" AND department_id = "${department}"`
 
@@ -90,9 +90,9 @@ doctor.put('/call_patient', (req, res) => {
     const doctor_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY)
     let wait_id = req.body.wait_id
     let call = `UPDATE wait_list
-                SET status = "in progress",
-                    doctor_id = "${doctor_id.userId}"
-                WHERE wait_id = "${wait_id.wait_id}"`
+    SET status = "in progress",
+        doctor_id = "${doctor_id.userId}"
+    WHERE wait_id = "${wait_id}"`
 
     db.query(call, (err, result) => {
         if (err) console.log(err);

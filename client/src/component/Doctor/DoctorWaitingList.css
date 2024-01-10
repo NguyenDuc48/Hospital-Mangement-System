@@ -5,7 +5,9 @@ body {
   background: #eee;
   font-family: Assistant, sans-serif;
 }
-
+.container {
+  padding-left: -100px;
+}
 .cell-1 {
   border-collapse: separate;
   border-spacing: 0 4em;
@@ -81,4 +83,22 @@ body {
   padding: 5px 10px !important
 
 
+}
+
+
+
+/* Styles for the "Status" buttons */
+.status-waiting {
+  background-color: blue; /* Adjust the color as needed */
+  padding : "100px"
+}
+
+
+.status-in-progress {
+  background-color: green; /* Adjust the color as needed */
+}
+
+/* Styles for the "Add Medical Report" button */
+.add-medical-report {
+  /* Add your specific styles for the "Add Medical Report" button */
 }
