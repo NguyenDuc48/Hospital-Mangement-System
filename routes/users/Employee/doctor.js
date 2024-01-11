@@ -26,14 +26,14 @@ doctor.get('/waiting_list', (req,res) => {
 
             const get_priority = `SELECT DISTINCT p.full_name , p.patient_id, wl.priority, wl.doctor_id, wl.wait_id, wl.status
                                 FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
-                                WHERE wl.priority = "yes" AND wl.status = "waiting" AND department_id = "${department}"`
+                                WHERE wl.priority = "yes" AND wl.status != "done" AND department_id = "${department}"`
 
             db.query(get_priority, (err1, result1) => {
                 if (err1) console.log(err1);
 
                 const get_non_priority = `SELECT DISTINCT p.full_name, p.patient_id, wl.priority, wl.doctor_id, wl.wait_id, wl.status
                                         FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
-                                        WHERE wl.priority = "no" AND wl.status = "waiting" AND department_id = "${department}"`
+                                        WHERE wl.priority = "no" AND wl.status != "done" AND department_id = "${department}"`
 
                 db.query(get_non_priority, (err2, result2) => {
                     if (err2) console.log(err2)
@@ -356,7 +356,14 @@ doctor.route('/create_report/:wait_id')
                 });
             })
         })
-        res.send("Create report successfully")
+        // res.send("Create report successfully")
+
+        let update_s = `UPDATE wait_list SET wait_list.status = "done" WHERE wait_id = "${wait_id}"`
+
+        db.query(update_s, (err6, result6) => {
+        if (err6) console.log(err6)
+            res.send("Updated successfully");
+        })
     })
     .put((req, res) => {
         const wait_id = req.params.wait_id
@@ -432,12 +439,18 @@ doctor.route('/create_report/:wait_id')
                                 SET money_need_to_pay = (SELECT (1 - (patient.health_insurance_percent / 100)) * total_bills.total_bill_raw
                                                         FROM patient
                                                         INNER JOIN total_bills ON medical_reports.bill_id = total_bills.total_bill_id
-                                                        WHERE patient.patient_id = medical_reports.patient_id)`
+                                                        WHERE patient.patient_id = medical_reports.patient_id);
+                                                        UPDATE wait_list SET wait_list.status = "done" WHERE wait_id = "${wait_id}" `
+
+                                                        
                                         
         db.query(money_need_to_pay, (err5, result5) => {
             if (err5) console.log(err5)
             res.send("Updated successfully");
         })
+
+
+       
     });
 
 module.exports = doctor;

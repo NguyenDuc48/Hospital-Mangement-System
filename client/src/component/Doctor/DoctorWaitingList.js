@@ -12,7 +12,9 @@ const DoctorWaitingList = () => {
   const [error, setError] = useState(null);
   const [activeRows, setActiveRows] = useState([]);
   // const [selectedPatient, setSelectedPatient] = useState(null);
-  const [selectedPatient, setSelectedPatient] = useState({});
+  // const [selectedPatient, setSelectedPatient] = useState({});
+  const [selectedPatient, setSelectedPatient] = useState(null);
+
 
   const [medicalActive, setMedicalActive] = useState(false)
   const [showMedicalReportButton, setShowMedicalReportButton] = useState(false);
@@ -21,47 +23,20 @@ const DoctorWaitingList = () => {
   const [note, setNote] = useState('');
   const [showMedicalReportModal, setShowMedicalReportModal] = useState(false);
   const [services, setServices] = useState([]);
-  const [selectedService, setSelectedService] = useState(null);
   const [drugs, setDrugs] = useState([]);
   const [selectedDrug, setSelectedDrug] = useState(null);
-  // const [quantity, setQuantity] = useState('');
   const [selectedDrugs, setSelectedDrugs] = useState([]);
   const [quantity, setQuantity] = useState('');
 
-  const handleMedicalReportModal = () => {
-    setShowMedicalReportModal(!showMedicalReportModal);
-  };
-  const handleMedicalReportSubmit = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token not found in localStorage');
-      }
+  const [selectedServices, setSelectedServices] = useState([]);
+  const [selectedService, setSelectedService] = useState(null);
+  const [serviceQuantity, setServiceQuantity] = useState('');
 
-      const response = await axios.post(
-        `/doctor/create_report/${selectedPatient.patient_id}`,
-        {
-          diagnostic,
-          conclusion,
-          note,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
 
-      // Handle success, close modal, or update state as needed
-      console.log('Medical report created:', response.data);
-      setShowMedicalReportModal(false);
-      fetchData(); // Fetch data again to update the waiting list
-    } catch (error) {
-      console.error('Error creating medical report:', error.message);
-      // Handle error as needed
-    }
-  };
+  const [selectedEquipments, setSelectedEquipments] = useState([]);
+  const [selectedEquipment, setSelectedEquipment] = useState(null);
+  const [equipmentQuantity, setEquipmentQuantity] = useState('');
+  const [equipments, setEquipments] = useState([]);
 
   const fetchData = async () => {
     try {
@@ -83,6 +58,75 @@ const DoctorWaitingList = () => {
       console.error('Error fetching waiting list:', error.message);
       setError('Failed to fetch waiting list');
       setLoading(false);
+    }
+  };
+  const handleMedicalReportModal = (waitId) => {
+    setSelectedPatient(waitingList.flat().find(patient => patient.wait_id === waitId) || {});
+    setShowMedicalReportModal(!showMedicalReportModal);
+  };
+  
+
+  const handleMedicalReportSubmit = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token not found in localStorage');
+      }
+  
+      const equipmentsList = selectedEquipments.map(equipment => [equipment.equipment_id, equipment.quantity, equipment.daysUsed]);
+  
+      const response = await axios.post(
+        `/doctor/create_report/${selectedPatient.wait_id}`,
+        {
+          diagnostic,
+          conclusion,
+          note,
+          services_list: selectedServices.map(service => service.service_id),
+          drugs_list: selectedDrugs.map(drug => [drug.drug_id, drug.quantity]),
+          equipments_list: equipmentsList,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+  
+      // Handle success, close modal, or update state as needed
+      console.log('Medical report created:', response.data);
+      setShowMedicalReportModal(false);
+      fetchData(); // Fetch data again to update the waiting list
+    } catch (error) {
+      console.error('Error creating medical report:', error.message);
+      // Handle error as needed
+    }
+  };
+  
+
+
+  const handleWaitingButtonClick = async (waitId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token not found in localStorage');
+      }
+  
+      await axios.put(
+        `/doctor/call_patient`,
+        { wait_id: waitId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+  
+      // Fetch updated data after calling the patient
+      fetchData();
+    } catch (error) {
+      console.error('Error calling patient:', error.message);
     }
   };
   useEffect(() => {
@@ -111,47 +155,30 @@ const DoctorWaitingList = () => {
     fetchData();
   }, []);
 
+  // useEffect(() => {
+  //   // Set the first patient as selectedPatient when waitingList changes
+  //   if (waitingList.length > 0) {
+  //     setSelectedPatient(waitingList[0][0] || {});
+  //   }
+  // }, [waitingList]);
+
+  // useEffect(() => {
+  //   // Set the selectedPatient based on the first wait_id when waitingList changes
+  //   if (waitingList.length > 0) {
+  //     const firstWaitId = waitingList[0][0]?.wait_id || null;
+  //     setSelectedPatient(waitingList.flat().find(patient => patient.wait_id === firstWaitId) || {});
+  //   }
+  // }, [waitingList]);
+
   useEffect(() => {
-    // Set the first patient as selectedPatient when waitingList changes
+    // Set the selectedPatient based on the first wait_id when waitingList changes
     if (waitingList.length > 0) {
-      setSelectedPatient(waitingList[0][0] || {});
+      // Assuming the wait_id is the first item in each inner array
+      const firstWaitId = waitingList[0][0]?.wait_id || null;
+      setSelectedPatient(waitingList.flat().find(patient => patient.wait_id === firstWaitId) || {});
     }
   }, [waitingList]);
-
-  const handleWaitingButtonClick = async (waitId) => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token not found in localStorage');
-      }
-      await axios.put(
-        `/doctor/call_patient`,
-        { wait_id: waitId },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-    fetchData();
-    } catch (error) {
-      console.error('Error calling patient:', error.message);
-    }
-  };
-
-  const fetchDrugs = async () => {
-    try {
-      const response = await axios.get('/doctor/get_drugs');
-      setDrugs(response.data);
-    } catch (error) {
-      console.error('Error fetching drugs:', error.message);
-    }
-  };
-  useEffect(() => {
-    fetchDrugs();
-  }, []);
-    
+  
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -178,10 +205,26 @@ const DoctorWaitingList = () => {
   
     fetchDrugs();
   }, []);
-  
 
-  // console.log("Patient", selectedPatient)
-  // console.log("Waiting", waitingList)
+
+useEffect(() => {
+  const fetchEquipments = async () => {
+    try {
+      const response = await axios.get('/doctor/get_equipments');
+      setEquipments(response.data);
+    } catch (error) {
+      console.error('Error fetching equipments:', error.message);
+      // Handle error as needed
+    }
+  };
+
+  fetchEquipments();
+}, []); 
+
+console.log("Equipment", equipments)
+console.log(selectedPatient)
+console.log("Wait",waitingList)
+
 
   return (
     <div>
@@ -284,7 +327,15 @@ const DoctorWaitingList = () => {
                                     <td>
                                       
                                       {item.status === 'in progress' && (
-                                        <Button className = "add-report" onClick={handleMedicalReportModal}>Add Report</Button>
+                                       // Inside the map function where you render the rows of the waiting list
+<Button
+  className="add-report"
+  onClick={() => handleMedicalReportModal(item.wait_id)}
+>
+  Add Report
+</Button>
+
+
                                       )}
                                     </td>
                                   
@@ -343,21 +394,56 @@ const DoctorWaitingList = () => {
                 onChange={(e) => setNote(e.target.value)}
               />
             </Form.Group>
-            <Form.Group controlId="service">
-              <Form.Label>Service</Form.Label>
-              <Dropdown onSelect={(eventKey) => setSelectedService(eventKey)}>
-                <Dropdown.Toggle variant="success" id="dropdown-basic">
-                  {selectedService ? selectedService.service_name : 'Select Service'}
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  {services.map((service) => (
-                    <Dropdown.Item key={service.service_id} eventKey={service}>
-                      {service.service_name}
-                    </Dropdown.Item>
-                  ))}
-                </Dropdown.Menu>
-              </Dropdown>
-            </Form.Group>
+
+
+
+<Form.Group controlId="service">
+  <Form.Label>Service</Form.Label>
+  <Dropdown onSelect={(eventKey) => {
+      const selectedService = services.find(service => service.service_id === parseInt(eventKey, 10));
+      setSelectedServices([...selectedServices, { ...selectedService, quantity: serviceQuantity }]);
+      setServiceQuantity('');
+    }}
+  >
+    <Dropdown.Toggle variant="success" id="dropdown-service">
+      {selectedServices.length > 0 ? 'Services Selected' : 'Select Service'}
+    </Dropdown.Toggle>
+    <Dropdown.Menu>
+      {services.map((service) => (
+        <Dropdown.Item key={service.service_id} eventKey={service.service_id}>
+          {service.service_name}
+        </Dropdown.Item>
+      ))}
+    </Dropdown.Menu>
+  </Dropdown>
+</Form.Group>
+
+{selectedServices.length > 0 && (
+  <>
+    {selectedServices.map((selectedService, index) => (
+      <div key={index}>
+        <p>Selected Service: {selectedService.service_name}</p>
+        <Form.Group controlId={`service-quantity-${index}`}>
+          <Form.Label>Quantity</Form.Label>
+          {/* <Form.Control
+            type="text"
+            placeholder="Enter quantity"
+            value={selectedService.quantity}
+            onChange={(e) => {
+              const updatedServices = [...selectedServices];
+              updatedServices[index].quantity = e.target.value;
+              setSelectedServices(updatedServices);
+            }}
+          /> */}
+        </Form.Group>
+
+        {/* Add any other display logic for the selected service */}
+      </div>
+    ))}
+
+    {/* Add any other input fields related to the selected service here */}
+  </>
+)}
 
       
 <Form.Group controlId="drug">
@@ -407,6 +493,73 @@ const DoctorWaitingList = () => {
     {/* Add any other input fields related to the selected drug here */}
   </>
 )}
+
+
+
+
+
+<Form.Group controlId="equipment">
+  <Form.Label>Equipment</Form.Label>
+  <Dropdown onSelect={(eventKey) => {
+      const selectedEquipment = equipments.find(equipment => equipment.equipment_id === parseInt(eventKey, 10));
+      setSelectedEquipments([...selectedEquipments, { ...selectedEquipment, quantity: equipmentQuantity }]);
+      setEquipmentQuantity('');
+    }}
+  >
+    <Dropdown.Toggle variant="success" id="dropdown-equipment">
+      {selectedEquipments.length > 0 ? 'Equipments Selected' : 'Select Equipment'}
+    </Dropdown.Toggle>
+    <Dropdown.Menu>
+      {equipments.map((equipment) => (
+        <Dropdown.Item key={equipment.equipment_id} eventKey={equipment.equipment_id}>
+          {equipment.name}
+        </Dropdown.Item>
+      ))}
+    </Dropdown.Menu>
+  </Dropdown>
+</Form.Group>
+{selectedEquipments.length > 0 && (
+  <>
+    {selectedEquipments.map((selectedEquipment, index) => (
+      <div key={index}>
+        <p>Selected Equipment: {selectedEquipment.name}</p>
+        <Form.Group controlId={`equipment-quantity-${index}`}>
+          <Form.Label>Quantity</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter quantity"
+            value={selectedEquipment.quantity}
+            onChange={(e) => {
+              const updatedEquipments = [...selectedEquipments];
+              updatedEquipments[index].quantity = e.target.value;
+              setSelectedEquipments(updatedEquipments);
+            }}
+          />
+        </Form.Group>
+
+        <Form.Group controlId={`equipment-days-${index}`}>
+          <Form.Label>Days Used</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Enter days used"
+            value={selectedEquipment.daysUsed}
+            onChange={(e) => {
+              const updatedEquipments = [...selectedEquipments];
+              updatedEquipments[index].daysUsed = e.target.value;
+              setSelectedEquipments(updatedEquipments);
+            }}
+          />
+        </Form.Group>
+
+        {/* Add any other display logic for the selected equipment */}
+      </div>
+    ))}
+
+    {/* Add any other input fields related to the selected equipment here */}
+  </>
+)}
+
+
 
            
 
