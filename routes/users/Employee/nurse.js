@@ -199,14 +199,14 @@ nurse.get('/waiting_list', (req,res) => {
     let get_list = `SELECT DISTINCT wl.wait_id, p.full_name, d.department_name, wl.description
                     FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
                                       JOIN departments d ON d.department_id = wl.department_id
-                    WHERE wl.status = "waiting" AND wl.priority = "yes"
+                    WHERE wl.priority = "yes"
 
                     UNION
 
                     SELECT DISTINCT wl.wait_id, p.full_name, d.department_name, wl.description
                     FROM wait_list wl JOIN patient p ON p.patient_id = wl.patient_id 
                                       JOIN departments d ON d.department_id = wl.department_id
-                    WHERE wl.status = "waiting" AND wl.priority = "no"`
+                    WHERE wl.priority = "no"`
 
     db.query(get_list, (err, result) => {
         if (err) console.log(err);
