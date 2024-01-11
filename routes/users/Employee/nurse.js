@@ -93,7 +93,7 @@ nurse.get('/waiting_to_pay', (req,res) => {
 nurse.get('/show_bill_info/:wait_id', (req, res) => {
     const wait_id = req.params.wait_id
 
-    let info = `SELECT p.full_name, mr.conclusion, mr.note, p.health_insurance_percent, tb.total_bill_raw, mr.money_need_to_pay
+    let info = `SELECT p.full_name, mr.conclusion, mr.note, p.health_insurance_percent, mr.money_need_to_pay
                 FROM patient p JOIN wait_list wl ON wl.patient_id = p.patient_id
                     JOIN medical_reports mr ON mr.patient_id = wl.patient_id
                     JOIN total_bills tb ON tb.total_bill_id = mr.bill_id
