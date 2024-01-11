@@ -413,7 +413,6 @@ employee.put('/update_equipment', (req, res) => {
     });
     res.send('Equipment information updated successfully');
 });
-// return res.status(200).json({ success: true, message: 'Patient added successfully' });
 employee.delete('/delete_equipment', (req, res) => {
     const equipment_id = req.body.equipment_id;
     console.log('Equipment ID to delete:', equipment_id);
