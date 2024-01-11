@@ -66,6 +66,17 @@ employee.post('/add_doctor', (req, res) => {
         if (result1[0] == undefined) {
             bcrypt.hash(req.body.password, 10, (err, hash) => {
                 doctorData.password = hash;
+
+                let create_account = `INSERT INTO credentials (username, password, id) 
+                                        VALUES ("${doctorData.doctor_id.toLowerCase()}",
+                                                "${doctorData.password}",
+                                                "${doctorData.doctor_id}")`;
+
+                db.query(create_account, (err3, result3) => {
+                    if (err3) console.log(err3);
+                });
+
+
                 let create = `INSERT INTO employees (employee_id, full_name, dob, gender, phone_number, email, address, salary, work_from)
                                 VALUES ("${doctorData.doctor_id}", 
                                         "${doctorData.full_name}",
@@ -82,14 +93,6 @@ employee.post('/add_doctor', (req, res) => {
                     if (err2) console.log(err2);
                 });
 
-                let create_account = `INSERT INTO credentials (username, password, id) 
-                                        VALUES ("${doctorData.doctor_id.toLowerCase()}",
-                                                "${doctorData.password}",
-                                                "${doctorData.doctor_id}")`;
-
-                db.query(create_account, (err3, result3) => {
-                    if (err3) console.log(err3);
-                });
 
                 let create_doctor = `INSERT INTO doctors (doctor_id, expertise, department)
                                         VALUES ("${doctorData.doctor_id}",
@@ -410,7 +413,7 @@ employee.put('/update_equipment', (req, res) => {
     });
     res.send('Equipment information updated successfully');
 });
-
+// return res.status(200).json({ success: true, message: 'Patient added successfully' });
 employee.delete('/delete_equipment', (req, res) => {
     const equipment_id = req.body.equipment_id;
     console.log('Equipment ID to delete:', equipment_id);
@@ -422,7 +425,7 @@ employee.delete('/delete_equipment', (req, res) => {
             console.error(err);
             res.status(500).send('Error deleting equipment');
         } else {
-            res.send('Equipment deleted successfully');
+            res.status(200).json({ success: true, message: 'Delete equipment successfully!' });
         }
     });
 });

@@ -193,7 +193,6 @@ function ManagerDepartment() {
                                                 <th className="text-center align-middle">Description</th>
                                                 <th className="text-center align-middle">Head of department</th>
                                                 <th className="text-center align-middle">Phone</th>
-                                                <th className="text-center align-middle">Email</th>
                                                 <th className="text-center align-middle">Address</th>
                                                 <th className="text-center align-middle">Actions</th>
                                             </tr>
@@ -206,7 +205,6 @@ function ManagerDepartment() {
                                                     <td className="text-center align-middle">{department.description}</td>
                                                     <td className="text-center align-middle">{department.head_of_department}</td>
                                                     <td className="text-center align-middle">{department.department_phone}</td>
-                                                    <td className="text-center align-middle">{department.department_email}</td>
                                                     <td className="text-center align-middle">{department.department_address}</td>
                                                     <td className="text-center align-middle">
                                                         <a

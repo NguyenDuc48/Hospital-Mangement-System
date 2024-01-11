@@ -134,10 +134,7 @@ function ManagerEquipment() {
       });
 
       if (deleteResponse.data.success) {
-        // Update the state to remove the deleted equipment
-        setEquipments((prevEquipments) =>
-          prevEquipments.filter((equipment) => equipment.equipment_id !== deletingEquipmentId)
-        );
+        fetchData();
       } else {
         console.error('Error deleting equipment:', deleteResponse.data.error);
       }
