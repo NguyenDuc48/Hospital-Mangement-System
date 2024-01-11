@@ -97,7 +97,8 @@ nurse.get('/show_bill_info/:wait_id', (req, res) => {
                 FROM patient p JOIN wait_list wl ON wl.patient_id = p.patient_id
                     JOIN medical_reports mr ON mr.patient_id = wl.patient_id
                     JOIN total_bills tb ON tb.total_bill_id = mr.bill_id
-                WHERE wl.wait_id = "${wait_id}" AND mr.payment_status = "pending"`
+                WHERE wl.wait_id = "${wait_id}" AND mr.payment_status = "pending"
+                ORDER BY report_id DESC LIMIT 1`
 
     db.query(info, (err, result) => {
         if (err) console.log(err);
@@ -108,38 +109,45 @@ nurse.get('/show_bill_info/:wait_id', (req, res) => {
 nurse.get('/show_list_in_bill/:wait_id', (req, res) => {
     const wait_id = req.params.wait_id
 
-    let list = `SELECT s.service_name, s.service_fee AS price, NULL AS quantity_used, NULL AS day_used
-                FROM services s 
-                    JOIN services_used_per_id sui ON s.service_id = sui.service_id
-                    JOIN total_bills tb ON tb.service_bill_id = sui.service_bill_id
-                    JOIN medical_reports mr ON mr.bill_id = tb.total_bill_id
-                    JOIN wait_list wl ON wl.patient_id = mr.patient_id
-                WHERE wait_id = "${wait_id}" AND payment_status = "pending"
+    let services_list = `SELECT s.service_name, s.service_fee AS price, NULL AS quantity_used, NULL AS day_used
+                        FROM services s 
+                            JOIN services_used_per_id sui ON s.service_id = sui.service_id
+                            JOIN total_bills tb ON tb.service_bill_id = sui.service_bill_id
+                            JOIN medical_reports mr ON mr.bill_id = tb.total_bill_id
+                            JOIN wait_list wl ON wl.patient_id = mr.patient_id
+                        WHERE wait_id = "${wait_id}" AND payment_status = "pending"
+                        ORDER BY report_id DESC LIMIT 1`
 
-                UNION
-
-                SELECT d.drug_name, d.price, dui.quantity_used, NULL AS day_used
-                FROM drugs d 
-                    JOIN drugs_used_per_id dui ON d.drug_id = dui.drug_id
-                    JOIN total_bills tb ON tb.medicine_bill_id = dui.medicine_bill_id
-                    JOIN medical_reports mr ON mr.bill_id = tb.total_bill_id
-                    JOIN wait_list wl ON wl.patient_id = mr.patient_id
-                WHERE wait_id = "${wait_id}" AND payment_status = "pending"
-                        
-                UNION
-                        
-                SELECT e.name, e.fee_per_day AS price, eui.quantity_used, eui.day_used
-                FROM equipments e 
-                    JOIN equipments_used_per_id eui ON e.equipment_id = eui.equipment_id
-                    JOIN total_bills tb ON tb.equipment_bill_id = eui.equipment_bill_id
-                    JOIN medical_reports mr ON mr.bill_id = tb.total_bill_id
-                    JOIN wait_list wl ON wl.patient_id = mr.patient_id
-                WHERE wait_id = "${wait_id}" AND payment_status = "pending";`
-                            
-    db.query(list, (err, result) => {
+    db.query(services_list, (err, result) => {
         if (err) console.log(err);
-        res.send(result)
-    });
+        
+        let drugs_list = `SELECT d.drug_name, d.price, dui.quantity_used, NULL AS day_used
+                    FROM drugs d 
+                        JOIN drugs_used_per_id dui ON d.drug_id = dui.drug_id
+                        JOIN total_bills tb ON tb.medicine_bill_id = dui.medicine_bill_id
+                        JOIN medical_reports mr ON mr.bill_id = tb.total_bill_id
+                        JOIN wait_list wl ON wl.patient_id = mr.patient_id
+                    WHERE wait_id = "${wait_id}" AND payment_status = "pending"
+                    ORDER BY report_id DESC LIMIT 1`
+
+        db.query(drugs_list, (err2, result2) => {
+            if (err2) console.log(err2);
+
+            let equipments_list = `SELECT e.name, e.fee_per_day AS price, eui.quantity_used, eui.day_used
+                        FROM equipments e 
+                            JOIN equipments_used_per_id eui ON e.equipment_id = eui.equipment_id
+                            JOIN total_bills tb ON tb.equipment_bill_id = eui.equipment_bill_id
+                            JOIN medical_reports mr ON mr.bill_id = tb.total_bill_id
+                            JOIN wait_list wl ON wl.patient_id = mr.patient_id
+                        WHERE wait_id = "${wait_id}" AND payment_status = "pending"
+                        ORDER BY report_id DESC LIMIT 1`
+                            
+            db.query(equipments_list, (err3, result3) => {
+                if (err3) console.log(err3);
+                res.send([result, result2, result3])
+            });
+        })
+    })
 })
 
 nurse.route('/pay')
