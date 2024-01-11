@@ -7,7 +7,7 @@ const db = require('../../utils/db');
 
 process.env.SECRET_KEY = 'Arijit';
 
-home.post('/', (req, res) => {
+home.post('/login', (req, res) => {
     const { username, password } = req.body;
     const find = `SELECT password, id FROM credentials WHERE username = "${username}"`;
     console.log("reqbody:" , req.body)
@@ -57,19 +57,32 @@ home.post('/', (req, res) => {
     });
 });
 
-home.delete('/reset_wait_list', (req, res) => {
-    const time = new Date();
-    
-    if (time.getHours() == 23) {
-        let reset = `DELETE FROM wait_list`
-
-        db.query(reset, (err, result) => {
-            if (err) console.log(err);
-            res.send("Reset Completed")
-        }) 
-    } else {
-        res.send("Not the time to reset")
+home.put('/change_password', (req, res) => {
+    const user_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY) 
+    const password = {
+        old_password : req.body.old_password,
+        new_password : req.body.new_password,
+        confirm : req.body.confirm
     }
+
+    let show_password = `SELECT password 
+                         FROM credentials
+                         WHERE id = "${user_id}"`
+
+    db.query(show_password, (err, result) => {
+        if (err) console.log(err)
+        {
+            if (password.new_password == password.confirm && password.old_password == result[0]) {
+                let change_password = `UPDATE credentials
+                                       SET password = "${password.new_password}"`
+
+                db.query(change_password, (err2, result2) => {
+                    if (err2) console.log(err2)
+                    res.send("Update successfully")
+                })
+            }
+        }
+    })
 })
 
 module.exports = home;
