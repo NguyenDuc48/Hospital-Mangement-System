@@ -379,21 +379,45 @@ doctor.route('/create_report/:wait_id')
         });
         
         let calculate_drugs = `UPDATE medicine_bills JOIN total_bills
-                                SET total_medicine_bill = (SELECT SUM(drugs.price)
+                                SET total_medicine_bill = (SELECT SUM(drugs.price * drugs_used_per_id.quantity_used) AS total_fee
                                                             FROM drugs_used_per_id
                                                                 INNER JOIN drugs ON drugs_used_per_id.drug_id = drugs.drug_id                                                         
                                                             WHERE medicine_bills.medicine_bill_id = drugs_used_per_id.medicine_bill_id
                                                             GROUP BY drugs_used_per_id.medicine_bill_id)
                                 WHERE total_bills.total_bill_id = (SELECT mr.bill_id
                                                                     FROM medical_reports mr JOIN wait_list wl ON mr.patient_id = wl.patient_id
-                                                                    WHERE mr.payment_status = "pending" AND wl.wait_id = "${wait_id}")`
-
+                                                                    WHERE mr.payment_status = "pending" AND wl.wait_id = "${wait_id}")`                                                           
+        
         db.query(calculate_drugs, (err2, result2) => {
             if (err2) {
                 console.log(err2);
                 return res.status(500).json({ success: false, message: 'Internal Server Error' });
             }
         })  
+
+        let calculate_drugs_after_insurance = `UPDATE medicine_bills
+                                                SET total_medicine_bill = (
+                                                    SELECT SUM(
+                                                        CASE
+                                                            WHEN patient.health_insurance_percent > 50 AND drugs.insurance_coverage = 'YES' THEN 0
+                                                            ELSE drugs.price * drugs_used_per_id.quantity_used
+                                                        END
+                                                    )
+                                                    FROM drugs_used_per_id
+                                                    INNER JOIN drugs ON drugs_used_per_id.drug_id = drugs.drug_id
+                                                    INNER JOIN total_bills ON drugs_used_per_id.medicine_bill_id = total_bills.medicine_bill_id
+                                                    INNER JOIN medical_reports ON total_bills.total_bill_id = medical_reports.bill_id
+                                                    INNER JOIN patient ON medical_reports.patient_id = patient.patient_id
+                                                    WHERE medicine_bills.medicine_bill_id = drugs_used_per_id.medicine_bill_id
+                                                    GROUP BY drugs_used_per_id.medicine_bill_id
+                                                );`
+
+        db.query(calculate_drugs_after_insurance, (err_insurance, result_insurance) => {
+            if (err_insurance) {
+                console.log(err_insurance);
+                return res.status(500).json({ success: false, message: 'Internal Server Error' });
+            }
+        })
 
         let calculate_equipments = `UPDATE equipment_bills JOIN total_bills
                                     SET total_equipment_bill = (SELECT SUM(equipments.fee_per_day * equipments_used_per_id.quantity_used * equipments_used_per_id.day_used) AS total_fee
@@ -411,22 +435,6 @@ doctor.route('/create_report/:wait_id')
                 return res.status(500).json({ success: false, message: 'Internal Server Error' });
             }
         })    
-
-        let total_bill = `UPDATE total_bills
-                        SET total_bill_raw = (SELECT (COALESCE(SUM(service_bills.total_service_bill), 0)
-                                                    + COALESCE(SUM(medicine_bills.total_medicine_bill), 0)
-                                                    + COALESCE(SUM(equipment_bills.total_equipment_bill), 0)) AS total_raw
-                                                FROM total_bills
-                                                    LEFT JOIN service_bills ON total_bills.service_bill_id = service_bills.service_bill_id
-                                                    LEFT JOIN medicine_bills ON total_bills.medicine_bill_id = medicine_bills.medicine_bill_id
-                                                    LEFT JOIN equipment_bills ON total_bills.equipment_bill_id = equipment_bills.equipment_bill_id)
-                        WHERE total_bill_id = (SELECT mr.bill_id
-                                                FROM medical_reports mr JOIN wait_list wl ON mr.patient_id = wl.patient_id
-                                                WHERE mr.payment_status = "pending" AND wl.wait_id = "${wait_id}")`
-        
-        db.query(total_bill, (err4, result4) => {
-            if (err4) console.log(err4)
-        });
 
         let money_need_to_pay = `UPDATE medical_reports
                                 SET money_need_to_pay = (SELECT (1 - (patient.health_insurance_percent / 100)) * total_bills.total_bill_raw
