@@ -1,0 +1,9 @@
+.custom-calendar-style {
+    /* Add your custom styles here */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    line-height: 24px;
+    margin: 0 auto
+
+    /* ... (other styles) */
+  }
