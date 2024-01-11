@@ -14,6 +14,12 @@ const Header = () => {
       aboutSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
+  const handleScrollToDepartment = () => {
+    const aboutSection = document.getElementById('department');
+    if (aboutSection) {
+      aboutSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <header>
@@ -47,7 +53,7 @@ const Header = () => {
                 <a className="nav-link" href="doctor.html">Doctors</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="department.html">Department</a>
+                <a className="nav-link" href="#department">Department</a>
               </li>
               {/* <li className="nav-item">
                 <a className="nav-link" href="blog.html">Blog</a>

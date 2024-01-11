@@ -93,10 +93,10 @@ const About = () => {
               </div>
             </Col>
             <Col lg={6} md={12}>
-              <div className="position-relative">
+              <div className="">
                 <div
-                  className="position-absolute top-0 end-0 d-none d-lg-block"
-                  style={{ zIndex: 1 }}
+                  className=" top-0 end-0 d-none d-lg-block"
+                  // style={{ zIndex: 1 }}
                 >
                   <img
                     src={about2}
@@ -104,7 +104,7 @@ const About = () => {
                     style={{ maxWidth: "100%", maxHeight: "100%" }}
                   />
                 </div>
-                <div
+                {/* <div
                   className="position-absolute top-0 end-0"
                   style={{ zIndex: 2 }}
                 >
@@ -113,7 +113,7 @@ const About = () => {
                     alt=""
                     style={{ maxWidth: "100%", maxHeight: "50%" }}
                   />
-                </div>
+                </div> */}
               </div>
             </Col>
           </Row>
