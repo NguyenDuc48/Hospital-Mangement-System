@@ -3,7 +3,7 @@ import { Form, Button, Alert } from "react-bootstrap";
 import "./login.css";
 import axios from "axios";
 import BackgroundImage from "../../../src/photo/background.png";
-
+import { Link } from "react-router-dom";
 const Login = (props) => {
   const [inputUsername, setInputUsername] = useState("");
   const [inputPassword, setInputPassword] = useState("");
@@ -26,7 +26,7 @@ const Login = (props) => {
         localStorage.setItem("token", token);
         // console.log(localStorage.getItem('token'));
         props.history.push("/manager/doctor_account");
-      } 
+      }
       if (response.status === 202) {
         const { message, token } = response.data;
         console.log(message); // 'Login successful'
@@ -34,23 +34,23 @@ const Login = (props) => {
         localStorage.setItem("token", token);
         console.log(localStorage.getItem('token'));
         props.history.push("/patient/get_profile");
-      } 
-     else if (response.status === 201) {
+      }
+      else if (response.status === 201) {
         const { message, token } = response.data;
         console.log(message); // 'Login successful'
         console.log(token);   // The JWT token
         localStorage.setItem("token", token);
         console.log(localStorage.getItem('token'));
         props.history.push("/doctor/get_profile");
-      } 
-     else if (response.status === 203) {
+      }
+      else if (response.status === 203) {
         const { message, token } = response.data;
         console.log(message); // 'Login successful'
         console.log(token);   // The JWT token
         localStorage.setItem("token", token);
         console.log(localStorage.getItem('token'));
         props.history.push("/nurse/get_profile");
-      } 
+      }
       else {
         setShow(true); // Show an error message for unsuccessful login
       }
@@ -61,7 +61,7 @@ const Login = (props) => {
 
     setLoading(false);
   };
-  const handlePassword = () => {};
+  // const handlePassword = () => { };
 
   function delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -77,10 +77,7 @@ const Login = (props) => {
       {/* Form */}
       <Form className="shadow p-4 bg-white rounded" onSubmit={handleSubmit}>
         {/* Header */}
-        <img
-          className="img-thumbnail mx-auto d-block mb-2"
-        />
-        <div className="h4 mb-2 text-center">Sign In</div>
+        <div className="h4 mb-2 text-center">Đăng nhập</div>
         {/* ALert */}
         {show ? (
           <Alert
@@ -89,13 +86,13 @@ const Login = (props) => {
             onClose={() => setShow(false)}
             dismissible
           >
-            Incorrect username or password.
+            Sai tài khoản hoặc mật khẩu.
           </Alert>
         ) : (
           <div />
         )}
         <Form.Group className="mb-2" controlId="username">
-          <Form.Label>Username</Form.Label>
+          <Form.Label>Số điện thoại</Form.Label>
           <Form.Control
             type="text"
             value={inputUsername}
@@ -105,7 +102,7 @@ const Login = (props) => {
           />
         </Form.Group>
         <Form.Group className="mb-2" controlId="password">
-          <Form.Label>Password</Form.Label>
+          <Form.Label>Mật khẩu</Form.Label>
           <Form.Control
             type="password"
             value={inputPassword}
@@ -115,18 +112,18 @@ const Login = (props) => {
           />
         </Form.Group>
         <Form.Group className="mb-2" controlId="checkbox">
-          <Form.Check type="checkbox" label="Remember me" />
+          <Form.Check type="checkbox" label="Ghi nhớ đăng nhập" />
         </Form.Group>
         {!loading ? (
           <Button className="w-100" variant="primary" type="submit">
-            Log In
+            Đăng nhập
           </Button>
         ) : (
           <Button className="w-100" variant="primary" type="submit" disabled>
-            Logging In...
+            Đang chuyển hướng...
           </Button>
         )}
-        <div className="d-grid justify-content-end">
+        {/* <div className="d-grid justify-content-end">
           <Button
             className="text-muted px-0"
             variant="link"
@@ -134,12 +131,18 @@ const Login = (props) => {
           >
             Forgot password?
           </Button>
+        </div> */}
+        <div className="text-center mt-3">
+          Chưa có tài khoản ?{"  "}
+          <Link to="/sign_up" className="text-primary">
+            Đăng kí ngay
+          </Link>
         </div>
       </Form>
       {/* Footer */}
-      <div className="w-100 mb-2 position-absolute bottom-0 start-50 translate-middle-x text-white text-center">
+      {/* <div className="w-100 mb-2 position-absolute bottom-0 start-50 translate-middle-x text-white text-center">
         Made by Hendrik C | &copy;2022
-      </div>
+      </div> */}
     </div>
   );
 };

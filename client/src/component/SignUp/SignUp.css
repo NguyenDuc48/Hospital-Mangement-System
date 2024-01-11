@@ -1,0 +1,65 @@
+/* SignUp.css */
+
+/* Apply a global box-sizing for better layout consistency */
+* {
+    box-sizing: border-box;
+  }
+  
+  /* Background styling */
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #f8f9fa; /* Light grey background color */
+  }
+  
+  /* Center the form vertically and horizontally */
+  .bg-dark {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Card styling */
+  .my-4 {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Card body styling */
+  .text-black {
+    padding: 2rem;
+  }
+  
+  /* Form title styling */
+  .text-uppercase {
+    text-align: center;
+  }
+  
+  /* Form styling */
+  .form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Form input styling */
+  .MDBInput {
+    margin-bottom: 1rem;
+  }
+  
+  /* Button styling */
+  .d-flex {
+    justify-content: space-between;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .my-4 {
+      margin: 1rem;
+    }
+  
+    .text-black {
+      padding: 1rem;
+    }
+  }

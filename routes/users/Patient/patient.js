@@ -8,68 +8,101 @@ const db = require('../../../utils/db');
 process.env.SECRET_KEY = 'Arijit';
 
 patient.post('/add_patient', (req, res) => {
-    var idx = 0;
-    var pat_id = ""
-    let find_idx = 'SELECT * FROM patient ORDER BY patient_id DESC LIMIT 1';
-    db.query(find_idx, (err, result) => {
-        last_id = result[0].patient_id.substring(2); //BN006 -> 006
-        idx = parseInt(last_id, 10) //006 -> 6
-        pat_id = "BN" + String(idx+1).padStart(3,'0') //idx + 1 = 7 ; padStart(3,'0') -> 007 ; "BN" + "007" = "BN007"
-    });
+    const phone_number = req.body.phone_number;
 
-    let find = `SELECT patient_id FROM patient WHERE patient_id = "${pat_id}"`;
+    // Check if the username (phone_number) already exists in credentials
+    let find = `SELECT username FROM credentials WHERE username = "${req.body.phone_number}"`;
+    console.log(find)
+    db.query(find, (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ success: false, error: 'Internal Server Error' });
+        }
 
-    db.query(find, (err1, result1) => {
-        const patientData = {
-            patient_id  : pat_id,
-            full_name   : req.body.full_name,
-            dob         : req.body.dob,
-            gender      : req.body.gender,
-            phone_number: req.body.phone_number,
-            address     : req.body.address,
-            email       : req.body.email,
-            password    : req.body.password
-    }
-        if(err1) console.log(err1);
-        if (result1[0] == undefined) { 
-            bcrypt.hash(req.body.password, 10, (err, hash) => {
-                patientData.password = hash; 
-                let create = `INSERT INTO patient (
-                    patient_id,
-                    full_name,
-                    dob,
-                    gender,
-                    phone_number,
-                    address,
-                    email,
-                    health_insurance_percent
-                ) VALUES (
-                    "${patientData.patient_id}",
-                    "${patientData.full_name}",
-                    "${patientData.dob}",
-                    "${patientData.gender}",
-                    "${patientData.phone_number}",
-                    "${patientData.address}",
-                    "${patientData.email}", 
-                    0
-                )`;
-                
-                db.query(create, (err2, result2) => {
-                    if(err2) console.log(err2);
-                })
+        if (result.length === 0) {
+            // The username (phone_number) doesn't exist, proceed with creating the patient and credentials
+            let pat_id = '';
 
-                let create_account = `INSERT INTO credentials (username, password, id) 
-                                        VALUES ("${patientData.phone_number}",
-                                                "${patientData.password}",
-                                                "${patientData.patient_id}")`;
+            // Get the last patient_id from the database
+            let find_idx = 'SELECT * FROM patient ORDER BY patient_id DESC LIMIT 1';
+            db.query(find_idx, (err1, result1) => {
+                if (err1) {
+                    console.error(err1);
+                    return res.status(500).json({ success: false, error: 'Internal Server Error' });
+                }
 
-                db.query(create_account, (err3, result3) => {
-                    if(err3) console.log(err3);
-                    res.send("Created Database ooooooooooooohhhhhh");
-                })
+                if (result1.length > 0) {
+                    let last_id = result1[0].patient_id.substring(2);
+                    let idx = parseInt(last_id, 10);
+                    pat_id = 'BN' + String(idx + 1).padStart(3, '0');
+                } else {
+                    pat_id = 'BN001';
+                }
+
+                const patientData = {
+                    patient_id: pat_id,
+                    full_name: req.body.full_name,
+                    dob: req.body.dob,
+                    gender: req.body.gender,
+                    phone_number: req.body.phone_number,
+                    address: req.body.address,
+                    email: req.body.email,
+                    password: req.body.password,
+                };
+
+                bcrypt.hash(req.body.password, 10, (err2, hash) => {
+                    if (err2) {
+                        console.error(err2);
+                        return res.status(500).json({ success: false, error: 'Internal Server Error' });
+                    }
+
+                    patientData.password = hash;
+
+                    let create = `INSERT INTO patient (
+                        patient_id,
+                        full_name,
+                        dob,
+                        gender,
+                        phone_number,
+                        address,
+                        email,
+                        health_insurance_percent
+                    ) VALUES (
+                        "${patientData.patient_id}",
+                        "${patientData.full_name}",
+                        "${patientData.dob}",
+                        "${patientData.gender}",
+                        "${patientData.phone_number}",
+                        "${patientData.address}",
+                        "${patientData.email}",
+                        0
+                    )`;
+
+                    db.query(create, (err3, result3) => {
+                        if (err3) {
+                            console.error(err3);
+                            return res.status(500).json({ success: false, error: 'Internal Server Error' });
+                        }
+
+                        let create_account = `INSERT INTO credentials (username, password, id) 
+                            VALUES ("${patientData.phone_number}",
+                                    "${patientData.password}",
+                                    "${patientData.patient_id}")`;
+
+                        db.query(create_account, (err4, result4) => {
+                            if (err4) {
+                                console.error(err4);
+                                return res.status(500).json({ success: false, error: 'Internal Server Error' });
+                            }
+
+                            return res.status(200).json({ success: true, message: 'Patient added successfully' });
+                        });
+                    });
+                });
             });
         } else {
-            res.send("patient already exist...");
+            // The username (phone_number) already exists, send an appropriate response
+            return res.status(400).json({ success: false, error: 'Username already exists' });
         }
     });
 });

@@ -52,11 +52,11 @@ const Header = () => {
               {/* <li className="nav-item">
                 <a className="nav-link" href="blog.html">Blog</a>
               </li> */}
-              <li className="nav-item">
-                <a className="nav-link" href="/sign_up">Sign Up Patient</a>
-              </li>
+              {/* <li className="nav-item">
+                <a className="nav-link" href="/sign_up">SIGN UP</a>
+              </li> */}
             </ul>
-            <div className="header-right-btn ml-3">
+            <div className="nav-item">
               <a href="/login" className="btn header-btn">SIGN IN</a>
             </div>
           </div>
