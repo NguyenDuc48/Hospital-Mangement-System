@@ -5,12 +5,31 @@ import PatientSidebar from './PatientSidebar';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './Patient.css'
+import jwt from 'jsonwebtoken';
+
+
 const PatientAppointment = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [timeOfDay, setTimeOfDay] = useState('');
   const [diseaseDescription, setDiseaseDescription] = useState('');
   const [timeOptions, setTimeOptions] = useState([]);
-
+  const [isValidAccess, setValidAccess] = useState(false);
+  useEffect(() => {
+    const decodeToken = () => {  
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setValidAccess(false)
+        }
+        else {
+          const decoded = jwt.decode(token);
+          console.log("decode day nay:", decoded)
+          if (decoded.userId.substring(0,2) === "BN") 
+            setValidAccess(true);
+          else setValidAccess(false)
+        }
+    };
+    decodeToken();
+  },[]);
   const isDateDisabled = (date) => {
     const vietnamDate = new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Ho_Chi_Minh' }));
     const yesterday = new Date(vietnamDate);
@@ -91,7 +110,8 @@ const PatientAppointment = () => {
 
   console.log("timeoption", timeOptions);
 
- 
+  if (isValidAccess)
+
   return (
     <div>
       <Header />
@@ -156,6 +176,21 @@ const PatientAppointment = () => {
       </div>
     </div>
   );
+  else
+  return (      
+  <p
+    style={{
+      color: 'red',
+      fontWeight: 'bold',
+      fontSize: '18px',
+      fontFamily: 'Arial, sans-serif',
+      padding: '10px',
+      backgroundColor: '#ffe6e6',
+      borderRadius: '5px',
+    }}
+  >
+    Access Denied
+  </p>);
 };
 
 

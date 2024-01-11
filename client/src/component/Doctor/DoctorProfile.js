@@ -19,6 +19,7 @@ import {
 } from 'mdbreact';
 import Header from './Header';
 import DoctorSidebar from './DoctorSidebar'; // Create DoctorSidebar component for doctor-specific content
+import jwt from 'jsonwebtoken';
 
 const DoctorProfile = () => {
   const [doctorData, setDoctorData] = useState(null);
@@ -38,7 +39,23 @@ const DoctorProfile = () => {
     work_from: '',
     status: '',
   });
-
+  const [isValidAccess, setValidAccess] = useState(false);
+  useEffect(() => {
+    const decodeToken = () => {  
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setValidAccess(false)
+        }
+        else {
+          const decoded = jwt.decode(token);
+          console.log("decode day nay:", decoded)
+          if (decoded.userId.substring(0,2) === "BS") 
+            setValidAccess(true);
+          else setValidAccess(false)
+        }
+    };
+    decodeToken();
+  },[]);
   const fetchDoctorProfile = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -121,6 +138,7 @@ const DoctorProfile = () => {
   useEffect(() => {
     fetchDoctorProfile();
   }, []);
+  if (isValidAccess)
 
   return (
     <div>
@@ -294,6 +312,21 @@ const DoctorProfile = () => {
       </div>
     </div>
   );
+  else
+  return (      
+  <p
+    style={{
+      color: 'red',
+      fontWeight: 'bold',
+      fontSize: '18px',
+      fontFamily: 'Arial, sans-serif',
+      padding: '10px',
+      backgroundColor: '#ffe6e6',
+      borderRadius: '5px',
+    }}
+  >
+    Access Denied
+  </p>);
 };
 
 export default DoctorProfile;

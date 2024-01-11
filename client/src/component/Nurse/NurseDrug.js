@@ -4,13 +4,30 @@ import Header from './Header';
 import NurseSidebar from './NurseSidebar';
 import { InputGroup, FormControl } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import jwt from 'jsonwebtoken';
 
 const NurseDrug = () => {
   const [drugList, setDrugList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchInput, setSearchInput] = useState('');
-
+  const [isValidAccess, setValidAccess] = useState(false);
+  useEffect(() => {
+    const decodeToken = () => {  
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setValidAccess(false)
+        }
+        else {
+          const decoded = jwt.decode(token);
+          console.log("decode day nay:", decoded)
+          if (decoded.userId.substring(0,2) === "YT") 
+            setValidAccess(true);
+          else setValidAccess(false)
+        }
+    };
+    decodeToken();
+  },[]);
   const fetchAllDrugs = async () => {
     try {
       const response = await axios.get('/nurse/all_drug');
@@ -52,6 +69,7 @@ const NurseDrug = () => {
       fetchAllDrugs();
     }
   }, [searchInput]);
+  if (isValidAccess)
 
   return (
     <div>
@@ -122,6 +140,21 @@ const NurseDrug = () => {
       </div>
     </div>
   );
+  else
+  return (      
+  <p
+    style={{
+      color: 'red',
+      fontWeight: 'bold',
+      fontSize: '18px',
+      fontFamily: 'Arial, sans-serif',
+      padding: '10px',
+      backgroundColor: '#ffe6e6',
+      borderRadius: '5px',
+    }}
+  >
+    Access Denied
+  </p>);
 };
 
 export default NurseDrug;

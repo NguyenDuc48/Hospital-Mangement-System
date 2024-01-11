@@ -6,6 +6,7 @@ import ManagerSidebar from './ManagerSidebar';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './manager.css';
+import jwt from 'jsonwebtoken';
 
 function ManagerDepartment() {
     const [departments, setDepartments] = useState([]);
@@ -15,6 +16,24 @@ function ManagerDepartment() {
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
     const [deletingDepartmentId, setDeletingDepartmentId] = useState(null);
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const [isValidAccess, setValidAccess] = useState(false);
+    useEffect(() => {
+      const decodeToken = () => {  
+          const token = localStorage.getItem('token');
+          if (!token) {
+            setValidAccess(false)
+          }
+          else {
+            const decoded = jwt.decode(token);
+            console.log("decode day nay:", decoded)
+            if (decoded.userId.substring(0,2) === "QL") 
+              setValidAccess(true);
+            else setValidAccess(false)
+          }
+      };
+      decodeToken();
+    },[]);
+
     const [formData, setFormData] = useState({
         department_id: '',
         department_name: '',
@@ -150,6 +169,7 @@ function ManagerDepartment() {
         handleCloseDeleteConfirmation();
     };
 
+    if (isValidAccess)
 
     return (
         <div>
@@ -424,6 +444,21 @@ function ManagerDepartment() {
             </div>
         </div>
     );
-}
+    else
+    return (      
+    <p
+      style={{
+        color: 'red',
+        fontWeight: 'bold',
+        fontSize: '18px',
+        fontFamily: 'Arial, sans-serif',
+        padding: '10px',
+        backgroundColor: '#ffe6e6',
+        borderRadius: '5px',
+      }}
+    >
+      Access Denied
+    </p>);
+};
 
 export default ManagerDepartment;

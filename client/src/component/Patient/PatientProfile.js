@@ -20,6 +20,7 @@ import {
 } from 'mdbreact';
 import Header from './Header';
 import PatientSidebar from './PatientSidebar';
+import jwt from 'jsonwebtoken';
 
 const PatientProfile = () => {
   const [patientData, setPatientData] = useState(null);
@@ -34,6 +35,25 @@ const PatientProfile = () => {
     address: '',
     email: '',
   });
+
+  const [isValidAccess, setValidAccess] = useState(false);
+  useEffect(() => {
+    const decodeToken = () => {  
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setValidAccess(false)
+        }
+        else {
+          const decoded = jwt.decode(token);
+          console.log("decode day nay:", decoded)
+          if (decoded.userId.substring(0,2) === "BN") 
+            setValidAccess(true);
+          else setValidAccess(false)
+        }
+    };
+    decodeToken();
+  },[]);
+
   const fetchPatientProfile = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -147,6 +167,9 @@ const PatientProfile = () => {
     fetchPatientProfile();
   }, []); 
   console.log('Rendering component with patientData:', patientData);
+
+  if (isValidAccess)
+
   return (
     <div>
       <Header />
@@ -294,6 +317,21 @@ const PatientProfile = () => {
       </div>
     </div>
   );
+  else
+  return (      
+  <p
+    style={{
+      color: 'red',
+      fontWeight: 'bold',
+      fontSize: '18px',
+      fontFamily: 'Arial, sans-serif',
+      padding: '10px',
+      backgroundColor: '#ffe6e6',
+      borderRadius: '5px',
+    }}
+  >
+    Access Denied
+  </p>);
 };
 
 export default PatientProfile;

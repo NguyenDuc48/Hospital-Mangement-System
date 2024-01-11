@@ -6,6 +6,7 @@ import ManagerSidebar from './ManagerSidebar';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './manager.css'
+import jwt from 'jsonwebtoken';
 
 function DoctorAccount() {
   const [doctors, setDoctors] = useState([]);
@@ -33,7 +34,23 @@ function DoctorAccount() {
   });
   // Add departments state
   const [departments, setDepartments] = useState([]);
-
+  const [isValidAccess, setValidAccess] = useState(false);
+  useEffect(() => {
+    const decodeToken = () => {  
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setValidAccess(false)
+        }
+        else {
+          const decoded = jwt.decode(token);
+          console.log("decode day nay:", decoded)
+          if (decoded.userId.substring(0,2) === "QL") 
+            setValidAccess(true);
+          else setValidAccess(false)
+        }
+    };
+    decodeToken();
+  },[]);
   useEffect(() => {
     fetchData();
     fetchDepartments();
@@ -171,6 +188,7 @@ function DoctorAccount() {
 
     handleCloseDeleteConfirmation();
   };
+  if (isValidAccess)
 
   return (
     <div>
@@ -558,6 +576,21 @@ function DoctorAccount() {
       </div>
     </div>
   );
+  else
+  return (      
+  <p
+    style={{
+      color: 'red',
+      fontWeight: 'bold',
+      fontSize: '18px',
+      fontFamily: 'Arial, sans-serif',
+      padding: '10px',
+      backgroundColor: '#ffe6e6',
+      borderRadius: '5px',
+    }}
+  >
+    Access Denied
+  </p>);
 }
 
 export default DoctorAccount;

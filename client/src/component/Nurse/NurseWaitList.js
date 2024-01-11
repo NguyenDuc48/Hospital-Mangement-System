@@ -5,6 +5,7 @@ import Header from "./Header";
 import NurseSidebar from "./NurseSidebar";
 import "./NurseWaitingList.css";
 import "./print-styles.css"
+import jwt from 'jsonwebtoken';
 
 const NurseWaitList = () => {
   const [waitingList, setWaitingList] = useState([]);
@@ -16,6 +17,24 @@ const NurseWaitList = () => {
   const [modalTableData, setModalTableData] = useState([]);
   const [totalData, setTotalData] = useState(null);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  const [isValidAccess, setValidAccess] = useState(false);
+  useEffect(() => {
+    const decodeToken = () => {  
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setValidAccess(false)
+        }
+        else {
+          const decoded = jwt.decode(token);
+          console.log("decode day nay:", decoded)
+          if (decoded.userId.substring(0,2) === "YT") 
+            setValidAccess(true);
+          else setValidAccess(false)
+        }
+    };
+    decodeToken();
+  },[]);
 
   const fetchData = async () => {
     try {
@@ -172,6 +191,7 @@ const NurseWaitList = () => {
 
   // console.log(modalTableData);
   // console.log("total datA", totalData);
+  if (isValidAccess)
 
   return (
     <div>
@@ -460,6 +480,21 @@ const NurseWaitList = () => {
 
     </div>
   );
+  else
+  return (      
+  <p
+    style={{
+      color: 'red',
+      fontWeight: 'bold',
+      fontSize: '18px',
+      fontFamily: 'Arial, sans-serif',
+      padding: '10px',
+      backgroundColor: '#ffe6e6',
+      borderRadius: '5px',
+    }}
+  >
+    Access Denied
+  </p>);
 };
 
 export default NurseWaitList;

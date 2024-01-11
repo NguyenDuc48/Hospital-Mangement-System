@@ -3,6 +3,11 @@ import Logo from '../../../src/photo/logo.png';
 import '../Manager/manager.css';
 
 const Header = () => {
+  const handleLogout = () => {
+    // Additional logout logic can be added here
+    localStorage.removeItem('token');
+    console.log('Logging out...');
+  };
   return (
     <header>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -44,7 +49,7 @@ const Header = () => {
               </li> */}
             </ul>
             <div className="header-right-btn ml-3">
-              <a href="/" className="custom-logout-btn">
+            <a href="/" className="custom-logout-btn" onClick={handleLogout}>
                 Log Out 
               </a>
             </div>

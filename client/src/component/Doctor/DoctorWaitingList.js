@@ -4,6 +4,7 @@ import Header from './Header';
 import DoctorSidebar from './DoctorSidebar';
 import './DoctorWaitingList.css';
 import { Button, Form, Modal, Dropdown } from 'react-bootstrap';
+import jwt from 'jsonwebtoken';
 
 const DoctorWaitingList = () => {
 
@@ -37,7 +38,23 @@ const DoctorWaitingList = () => {
   const [selectedEquipment, setSelectedEquipment] = useState(null);
   const [equipmentQuantity, setEquipmentQuantity] = useState('');
   const [equipments, setEquipments] = useState([]);
-
+  const [isValidAccess, setValidAccess] = useState(false);
+  useEffect(() => {
+    const decodeToken = () => {  
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setValidAccess(false)
+        }
+        else {
+          const decoded = jwt.decode(token);
+          console.log("decode day nay:", decoded)
+          if (decoded.userId.substring(0,2) === "BS") 
+            setValidAccess(true);
+          else setValidAccess(false)
+        }
+    };
+    decodeToken();
+  },[]);
   const fetchData = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -225,6 +242,7 @@ console.log("Equipment", equipments)
 console.log(selectedPatient)
 console.log("Wait",waitingList)
 
+if (isValidAccess)
 
   return (
     <div>
@@ -586,6 +604,21 @@ console.log("Wait",waitingList)
     </div>
     
   );
+  else
+  return (      
+  <p
+    style={{
+      color: 'red',
+      fontWeight: 'bold',
+      fontSize: '18px',
+      fontFamily: 'Arial, sans-serif',
+      padding: '10px',
+      backgroundColor: '#ffe6e6',
+      borderRadius: '5px',
+    }}
+  >
+    Access Denied
+  </p>);
 };
 
 export default DoctorWaitingList;

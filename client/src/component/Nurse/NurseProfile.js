@@ -18,6 +18,7 @@ import {
 } from 'mdbreact';
 import Header from './Header';
 import NurseSidebar from './NurseSidebar';
+import jwt from 'jsonwebtoken';
 
 const NurseProfile = () => {
   const [nurseData, setNurseData] = useState(null);
@@ -38,7 +39,23 @@ const NurseProfile = () => {
     work_from: '',
     status: '',
   });
-
+  const [isValidAccess, setValidAccess] = useState(false);
+  useEffect(() => {
+    const decodeToken = () => {  
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setValidAccess(false)
+        }
+        else {
+          const decoded = jwt.decode(token);
+          console.log("decode day nay:", decoded)
+          if (decoded.userId.substring(0,2) === "YT") 
+            setValidAccess(true);
+          else setValidAccess(false)
+        }
+    };
+    decodeToken();
+  },[]);
   const fetchNurseProfile = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -124,7 +141,7 @@ const NurseProfile = () => {
   }, []);
 
   console.log('Rendering component with nurseData:', nurseData);
-
+  if (isValidAccess)
   return (
     <div>
       <Header />
@@ -307,6 +324,22 @@ const NurseProfile = () => {
       </div>
     </div>
   );
+  
+  else
+  return (      
+  <p
+    style={{
+      color: 'red',
+      fontWeight: 'bold',
+      fontSize: '18px',
+      fontFamily: 'Arial, sans-serif',
+      padding: '10px',
+      backgroundColor: '#ffe6e6',
+      borderRadius: '5px',
+    }}
+  >
+    Access Denied
+  </p>);
 };
 
 export default NurseProfile;

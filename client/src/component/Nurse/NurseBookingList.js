@@ -4,6 +4,7 @@ import Header from './Header';
 import NurseSidebar from './NurseSidebar';
 import { Button, InputGroup, FormControl, Modal, Form } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import jwt from 'jsonwebtoken';
 
 const NurseBookingList = () => {
   const [bookedList, setBookedList] = useState([]);
@@ -14,7 +15,23 @@ const NurseBookingList = () => {
   const [selectedPatientId, setSelectedPatientId] = useState(null);
   const [departmentId, setDepartmentId] = useState('');
   const [description, setDescription] = useState('');
-
+  const [isValidAccess, setValidAccess] = useState(false);
+  useEffect(() => {
+    const decodeToken = () => {  
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setValidAccess(false)
+        }
+        else {
+          const decoded = jwt.decode(token);
+          console.log("decode day nay:", decoded)
+          if (decoded.userId.substring(0,2) === "YT") 
+            setValidAccess(true);
+          else setValidAccess(false)
+        }
+    };
+    decodeToken();
+  },[]);
   const fetchAllBookedPatients = async () => {
     try {
       const response = await axios.get('/nurse/all_booked_patient');
@@ -110,6 +127,7 @@ const NurseBookingList = () => {
   useEffect(() => {
     fetchAllBookedPatients();
   }, []);
+  if (isValidAccess)
 
   return (
     <div>
@@ -223,6 +241,21 @@ const NurseBookingList = () => {
       </div>
     </div>
   );
+  else
+  return (      
+  <p
+    style={{
+      color: 'red',
+      fontWeight: 'bold',
+      fontSize: '18px',
+      fontFamily: 'Arial, sans-serif',
+      padding: '10px',
+      backgroundColor: '#ffe6e6',
+      borderRadius: '5px',
+    }}
+  >
+    Access Denied
+  </p>);
 };
 
 export default NurseBookingList;

@@ -13,12 +13,29 @@ import {
 } from 'mdbreact';
 import Header from './Header';
 import PatientSidebar from './PatientSidebar';
+import jwt from 'jsonwebtoken';
 
 const PatientHistory = () => {
   const [patientHistory, setPatientHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [isValidAccess, setValidAccess] = useState(false);
+  useEffect(() => {
+    const decodeToken = () => {  
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setValidAccess(false)
+        }
+        else {
+          const decoded = jwt.decode(token);
+          console.log("decode day nay:", decoded)
+          if (decoded.userId.substring(0,2) === "BN") 
+            setValidAccess(true);
+          else setValidAccess(false)
+        }
+    };
+    decodeToken();
+  },[]);
   useEffect(() => {
     const fetchPatientHistory = async () => {
       try {
@@ -49,6 +66,7 @@ const PatientHistory = () => {
 
     fetchPatientHistory();
   }, []);
+  if (isValidAccess)
 
   return (
     <div>
@@ -126,6 +144,21 @@ const PatientHistory = () => {
       </div>
     </div>
   );
+  else
+  return (      
+  <p
+    style={{
+      color: 'red',
+      fontWeight: 'bold',
+      fontSize: '18px',
+      fontFamily: 'Arial, sans-serif',
+      padding: '10px',
+      backgroundColor: '#ffe6e6',
+      borderRadius: '5px',
+    }}
+  >
+    Access Denied
+  </p>);
 };
 
 export default PatientHistory;
