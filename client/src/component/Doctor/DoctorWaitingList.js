@@ -432,7 +432,7 @@ const DoctorWaitingList = () => {
                   </Form.Group>
 
 
-                <div style={{display:"flex", justifyContent: "space-around"}}>
+                <div style={{display:"flex", justifyContent: "space-around", flexDirection: "row-reverse"}}>
                   <div>
 
                   <Form.Group controlId="service">
