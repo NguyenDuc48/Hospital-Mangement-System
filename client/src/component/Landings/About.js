@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import about2 from "../../photo/about2.png";
 import about1 from "../../photo/about1.png";
-import favicon from "../../photo/favicon.ico"
+import favicon from "../../photo/favicon.ico";
 import "./about.css";
 const About = () => {
   return (
@@ -39,18 +39,29 @@ const About = () => {
                     Welcome To Our Hospital
                   </h2>
                 </div>
-                <p>
-                  There are many variations of passages of Lorem Ipsum
-                  available, but the majority have suffered alteration in some
-                  form, by injected humour, or randomised words which don't look
-                  even slightly believable.
+                <p
+                  style={{
+                    fontSize: "16px",
+                    color: "#6c757d",
+                    lineHeight: "1.6",
+                  }}
+                >
+                  Welcome to our hospital, where compassionate care meets
+                  cutting-edge expertise. At our facility, we are dedicated to
+                  providing high-quality healthcare services tailored to your
+                  individual needs. 
+                  {/* Our team of experienced professionals is
+                  committed to ensuring your well-being and comfort. We
+                  understand that each patient is unique, and we strive to
+                  create a healing environment that promotes both physical and
+                  emotional recovery. */}
                 </p>
 
                 <div style={{ width: "100%" }}>
                   <div style={{ width: "50%" }}>
                     <Button
-                      href="#about"
-                      variant="primary"
+                      // href="#about"
+                      variant="secondary"
                       className="mr-2"
                       style={{
                         marginBottom: "30px",
@@ -58,13 +69,13 @@ const About = () => {
                         padding: "10px",
                       }}
                     >
-                      Find Doctors <i className="ti-arrow-right"></i>
+                      Quality Doctors <i className="ti-arrow-right"></i>
                     </Button>
                   </div>
 
                   <div style={{ width: "50%" }}>
                     <Button
-                      href="#about"
+                      // href="#about"
                       variant="secondary"
                       className="mr-2  "
                       style={{
@@ -78,7 +89,7 @@ const About = () => {
                   </div>
                   <div style={{ width: "50%" }}>
                     <Button
-                      href="about.html"
+                      // href="about.html"
                       variant="secondary"
                       style={{
                         marginBottom: "30px",
@@ -86,17 +97,17 @@ const About = () => {
                         padding: "10px",
                       }}
                     >
-                      Emergency 1 <i className="ti-arrow-right"></i>
+                      Emergency <i className="ti-arrow-right"></i>
                     </Button>
                   </div>
                 </div>
               </div>
             </Col>
             <Col lg={6} md={12}>
-              <div className="position-relative">
+              <div className="">
                 <div
-                  className="position-absolute top-0 end-0 d-none d-lg-block"
-                  style={{ zIndex: 1 }}
+                  className=" top-0 end-0 d-none d-lg-block"
+                  // style={{ zIndex: 1 }}
                 >
                   <img
                     src={about2}
@@ -104,7 +115,7 @@ const About = () => {
                     style={{ maxWidth: "100%", maxHeight: "100%" }}
                   />
                 </div>
-                <div
+                {/* <div
                   className="position-absolute top-0 end-0"
                   style={{ zIndex: 2 }}
                 >
@@ -113,7 +124,7 @@ const About = () => {
                     alt=""
                     style={{ maxWidth: "100%", maxHeight: "50%" }}
                   />
-                </div>
+                </div> */}
               </div>
             </Col>
           </Row>
