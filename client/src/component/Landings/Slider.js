@@ -34,9 +34,12 @@ const Slider = () => {
                   >
                     Committed to Success
                   </span>
-                  <div style={{marginTop:"35px"}}>
-                    <h1 className="cd-headline letters scale" style={{fontSize:"70px", fontWeight: "800"}}>
-                      We Care About Your 
+                  <div style={{ marginTop: "35px" }}>
+                    <h1
+                      className="cd-headline letters scale"
+                      style={{ fontSize: "70px", fontWeight: "800" }}
+                    >
+                      We Care About Your
                       <strong className="cd-words-wrapper">
                         <b className="is-visible"> Health</b>
                         {/* <b>Sushi</b>
@@ -44,25 +47,35 @@ const Slider = () => {
                       </strong>
                     </h1>
                   </div>
-                  <p style={{padding : " 20px 0"}}
-                    className="hero__description"
+                  <p
+                    style={{
+                      padding: "20px 0",
+                      fontSize: "18px",
+                      color: "#808080",
+                      lineHeight: "1.6",
+                    }}
                     data-animation="fadeInLeft"
                     data-delay="0.1s"
                   >
-                    Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                    laboris nisi uquip ex ea commodo consequat is aute irure.
+                    We are dedicated to
+                    your well-being. Our commitment to success is reflected in
+                    the quality of healthcare services we provide. We believe in
+                    delivering personalized care to enhance your health and
+                    overall experience. Our team of experienced professionals is
+                    here to support you on your journey to well-being.
                   </p>
+
                   <Button
-                      variant="secondary"
-                      className="mr-2  "
-                      style={{
-                        marginBottom: "30px",
-                        width: " 30%",
-                        padding: "10px",
-                      }}
-                    >
-                      <span>Appointment </span>
-                    </Button>
+                    variant="secondary"
+                    className="mr-2  "
+                    style={{
+                      marginBottom: "30px",
+                      width: " 30%",
+                      padding: "10px",
+                    }}
+                  >
+                    <span>Quick Appointment </span>
+                  </Button>
                 </div>
               </div>
             </div>
