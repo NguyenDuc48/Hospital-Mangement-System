@@ -27,17 +27,11 @@ const DoctorProfile = () => {
   const [error, setError] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [editedData, setEditedData] = useState({
-    full_name: '',
-    dob: '',
-    gender: '',
     phone_number: '',
-    address: '',
     email: '',
-    expertise: '',
-    department: '',
-    salary: '',
-    work_from: '',
-    status: '',
+    old_password: '',
+    new_password: '',
+    retype_password: ''
   });
   const [isValidAccess, setValidAccess] = useState(false);
   useEffect(() => {
@@ -286,12 +280,15 @@ const DoctorProfile = () => {
             </MDBModalHeader>
             <MDBModalBody>
               {/* Use MDBInput for enhanced styling */}
-              <MDBInput label="Full Name" type="text" id="full_name" name="full_name" value={editedData.full_name} onChange={handleInputChange} />
-              <MDBInput label="Date of Birth" type="date" id="dob" name="dob" value={editedData.dob} onChange={handleInputChange} />
-              <MDBInput label="Gender" type="text" id="gender" name="gender" value={editedData.gender} onChange={handleInputChange} />
-              <MDBInput label="Phone Number" type="text" id="phone_number" name="phone_number" value={editedData.phone_number} onChange={handleInputChange} />
-              <MDBInput label="Address" type="text" id="address" name="address" value={editedData.address} onChange={handleInputChange} />
-              <MDBInput label="Email" type="text" id="email" name="email" value={editedData.email} onChange={handleInputChange} />
+              <MDBInput label="New phone number" type="text" id="new_phone" name="new_phone" value={editedData.phone_number} onChange={handleInputChange} />
+
+<MDBInput label="New email" type="text" id="new_email" name="new_email" value={editedData.email} onChange={handleInputChange} />
+
+<MDBInput label="Old password" type="text" id="old_pass" name="old_pass" value={editedData.old_password} onChange={handleInputChange} />
+
+<MDBInput label="New password" type="text" id="new_pass" name="new_pass" value={editedData.new_password} onChange={handleInputChange} />
+
+<MDBInput label="Retype password" type="text" id="retype_pass" name="retype_pass" value={editedData.retype_password} onChange={handleInputChange} />
               {/* <MDBInput label="Expertise" type="text" id="expertise" name="expertise" value={editedData.expertise} onChange={handleInputChange} /> */}
               {/* <MDBInput label="Department" type="text" id="department" name="department" value={editedData.department} onChange={handleInputChange} /> */}
               {/* <MDBInput label="Salary" type="text" id="salary" name="salary" value={editedData.salary} onChange={handleInputChange} /> */}

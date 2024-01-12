@@ -22,7 +22,7 @@ import NurseBookingList from './component/Nurse/NurseBookingList';
 import NurseWaitList from './component/Nurse/NurseWaitList';
 import NurseEquipment from './component/Nurse/NurseEquipment';
 import NurseDrug from './component/Nurse/NurseDrug';
-
+import ManagerResetPass from './component/Manager/ManagerResetPass';
 function App() {
   return (
     <div className="App">
@@ -54,7 +54,8 @@ function App() {
         <Route exact path="/manager/drug" component={ManagerDrug} />
         <Route exact path="/manager/equipment" component={ManagerEquipment} />
         <Route exact path="/manager/department" component={ManagerDepartment} />
-
+        <Route exact path="/manager/resetpass" component={ManagerResetPass} />
+    
 
       </Router>
     </div>

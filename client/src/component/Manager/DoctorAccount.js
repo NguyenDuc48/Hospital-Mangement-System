@@ -91,7 +91,7 @@ function DoctorAccount() {
     e.preventDefault();
     try {
       const response = await axios.post('/manager/add_doctor', formData);
-      console.log(response.data);
+      // console.log(response.data);
       fetchData();
       handleClose();
 
@@ -125,7 +125,7 @@ function DoctorAccount() {
     e.preventDefault();
     try {
       const response = await axios.put('/manager/update_doctor', formData);
-      console.log(response.data);
+      // console.log(response.data);
       fetchData();
       handleCloseModal();
 

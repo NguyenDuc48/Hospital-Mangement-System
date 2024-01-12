@@ -115,6 +115,7 @@ const NurseDrug = () => {
                   <tr>
                     <th>ID</th>
                     <th>Name</th>
+                    <th>Description</th>
                     <th>Dosage</th>
                     <th>Price</th>
                     <th>Origin</th>
@@ -126,6 +127,7 @@ const NurseDrug = () => {
                     <tr key={drug.drug_id} className={index % 2 === 0 ? 'table-light' : 'table-white'}>
                       <td>{drug.drug_id}</td>
                       <td>{drug.drug_name}</td>
+                      <td>{drug.description}</td>
                       <td>{drug.dosage}</td>
                       <td>{drug.price}</td>
                       <td>{drug.origin}</td>

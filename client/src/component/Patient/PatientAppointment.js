@@ -64,7 +64,7 @@ const PatientAppointment = () => {
 
       console.log("testtt", vietnamISOString.split('T')[0])
       console.log('API Response:', response.data);
-      window.alert('Record added successfully!');
+      window.alert('Đăng kí lịch hẹn thành công');
 
       setSelectedDate(new Date());
       setTimeOfDay('');

@@ -29,7 +29,7 @@ employee.get('/get_doctor', (req, res) => {
 
     db.query(sql, (err, result) => {
         if (err) console.log(err);
-        console.log(result)
+        // console.log(result)
         res.json(result);
     });
 });

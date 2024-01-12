@@ -57,39 +57,39 @@ patient.post('/add_patient', (req, res) => {
                     }
 
                     patientData.password = hash;
+                    let create_account = `INSERT INTO credentials (username, password, id) 
+                    VALUES ("${patientData.phone_number}",
+                            "${patientData.password}",
+                            "${patientData.patient_id}")`;
 
-                    let create = `INSERT INTO patient (
-                        patient_id,
-                        full_name,
-                        dob,
-                        gender,
-                        phone_number,
-                        address,
-                        email,
-                        health_insurance_percent
-                    ) VALUES (
-                        "${patientData.patient_id}",
-                        "${patientData.full_name}",
-                        "${patientData.dob}",
-                        "${patientData.gender}",
-                        "${patientData.phone_number}",
-                        "${patientData.address}",
-                        "${patientData.email}",
-                        0
-                    )`;
 
-                    db.query(create, (err3, result3) => {
+                    db.query(create_account, (err3, result3) => {
                         if (err3) {
                             console.error(err3);
                             return res.status(500).json({ success: false, error: 'Internal Server Error' });
                         }
 
-                        let create_account = `INSERT INTO credentials (username, password, id) 
-                            VALUES ("${patientData.phone_number}",
-                                    "${patientData.password}",
-                                    "${patientData.patient_id}")`;
+                        let create = `INSERT INTO patient (
+                            patient_id,
+                            full_name,
+                            dob,
+                            gender,
+                            phone_number,
+                            address,
+                            email,
+                            health_insurance_percent
+                        ) VALUES (
+                            "${patientData.patient_id}",
+                            "${patientData.full_name}",
+                            "${patientData.dob}",
+                            "${patientData.gender}",
+                            "${patientData.phone_number}",
+                            "${patientData.address}",
+                            "${patientData.email}",
+                            0
+                        )`;
 
-                        db.query(create_account, (err4, result4) => {
+                        db.query(create, (err4, result4) => {
                             if (err4) {
                                 console.error(err4);
                                 return res.status(500).json({ success: false, error: 'Internal Server Error' });

@@ -118,7 +118,7 @@ const NurseEquipment = () => {
                   <tr>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Status</th>
+                    
                     <th>Quantity Left</th>
                     <th>Fee per Day</th>
                   </tr>
@@ -128,7 +128,7 @@ const NurseEquipment = () => {
                     <tr key={equipment.equipment_id} className={index % 2 === 0 ? 'table-light' : 'table-white'}>
                       <td>{equipment.equipment_id}</td>
                       <td>{equipment.name}</td>
-                      <td>{equipment.status}</td>
+                      
                       <td>{equipment.quantity_left}</td>
                       <td>{equipment.fee_per_day}</td>
                      
