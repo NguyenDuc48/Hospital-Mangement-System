@@ -120,3 +120,8 @@ body {
   background-color: #d79d67 !important;
 
 }
+
+.custom-modal-dialog { 
+  max-width: 60% !important;
+  text-align: "center";
+}

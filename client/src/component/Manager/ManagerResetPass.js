@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
+import Headers from '../Manager/Header';
+import ManagerSidebar from './ManagerSidebar';
 
 const ManagerResetPass = () => {
     const [formData, setFormData] = useState({
@@ -39,6 +41,13 @@ const ManagerResetPass = () => {
     };
 
     return (
+        <div>
+            <Headers />
+      <div style={{ display: 'flex', overflowY: 'auto', width: '100%', flexWrap: 'wrap' }}>
+      <div style={{ width: '25%' }}>
+          <ManagerSidebar />
+        </div>
+        <div style={{ height: '100vh', overflow: 'scroll initiali', width: '70%' }}>
         <Container>
             <Row className="justify-content-md-center mt-5">
                 <Col md={6}>
@@ -79,6 +88,13 @@ const ManagerResetPass = () => {
                 </Col>
             </Row>
         </Container>
+</div>
+        </div>
+        </div>
+
+
+            
+        
     );
 };
 
