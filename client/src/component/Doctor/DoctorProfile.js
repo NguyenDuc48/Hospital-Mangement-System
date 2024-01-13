@@ -20,6 +20,8 @@ import {
 import Header from './Header';
 import DoctorSidebar from './DoctorSidebar'; // Create DoctorSidebar component for doctor-specific content
 import jwt from 'jsonwebtoken';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const DoctorProfile = () => {
   const [doctorData, setDoctorData] = useState(null);
@@ -27,8 +29,6 @@ const DoctorProfile = () => {
   const [error, setError] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [editedData, setEditedData] = useState({
-    phone_number: '',
-    email: '',
     old_password: '',
     new_password: '',
     retype_password: ''
@@ -108,27 +108,60 @@ const DoctorProfile = () => {
   };
 
   const saveChanges = async () => {
+
     console.log('Saving changes:', editedData);
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Token not found in localStorage');
-      }
-
-      await axios.put('/doctor/update_profile', editedData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+    if (editedData.retype_pass !== editedData.new_pass) {
+      toast.error('Passwords do not match', {
+        position: 'bottom-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
       });
-
-      closeModal();
-      fetchDoctorProfile();
-    } catch (error) {
-      console.error('Error updating doctor profile:', error.message);
     }
+    else {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Token not found in localStorage');
+        }
+  
+        console.log("editeddata nè:", editedData)
+        await axios.put('/doctor/update_profile', editedData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        toast.success('Changed password successfully!', {
+          position: 'bottom-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+  
+        closeModal();
+        fetchDoctorProfile();
+  
+      } catch (error) {
+        console.error('Error updating nurse profile:', error.message);
+        closeModal();
+        fetchDoctorProfile();
+        toast.error('Password change failed', {
+          position: 'bottom-right',
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+    }
+    
   };
-
   useEffect(() => {
     fetchDoctorProfile();
   }, []);
@@ -137,6 +170,7 @@ const DoctorProfile = () => {
   return (
     <div>
       <Header />
+      <ToastContainer position="bottom-right" autoClose={2000} />
       <div
         style={{
           display: 'flex',
@@ -280,20 +314,24 @@ const DoctorProfile = () => {
             </MDBModalHeader>
             <MDBModalBody>
               {/* Use MDBInput for enhanced styling */}
-              <MDBInput label="New phone number" type="text" id="new_phone" name="new_phone" value={editedData.phone_number} onChange={handleInputChange} />
-
-<MDBInput label="New email" type="text" id="new_email" name="new_email" value={editedData.email} onChange={handleInputChange} />
-
-<MDBInput label="Old password" type="text" id="old_pass" name="old_pass" value={editedData.old_password} onChange={handleInputChange} />
-
-<MDBInput label="New password" type="text" id="new_pass" name="new_pass" value={editedData.new_password} onChange={handleInputChange} />
-
-<MDBInput label="Retype password" type="text" id="retype_pass" name="retype_pass" value={editedData.retype_password} onChange={handleInputChange} />
+              {/* <MDBInput label="Full Name" type="text" id="full_name" name="full_name" value={editedData.full_name} onChange={handleInputChange} />
+              <MDBInput label="Date of Birth" type="date" id="dob" name="dob" value={editedData.dob} onChange={handleInputChange} />
+              <MDBInput label="Gender" type="text" id="gender" name="gender" value={editedData.gender} onChange={handleInputChange} />
+              <MDBInput label="Phone Number" type="text" id="phone_number" name="phone_number" value={editedData.phone_number} onChange={handleInputChange} />
+              <MDBInput label="Address" type="text" id="address" name="address" value={editedData.address} onChange={handleInputChange} />
+              <MDBInput label="Email" type="text" id="email" name="email" value={editedData.email} onChange={handleInputChange} /> */}
               {/* <MDBInput label="Expertise" type="text" id="expertise" name="expertise" value={editedData.expertise} onChange={handleInputChange} /> */}
               {/* <MDBInput label="Department" type="text" id="department" name="department" value={editedData.department} onChange={handleInputChange} /> */}
               {/* <MDBInput label="Salary" type="text" id="salary" name="salary" value={editedData.salary} onChange={handleInputChange} /> */}
               {/* <MDBInput label="Work From" type="date" id="work_from" name="work_from" value={editedData.work_from} onChange={handleInputChange} /> */}
               {/* <MDBInput label="Status" type="text" id="status" name="status" value={editedData.status} onChange={handleInputChange} /> */}
+              <MDBInput label="Old password" type="password" id="old_pass" name="old_pass" value={editedData.old_password} onChange={handleInputChange} />
+
+
+<MDBInput label="New password" type="password" id="new_pass" name="new_pass" value={editedData.new_password} onChange={handleInputChange} />
+
+
+<MDBInput label="Retype password" type="password" id="retype_pass" name="retype_pass" value={editedData.retype_password} onChange={handleInputChange} />
             </MDBModalBody>
 
             <MDBModalFooter>

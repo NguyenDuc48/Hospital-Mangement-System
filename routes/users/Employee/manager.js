@@ -241,6 +241,18 @@ employee.post('/add_nurse', (req, res) => {
         if (result1[0] == undefined) {
             bcrypt.hash(req.body.password, 10, (err, hash) => {
                 nurseData.password = hash;
+
+
+                let create_account = `INSERT INTO credentials (username, password, id) 
+                VALUES ("${nurseData.nurse_id.toLowerCase()}",
+                        "${nurseData.password}",
+                        "${nurseData.nurse_id}")`;
+
+                db.query(create_account, (err3, result3) => {
+                    if (err3) console.log(err3);
+                });
+
+
                 let create = `INSERT INTO employees (employee_id, full_name, dob, gender, phone_number, email, address, salary, work_from)
                                 VALUES ("${nurseData.nurse_id}", 
                                         "${nurseData.full_name}",
@@ -256,14 +268,7 @@ employee.post('/add_nurse', (req, res) => {
                     if (err2) console.log(err2);
                 });
 
-                let create_account = `INSERT INTO credentials (username, password, id) 
-                                        VALUES ("${nurseData.nurse_id.toLowerCase()}",
-                                                "${nurseData.password}",
-                                                "${nurseData.nurse_id}")`;
 
-                db.query(create_account, (err3, result3) => {
-                    if (err3) console.log(err3);
-                });
 
                 let create_nurse = `INSERT INTO nurses (nurse_id, department, shift)
                                         VALUES ("${nurseData.nurse_id}",
@@ -606,6 +611,42 @@ employee.delete('/delete_department', (req, res) => {
     });
 });
 
+employee.post('/reset_password', async (req, res) => {
+    const { username, password } = req.body;
+
+    const find = `SELECT username FROM credentials WHERE username = "${username}"`;
+
+
+    
+    db.query(find, (err, result) => {
+        console.log("result:", result)
+        if (result.length > 0) {
+         
+            bcrypt.hash(password, 10, (err, hash) => {
+                let password_bcrypt = hash;
+                let update_password =`UPDATE credentials
+                SET password = "${password_bcrypt}"
+                WHERE username = "${username}"`;
+                db.query(update_password, (err2, result2) => {
+                    if(err2) {
+                        console.log(err2);
+                        res.status(500).json({ error: 'Error creating employee' });
+                    }
+                    else {
+                        res.json({ success: true, message: 'Password updated successfully' });
+
+                    }
+
+
+                });
+            });
+
+
+        } else {
+          res.status(500).json({ message: 'Not found!' });
+        }
+      });
+});
 
 
 

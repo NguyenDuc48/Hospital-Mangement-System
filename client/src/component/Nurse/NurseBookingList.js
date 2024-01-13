@@ -126,7 +126,7 @@ const NurseBookingList = () => {
 
   useEffect(() => {
     fetchAllBookedPatients();
-  }, []);
+  }, [bookedList]);
   if (isValidAccess)
 
   return (

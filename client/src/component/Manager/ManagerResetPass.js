@@ -4,6 +4,9 @@ import { Form, Button, Container, Row, Col } from 'react-bootstrap';
 import axios from 'axios';
 import Headers from '../Manager/Header';
 import ManagerSidebar from './ManagerSidebar';
+import { ToastContainer, toast } from 'react-toastify';
+// import { response } from 'express';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ManagerResetPass = () => {
     const [formData, setFormData] = useState({
@@ -24,7 +27,7 @@ const ManagerResetPass = () => {
 
         try {
             // Assuming you have an API endpoint for resetting the password
-            const response = await axios.post('/api/reset_password', formData);
+            const response = await axios.post('/manager/reset_password', formData);
 
             console.log(response.data);
 
@@ -35,14 +38,32 @@ const ManagerResetPass = () => {
                 username: '',
                 password: '',
             });
+            toast.success('Changed password successfully!', {
+                position: 'bottom-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              });
         } catch (error) {
             console.error('Error resetting password:', error);
+            toast.error('Not found username!', {
+                position: 'bottom-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              });
         }
     };
 
     return (
         <div>
             <Headers />
+            <ToastContainer position="bottom-right" autoClose={2000} />
+
       <div style={{ display: 'flex', overflowY: 'auto', width: '100%', flexWrap: 'wrap' }}>
       <div style={{ width: '25%' }}>
           <ManagerSidebar />

@@ -6,7 +6,8 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './Patient.css'
 import jwt from 'jsonwebtoken';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const PatientAppointment = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -64,14 +65,29 @@ const PatientAppointment = () => {
 
       console.log("testtt", vietnamISOString.split('T')[0])
       console.log('API Response:', response.data);
-      window.alert('Đăng kí lịch hẹn thành công');
+      toast.success('Đặt lịch thành công!', {
+        position: 'bottom-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
 
       setSelectedDate(new Date());
       setTimeOfDay('');
       setDiseaseDescription('');
     } catch (error) {
-      window.alert('Error submitting form. Please try again.');
+      
       console.error('Error submitting form:', error);
+      toast.error('Đặt lịch thất bại!', {
+        position: 'bottom-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
@@ -115,6 +131,7 @@ const PatientAppointment = () => {
   return (
     <div>
       <Header />
+      <ToastContainer position="bottom-right" autoClose={2000} />
       <div style={{ display: 'flex', overflowY: 'auto', width: '100%', flexWrap: 'wrap' }}>
         <div style={{ width: '25%', marginBottom: '20px' }}>
           <PatientSidebar />

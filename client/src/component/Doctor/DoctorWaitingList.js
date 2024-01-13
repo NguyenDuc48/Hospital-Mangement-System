@@ -79,20 +79,65 @@ const DoctorWaitingList = () => {
     setShowMedicalReportModal(!showMedicalReportModal);
   };
 
+  // const handleMedicalReportSubmit = async () => {
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) {
+  //       throw new Error("Token not found in localStorage");
+  //     }
+
+  //     const equipmentsList = selectedEquipments.map((equipment) => [
+  //       equipment.equipment_id,
+  //       equipment.quantity,
+  //       equipment.daysUsed,
+  //     ]);
+
+  //     const response = await axios.post(
+  //       `/doctor/create_report/${selectedPatient.wait_id}`,
+  //       {
+  //         diagnostic,
+  //         conclusion,
+  //         note,
+  //         services_list: selectedServices.map((service) => service.service_id),
+  //         drugs_list: selectedDrugs.map((drug) => [
+  //           drug.drug_id,
+  //           drug.quantity,
+  //         ]),
+  //         equipments_list: equipmentsList,
+  //       },
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //           "Content-Type": "application/json",
+  //         },
+  //       }
+  //     );
+
+  //     // Handle success, close modal, or update state as needed
+  //     console.log("Medical report created:", response.data);
+  //     setShowMedicalReportModal(false);
+  //     fetchData(); // Fetch data again to update the waiting list
+  //   } catch (error) {
+  //     console.error("Error creating medical report:", error.message);
+  //     // Handle error as needed
+  //   }
+  // };
+
   const handleMedicalReportSubmit = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
         throw new Error("Token not found in localStorage");
       }
-
+  
       const equipmentsList = selectedEquipments.map((equipment) => [
         equipment.equipment_id,
         equipment.quantity,
         equipment.daysUsed,
       ]);
-
-      const response = await axios.post(
+  
+      // Step 1: Create the medical report
+      const responseCreateReport = await axios.post(
         `/doctor/create_report/${selectedPatient.wait_id}`,
         {
           diagnostic,
@@ -112,17 +157,37 @@ const DoctorWaitingList = () => {
           },
         }
       );
-
-      // Handle success, close modal, or update state as needed
-      console.log("Medical report created:", response.data);
+  
+      console.log("Medical report created:", responseCreateReport.data);
       setShowMedicalReportModal(false);
-      fetchData(); // Fetch data again to update the waiting list
+  
+      if (responseCreateReport.status === 200) {
+        try {
+          fetchData();
+  
+          const responseUpdateReport = await axios.put(
+            `/doctor/create_report/${selectedPatient.wait_id}`,
+            null, 
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+  
+          console.log("Report updated:", responseUpdateReport.data);
+        } catch (updateError) {
+          console.error("Error updating medical report:", updateError.message);
+        }
+      }
     } catch (error) {
       console.error("Error creating medical report:", error.message);
-      // Handle error as needed
     }
   };
-
+  
+  
+  
   const handleWaitingButtonClick = async (waitId) => {
     try {
       const token = localStorage.getItem("token");

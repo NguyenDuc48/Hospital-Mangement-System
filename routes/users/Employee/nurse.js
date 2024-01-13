@@ -22,32 +22,75 @@ nurse.get('/profile', (req, res) => {
 nurse.put('/update_me', (req, res) => {
     // let employee_id = req.body.employee_id;
     let employee_id = jwt.verify(req.headers['authorization'].replace('Bearer ', ''), process.env.SECRET_KEY);
+    // console.log("em"employee_id)
     const updatedData = {
-        full_name : req.body.full_name,
-        dob : req.body.dob,
-        gender : req.body.gender,
-        phone_number : req.body.phone_number,
-        email : req.body.email,
-        address : req.body.address
+        new_password : req.body.new_pass,
+        old_password : req.body.old_pass
     };
+    console.log("update data: ",updatedData)
+    const find = `SELECT password FROM credentials WHERE id = "${employee_id.userId}"`;
 
-    let updateQuery = `UPDATE employees
-                       SET full_name = "${updatedData.full_name}",
-                           dob = "${updatedData.dob}",
-                           gender = "${updatedData.gender}",
-                           phone_number = "${updatedData.phone_number}",
-                           email = "${updatedData.email}",
-                           address = "${updatedData.address}"
-                       WHERE employee_id = "${employee_id.userId}"`;
+    // let updateQuery = `UPDATE employees
+    //                    SET phone_number = "${updatedData.phone_number}",
+    //                        email = "${updatedData.email}",
+    //                    WHERE employee_id = "${employee_id.userId}"`;
 
-    db.query(updateQuery, (err, result) => {
+    // db.query(updateQuery, (err, result) => {
+    //     if (err) {
+    //         console.log(err);
+    //         res.status(500).json({ error: 'Error updating information' });
+    //     } else {
+    //         res.json({ success: true, message: 'Information updated successfully' });
+    //     }
+    // });
+    db.query(find, (err, result) => {
         if (err) {
-            console.log(err);
-            res.status(500).json({ error: 'Error updating information' });
-        } else {
-            res.json({ success: true, message: 'Information updated successfully' });
+          console.error(err);
+          res.status(500).json({ message: 'Internal Server Error' });
+          return;
         }
-    });
+        console.log("result:", result)
+        if (result.length > 0) {
+          const storedPassword = result[0].password;
+        //   console.log("store pass:", storedPassword)
+          
+          bcrypt.compare(updatedData.old_password, storedPassword, (bcryptErr, bcryptResult) => {
+            if (bcryptErr) {
+              console.error(bcryptErr);
+              res.status(500).json({ message: 'sai roi' });
+              return;
+            }
+            if (bcryptResult){ 
+            // if (password === result[0].password) {
+            bcrypt.hash(updatedData.new_password, 10, (err, hash) => {
+                let password_bcrypt = hash;
+                let update_password =`UPDATE credentials
+                SET password = "${password_bcrypt}"
+                WHERE id = "${employee_id.userId}"`;
+                db.query(update_password, (err2, result2) => {
+                    if(err2) {
+                        console.log(err2);
+                        res.status(500).json({ error: 'Error creating employee' });
+                    }
+                    else {
+                        res.json({ success: true, message: 'Password updated successfully' });
+
+                    }
+
+
+                });
+            });
+
+            }
+            else {
+                res.status(500).json({ message: 'Old password incorect!' });
+
+            }
+          });
+        } else {
+          res.status(500).json({ message: 'Not found!' });
+        }
+      });
 });
 
 nurse.put('/update_health_insurance', (req, res) => {
@@ -93,7 +136,7 @@ nurse.get('/waiting_to_pay', (req,res) => {
 nurse.get('/show_bill_info/:wait_id', (req, res) => {
     const wait_id = req.params.wait_id
 
-    let info = `SELECT p.full_name, mr.conclusion, mr.note, p.health_insurance_percent, mr.money_need_to_pay
+    let info = `SELECT p.full_name, mr.conclusion, mr.note, p.health_insurance_percent,tb.total_bill_raw, mr.money_need_to_pay
                 FROM patient p JOIN wait_list wl ON wl.patient_id = p.patient_id
                     JOIN medical_reports mr ON mr.patient_id = wl.patient_id
                     JOIN total_bills tb ON tb.total_bill_id = mr.bill_id
