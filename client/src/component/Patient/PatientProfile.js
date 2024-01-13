@@ -119,7 +119,6 @@ const PatientProfile = () => {
           'Content-Type': 'application/json',
         },
       });
-  
       // Close the modal and fetch updated patient profile
       closeModal();
       fetchPatientProfile();

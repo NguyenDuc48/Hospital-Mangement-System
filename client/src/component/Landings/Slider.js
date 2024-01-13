@@ -1,7 +1,7 @@
 import React from "react";
 import heroImage from "../../photo/h1_hero.png";
 import { Button } from "react-bootstrap";
-
+import { Link } from "react-router-dom";
 const Slider = () => {
   const sliderStyle = {
     backgroundImage: `url(${heroImage})`,
@@ -72,9 +72,12 @@ const Slider = () => {
                       marginBottom: "30px",
                       width: " 30%",
                       padding: "10px",
+                      color: "black",
                     }}
                   >
-                    <span>Quick Appointment </span>
+                  <Link to="/login" className="text-primary">
+                    Đặt lịch khám ngay
+                  </Link>
                   </Button>
                 </div>
               </div>

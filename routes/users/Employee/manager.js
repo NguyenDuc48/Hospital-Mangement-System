@@ -151,7 +151,7 @@ employee.route('/delete_doctor')
     .delete((req, res) => {
         const doctor_id = req.body.doctor_id;
 
-        let delete_account = `DELETE FROM credentials WHERE id = "${doctor_id}"`;
+        let delete_account = `UPDATE credentials SET password = "randompass" WHERE id = "${doctor_id}"`;
 
         db.query(delete_account, (err, result) => {
             if (err) {
@@ -327,7 +327,7 @@ employee.route('/delete_nurse')
     .delete((req, res) => {
         const nurse_id = req.body.nurse_id;
 
-        let delete_account = `DELETE FROM credentials WHERE id = "${nurse_id}"`;
+        let delete_account = `UPDATE credentials SET password = "randompassword" WHERE id = "${nurse_id}"`;
 
         db.query(delete_account, (err, result) => {
             if (err) {
@@ -422,7 +422,7 @@ employee.delete('/delete_equipment', (req, res) => {
     const equipment_id = req.body.equipment_id;
     console.log('Equipment ID to delete:', equipment_id);
 
-    let delete_equipment = `DELETE FROM equipments WHERE equipment_id = "${equipment_id}"`;
+    let delete_equipment = `UPDATE equipments SET quantity_left = 0 WHERE equipment_id = "${equipment_id}"`;
 
     db.query(delete_equipment, (err, result) => {
         if (err) {
@@ -512,7 +512,7 @@ employee.put('/update_drug', (req, res) => {
 employee.delete('/delete_drug', (req, res) => {
     const drug_id = req.body.drug_id;
 
-    let delete_drug = `DELETE FROM drugs WHERE drug_id = "${drug_id}"`;
+    let delete_drug = `UPDATE drugs SET quantity_left = 0 WHERE drug_id = "${drug_id}"`;
 
     db.query(delete_drug, (err, result) => {
         if (err) {

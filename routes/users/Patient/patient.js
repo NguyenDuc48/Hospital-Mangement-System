@@ -145,6 +145,19 @@ patient.put('/update_profile', (req, res) => {
             res.json({ success: true, message: 'Patient information updated successfully' });
         }
     });
+
+    // let updateQuery_1 = `UPDATE credentials
+    //                     SET username = "${updatedData.phone_number}"
+    //                     WHERE id = "${patient_id.userId}"`;
+
+    // db.query(updateQuery_1, (err, result) => {
+    //     if (err) {
+    //         console.log(err);
+    //         res.status(500).json({ error: 'Error updating patient information' });
+    //     } else {
+    //         res.json({ success: true, message: 'Patient information updated successfully' });
+    //     }
+    // });
 });
 
 patient.get('/history', (req, res) => {
