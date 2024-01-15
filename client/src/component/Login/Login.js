@@ -77,7 +77,7 @@ const Login = (props) => {
       {/* Form */}
       <Form className="shadow p-4 bg-white rounded" onSubmit={handleSubmit}>
         {/* Header */}
-        <div className="h4 mb-2 text-center">Đăng nhập</div>
+        <div className="h4 mb-2 text-center">Login</div>
         {/* ALert */}
         {show ? (
           <Alert
@@ -86,13 +86,14 @@ const Login = (props) => {
             onClose={() => setShow(false)}
             dismissible
           >
-            Sai tài khoản hoặc mật khẩu.
+            Wrong account or password
+
           </Alert>
         ) : (
           <div />
         )}
         <Form.Group className="mb-2" controlId="username">
-          <Form.Label>Số điện thoại</Form.Label>
+          <Form.Label>Username</Form.Label>
           <Form.Control
             type="text"
             value={inputUsername}
@@ -102,7 +103,7 @@ const Login = (props) => {
           />
         </Form.Group>
         <Form.Group className="mb-2" controlId="password">
-          <Form.Label>Mật khẩu</Form.Label>
+          <Form.Label>Password</Form.Label>
           <Form.Control
             type="password"
             value={inputPassword}
@@ -112,15 +113,15 @@ const Login = (props) => {
           />
         </Form.Group>
         <Form.Group className="mb-2" controlId="checkbox">
-          <Form.Check type="checkbox" label="Ghi nhớ đăng nhập" />
+          <Form.Check type="checkbox" label="remember login" />
         </Form.Group>
         {!loading ? (
           <Button className="w-100" variant="primary" type="submit">
-            Đăng nhập
+            Login
           </Button>
         ) : (
           <Button className="w-100" variant="primary" type="submit" disabled>
-            Đang chuyển hướng...
+            Changing direction...
           </Button>
         )}
         {/* <div className="d-grid justify-content-end">
@@ -133,9 +134,10 @@ const Login = (props) => {
           </Button>
         </div> */}
         <div className="text-center mt-3">
-          Chưa có tài khoản ?{"  "}
+        Do not have an account?{"  "}
           <Link to="/sign_up" className="text-primary">
-            Đăng kí ngay
+          Register now
+
           </Link>
         </div>
       </Form>
