@@ -27,7 +27,18 @@ This is a web-based Hospital Management System built using ReactJS for the front
 * Authentication provided using JWT
 
 Feel free to check our [issues](https://github.com/NguyenDuc48/hms/issues) for more details on what's currently being worked on and to report any problems.
-
+## Landing page
+![Landing Page](https://github.com/NguyenDuc48/images/blob/master/landing.png)
+## Login
+![Login](https://github.com/NguyenDuc48/images/blob/master/login.png)
+## Manager
+![Manager](https://github.com/NguyenDuc48/images/blob/master/manager.png)
+## Patient
+![Patient](https://github.com/NguyenDuc48/images/blob/master/patient.png)
+## Doctor
+![Landing Page](https://github.com/NguyenDuc48/images/blob/master/doctor.png)
+## Nurse
+![Nurse](https://github.com/NguyenDuc48/images/blob/master/nurse.png)
 
 
 ### Instruction
@@ -41,7 +52,7 @@ Feel free to check our [issues](https://github.com/NguyenDuc48/hms/issues) for m
   ```
 * Open 2 terminals and run
   ``` bash
-  $ npm start
+  $ node server.js
   ```
   ```bash
   $ cd client
