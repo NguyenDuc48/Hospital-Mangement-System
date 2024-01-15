@@ -395,9 +395,9 @@ const NurseWaitList = () => {
                             <div class="d-none d-sm-block col-4 col-sm-2">
                               {item.quantity_used || "--"}
                             </div>
-                            <div class="col-2">${item.price}</div>
+                            <div class="col-2">{item.price} VND</div>
                             <div class="col-2">
-                              ${(item.quantity_used || 1) * (item.price || 1)}
+                              {(item.quantity_used || 1) * (item.price || 1)} VND
                             </div>
                           </div>
                         ))}
@@ -413,7 +413,7 @@ const NurseWaitList = () => {
                                 {/* <span class="text-120 text-secondary-d1">{totalData.length > 0 ? totalData[0].total_bill_raw : '--'}</span> */}
                                 <span class="text-120 text-secondary-d1">
                                   {totalData && totalData.length > 0
-                                    ? "$" + totalData[0].total_bill_raw
+                                    ?  totalData[0].total_bill_raw + " VND"
                                     : "--"}
                                 </span>
                               </div>
@@ -434,7 +434,7 @@ const NurseWaitList = () => {
                                 {/* <span class="text-150 text-success-d3 opacity-2">$2,475</span> */}
                                 <span class="text-120 text-secondary-d1">
                                   {totalData && totalData.length > 0
-                                    ? "$"+ totalData[0].money_need_to_pay
+                                    ? totalData[0].money_need_to_pay + " VND"
                                     : "--"}
                                 </span>
                               </div>

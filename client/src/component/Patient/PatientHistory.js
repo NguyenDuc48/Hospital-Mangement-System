@@ -129,7 +129,7 @@ const PatientHistory = () => {
                               <strong>Note:</strong> {historyItem.note}
                             </div>
                             <div>
-                              <strong>Money to Pay:</strong> ${historyItem.money_need_to_pay}
+                              <strong>Money to Pay:</strong> {historyItem.money_need_to_pay} VND
                             </div>
                           </MDBListGroupItem>
                         ))}
