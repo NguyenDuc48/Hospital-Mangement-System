@@ -28,17 +28,17 @@ This is a web-based Hospital Management System built using ReactJS for the front
 
 Feel free to check our [issues](https://github.com/NguyenDuc48/hms/issues) for more details on what's currently being worked on and to report any problems.
 ## Landing page
-![Landing Page](https://github.com/NguyenDuc48/images/blob/master/landing.png)
+![Landing Page](https://github.com/NguyenDuc48/hms/blob/main/client/src/photo/landing.png)
 ## Login
-![Login](https://github.com/NguyenDuc48/images/blob/master/login.png)
+![Login](https://github.com/NguyenDuc48/hms/blob/main/client/src/photo/login.png)
 ## Manager
-![Manager](https://github.com/NguyenDuc48/images/blob/master/manager.png)
+![Manager](https://github.com/NguyenDuc48/hms/blob/main/client/src/photo/manager.png)
 ## Patient
-![Patient](https://github.com/NguyenDuc48/images/blob/master/patient.png)
+![Patient](https://github.com/NguyenDuc48/hms/blob/main/client/src/photo/patient.png)
 ## Doctor
-![Landing Page](https://github.com/NguyenDuc48/images/blob/master/doctor.png)
+![Landing Page](https://github.com/NguyenDuc48/hms/blob/main/client/src/photo/doctor.png)
 ## Nurse
-![Nurse](https://github.com/NguyenDuc48/images/blob/master/nurse.png)
+![Nurse](https://github.com/NguyenDuc48/hms/blob/main/client/src/photo/nurse.png)
 
 
 ### Instruction
