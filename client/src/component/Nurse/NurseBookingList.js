@@ -16,6 +16,7 @@ const NurseBookingList = () => {
   const [departmentId, setDepartmentId] = useState('');
   const [description, setDescription] = useState('');
   const [isValidAccess, setValidAccess] = useState(false);
+  const [departments, setDepartments] = useState([]);
   useEffect(() => {
     const decodeToken = () => {  
         const token = localStorage.getItem('token');
@@ -32,6 +33,23 @@ const NurseBookingList = () => {
     };
     decodeToken();
   },[]);
+
+// Thêm useEffect để lấy danh sách departments khi component được tạo
+useEffect(() => {
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get('/nurse/all_department');
+      setDepartments(response.data);
+    } catch (error) {
+      console.error('Error fetching departments:', error.message);
+    }
+  };
+
+  fetchDepartments();
+}, []);
+
+
+
   const fetchAllBookedPatients = async () => {
     try {
       const response = await axios.get('/nurse/all_booked_patient');
@@ -206,14 +224,20 @@ const NurseBookingList = () => {
                 </Modal.Header>
                 <Modal.Body>
                   <Form>
-                    <Form.Group controlId="departmentId">
-                      <Form.Label>Department ID:</Form.Label>
+                  <Form.Group controlId="departmentId">
+                      <Form.Label>Department:</Form.Label>
                       <Form.Control
-                        type="text"
-                        placeholder="Enter department ID"
+                        as="select"
                         value={departmentId}
                         onChange={(e) => setDepartmentId(e.target.value)}
-                      />
+                      >
+                        <option value="" hidden>Select Department</option>
+                        {departments.map((dept) => (
+                          <option key={dept.department_id} value={dept.department_id}>
+                            {dept.department_name}
+                          </option>
+                        ))}
+                      </Form.Control>
                     </Form.Group>
                     <Form.Group controlId="description">
                       <Form.Label>Description:</Form.Label>

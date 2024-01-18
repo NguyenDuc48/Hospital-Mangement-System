@@ -288,21 +288,23 @@ nurse.get('/all_booked_patient/search/:input', (req, res) => {
 
 nurse.route('/add_waiting_patient')
     .post((req, res) => {
-        let priority = 'no'
+        let priority = 'no';
         const id = {
-            patient_id  : req.body.patient_id,
-            department_id : req.body.department_id,
-            description : req.body.description
-        }
-    
-        let find = `SELECT * FROM booked WHERE patient_id = "${id.patient_id}"`
+            patient_id: req.body.patient_id,
+            department_id: req.body.department_id,
+            description: req.body.description
+        };
+
+        let find = `SELECT * FROM booked WHERE patient_id = "${id.patient_id}"`;
 
         db.query(find, (err, result) => {
-            if (err) console.log(err)
+            if (err) console.log(err);
 
             const time = new Date();
             const current_date = time.toLocaleDateString('en-US');  // Format current date in local timezone
-            const current_time = `${time.getHours()}:${time.getMinutes()}`;
+            const current_hours = time.getHours().toString().padStart(2, '0');
+            const current_minutes = time.getMinutes().toString().padStart(2, '0');
+            const current_time = `${current_hours}:${current_minutes}`;
 
             // Convert result[0].booked_date to a string in 'YYYY-MM-DD' format
             const booked_date_string = result[0] ? result[0].booked_date.toLocaleDateString('en-US') : '';
@@ -310,14 +312,16 @@ nurse.route('/add_waiting_patient')
             // console.log(current_date, booked_date_string)
             if (result.length > 0 && booked_date_string === current_date) {
                 // The booked_date matches the current date
-                const booked_time = result[0].booked_time;
+                const booked_time = result[0].booked_time.padStart(5, '0');
 
                 // Calculate the end time (1 hour later)
                 const end_time = calculateEndTime(booked_time);
                 // console.log(end_time, booked_time, current_time)
-
+                console.log("Current Time:", current_time);
+                console.log("Booked Time:", booked_time);
+                console.log("End Time:", end_time);
                 if (current_time >= booked_time && current_time <= end_time) {
-                    priority = 'yes'
+                    priority = 'yes';
                 }
             }
 
@@ -329,20 +333,20 @@ nurse.route('/add_waiting_patient')
 
             db.query(add_to_list, (err2, result2) => {
                 if (err2) console.log(err2);
-                res.send(result)
-            }) 
-        })
+                res.send(result);
+            });
+        });
     })
     .delete((req, res) => {
-        const patient_id = req.body.patient_id
+        const patient_id = req.body.patient_id;
 
-        let delete_schedule = `DELETE FROM booked WHERE patient_id = "${patient_id}"`
+        let delete_schedule = `DELETE FROM booked WHERE patient_id = "${patient_id}"`;
 
         db.query(delete_schedule, (err, result) => {
             if (err) console.log(err);
             res.send("Deleted");
-        })
-    })
+        });
+    });
 
 function calculateEndTime(startTime) {
     const [hours, minutes] = startTime.split(':').map(Number);
@@ -350,7 +354,10 @@ function calculateEndTime(startTime) {
     endTime.setHours(hours + 1);
     endTime.setMinutes(minutes);
 
-    return `${endTime.getHours()}:${endTime.getMinutes()}`;
+    const end_hours = endTime.getHours().toString().padStart(2, '0');
+    const end_minutes = endTime.getMinutes().toString().padStart(2, '0');
+
+    return `${end_hours}:${end_minutes}`;
 }
 
 nurse.get('/all_equipment', (req, res) => {
@@ -403,5 +410,31 @@ nurse.get('/all_drug/search/:input', (req, res) => {
         res.send(result);
     });
 });
+
+nurse.get('/all_department', (req, res) => {
+    let departments = `SELECT * FROM departments  `
+    
+    db.query(departments, (err, result) => {
+        if (err) console.log(err);
+        res.send(result)
+    });
+})
+
+nurse.get('/all_department/search/:input', (req, res) => {
+    const input = req.params.input;
+
+    let search_departments = `SELECT * FROM departments
+                             WHERE department_name LIKE "${input}%"`;
+
+    db.query(search_departments, (err, result) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.send(result);
+    });
+});
+
 
 module.exports = nurse;

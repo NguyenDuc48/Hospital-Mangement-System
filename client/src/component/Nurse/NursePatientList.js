@@ -17,6 +17,7 @@ const NursePatientList = () => {
   const [description, setDescription] = useState('');
   const [showToast, setShowToast] = useState(false);
   const [isValidAccess, setValidAccess] = useState(false);
+  const [departments, setDepartments] = useState([]);
   useEffect(() => {
     const decodeToken = () => {  
         const token = localStorage.getItem('token');
@@ -33,6 +34,21 @@ const NursePatientList = () => {
     };
     decodeToken();
   },[]);
+
+// Thêm useEffect để lấy danh sách departments khi component được tạo
+useEffect(() => {
+  const fetchDepartments = async () => {
+    try {
+      const response = await axios.get('/nurse/all_department');
+      setDepartments(response.data);
+    } catch (error) {
+      console.error('Error fetching departments:', error.message);
+    }
+  };
+
+  fetchDepartments();
+}, []);
+
   const fetchAllPatients = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -162,7 +178,7 @@ const NursePatientList = () => {
                 Search
               </Button> */}
             </InputGroup>
-            <Button
+            {/* <Button
               variant="secondary"
               style={{ marginLeft: '10px', width: '15%' }}
               onClick={() => {
@@ -174,7 +190,7 @@ const NursePatientList = () => {
               }}
             >
               Add Patient
-            </Button>
+            </Button> */}
           </div>
           {loading ? (
             <p>Loading...</p>
@@ -222,15 +238,21 @@ const NursePatientList = () => {
                   <Modal.Title>Add Patient to Waitlist</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                  <Form>
+                  <Form>       
                     <Form.Group controlId="departmentId">
-                      <Form.Label>Department ID:</Form.Label>
+                      <Form.Label>Department:</Form.Label>
                       <Form.Control
-                        type="text"
-                        placeholder="Enter department ID"
+                        as="select"
                         value={departmentId}
                         onChange={(e) => setDepartmentId(e.target.value)}
-                      />
+                      >
+                        <option value="" hidden>Select Department</option>
+                        {departments.map((dept) => (
+                          <option key={dept.department_id} value={dept.department_id}>
+                            {dept.department_name}
+                          </option>
+                        ))}
+                      </Form.Control>
                     </Form.Group>
                     <Form.Group controlId="description">
                       <Form.Label>Description:</Form.Label>
